@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameModes;
 
+namespace MiraAPI.Patches.GameModes;
+
 [HarmonyPatch]
-public static class GameLogicPatches
+internal static class GameLogicPatches
 {
     [HarmonyPrefix, HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
     public static bool EndCritPatch(LogicGameFlowNormal __instance)

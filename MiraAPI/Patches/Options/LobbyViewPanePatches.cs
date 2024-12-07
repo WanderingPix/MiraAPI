@@ -1,8 +1,11 @@
 ﻿using HarmonyLib;
+using MiraAPI.GameModes;
+using MiraAPI.GameOptions;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
+using Reactor.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -181,6 +184,14 @@ public static class LobbyViewPanePatches
                 else
                 {
                     viewSettingsInfoPanel.SetInfo(data.Title, data.GetValueString(option.GetFloatData()), 61);
+
+                    if (viewSettingsInfoPanel.titleText.text.Contains("Game Mode"))
+                    {
+                        viewSettingsInfoPanel.titleText.text = TranslationController.Instance.GetString(
+                            OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.StringName,
+                            $"<#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>"
+                        );
+                    }
                 }
 
                 instance.settingsInfo.Add(viewSettingsInfoPanel.gameObject);

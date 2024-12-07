@@ -157,4 +157,7 @@ public abstract class AbstractGameMode
     /// <param name="playerInfo">Player attempting to vent.</param>
     /// <returns>True if venting is enabled in this mode.</returns>
     public virtual bool CanVent(Vent vent, NetworkedPlayerInfo playerInfo) => true;
+
+    /// <inheritdoc/>
+    public override string ToString() => Name;
 }

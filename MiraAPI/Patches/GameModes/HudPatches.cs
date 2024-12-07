@@ -1,12 +1,14 @@
 using HarmonyLib;
 using MiraAPI.GameModes;
 
-[HarmonyPatch]
-public static class HudPatches
+namespace MiraAPI.Patches.GameModes;
+
+[HarmonyPatch(typeof(HudManager))]
+internal static class HudPatches
 {
-    [HarmonyPostfix, HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
+    [HarmonyPostfix, HarmonyPatch(nameof(HudManager.Start))]
     public static void HudStartPatch(HudManager __instance) => CustomGameModeManager.ActiveMode?.HudStart(__instance);
 
-    [HarmonyPostfix, HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+    [HarmonyPostfix, HarmonyPatch(nameof(HudManager.Update))]
     public static void HudUpdatePatch(HudManager __instance) => CustomGameModeManager.ActiveMode?.HudUpdate(__instance);
 }

@@ -2,8 +2,10 @@
 using InnerNet;
 using MiraAPI.GameModes;
 
+namespace MiraAPI.Patches.GameModes;
+
 [HarmonyPatch]
-public static class ConsolePatches
+internal static class ConsolePatches
 {
     [HarmonyPrefix, HarmonyPatch(typeof(Console), nameof(Console.CanUse))]
     public static bool CanUsePatch(Console __instance, [HarmonyArgument(0)] NetworkedPlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)

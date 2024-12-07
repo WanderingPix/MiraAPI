@@ -1,11 +1,13 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameModes;
 
+namespace MiraAPI.Patches.GameModes;
+
 /// <summary>
-/// Allow Impostors to kill each other if can kill is enabled in gamemode or friendly fire is toggled on
+/// Allow Impostors to kill each other if can kill is enabled in gamemode or friendly fire is toggled on.
 /// </summary>
 [HarmonyPatch(typeof(ImpostorRole), "IsValidTarget")]
-public static class ImpostorTargetPatch
+internal static class ImpostorTargetPatch
 {
     public static bool Prefix(ImpostorRole __instance, [HarmonyArgument(0)] NetworkedPlayerInfo target, ref bool __result)
     {

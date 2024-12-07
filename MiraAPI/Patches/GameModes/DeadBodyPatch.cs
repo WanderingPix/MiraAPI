@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameModes;
 
+namespace MiraAPI.Patches.GameModes;
+
 [HarmonyPatch(typeof(DeadBody))]
-public static class DeadBodyPatch
+internal static class DeadBodyPatch
 {
     [HarmonyPrefix, HarmonyPatch(nameof(DeadBody.OnClick))]
     public static bool OnClickPatch(DeadBody __instance)

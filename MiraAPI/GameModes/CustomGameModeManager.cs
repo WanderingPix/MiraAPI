@@ -4,6 +4,7 @@ using Il2CppSystem.Threading.Tasks;
 using MiraAPI.GameOptions;
 using MiraAPI.PluginLoading;
 using Reactor.Utilities;
+using Reactor.Utilities.Extensions;
 
 namespace MiraAPI.GameModes;
 
@@ -72,11 +73,18 @@ public static class CustomGameModeManager
         if (IdToModeMap.TryGetValue(id, out var mode))
         {
             ActiveMode = mode;
-            return;
+        }
+        else if (id != 0)
+        {
+            ActiveMode = IdToModeMap[0];
+            OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.SetValue(0);
+            Logger<MiraApiPlugin>.Warning($"Unable to find game mode of id {id}!");
         }
 
-        ActiveMode = IdToModeMap[0];
-        Logger<MiraApiPlugin>.Warning($"Unable to find game mode of id {id}!");
+        if (OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour != null && ActiveMode != null)
+        {
+            ((NumberOption)OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour).TitleText.SetText($"Game Mode: <#{ActiveMode.Color.ToHtmlStringRGBA()}>{ActiveMode}</color>");
+        }
     }
 
     internal static void GetAndSetGameMode()

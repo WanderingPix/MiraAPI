@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
 using Il2CppSystem;
+using MiraAPI.GameModes;
+using MiraAPI.GameOptions;
 using MiraAPI.Utilities;
+using Reactor.Utilities.Extensions;
 
 namespace MiraAPI.Patches.Options;
 
@@ -38,8 +41,16 @@ public static class OptionsPatches
             return true;
         }
 
-        __instance.TitleText.text =
-            TranslationController.Instance.GetString(__instance.Title, Array.Empty<Object>());
+        if (__instance == OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour)
+        {
+            __instance.TitleText.text =
+                TranslationController.Instance.GetString(__instance.Title, $"<#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>");
+        }
+        else
+        {
+            __instance.TitleText.text =
+                TranslationController.Instance.GetString(__instance.Title);
+        }
 
         return false;
     }

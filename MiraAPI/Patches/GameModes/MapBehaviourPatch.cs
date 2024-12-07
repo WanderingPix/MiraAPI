@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameModes;
 
+namespace MiraAPI.Patches.GameModes;
+
 [HarmonyPatch(typeof(MapBehaviour))]
-public static class MapBehaviourPatch
+internal static class MapBehaviourPatch
 {
     [HarmonyPrefix, HarmonyPatch(nameof(MapBehaviour.ShowSabotageMap))]
     public static bool ShowSabotagePatch(MapBehaviour __instance)
