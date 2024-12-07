@@ -1,7 +1,9 @@
-﻿using Reactor.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Il2CppSystem.Threading.Tasks;
+using MiraAPI.GameOptions;
+using MiraAPI.PluginLoading;
+using Reactor.Utilities;
 
 namespace MiraAPI.GameModes;
 
@@ -10,62 +12,84 @@ namespace MiraAPI.GameModes;
 /// </summary>
 public static class CustomGameModeManager
 {
-    /// <summary>
-    /// List of registered gamemodes.
-    /// </summary>
-    internal static readonly Dictionary<int, CustomGameMode> GameModes = [];
+    private static readonly Dictionary<uint, AbstractGameMode> IdToModeMap = [];
 
-    public static bool IsDefault()
+    private static uint _nextId;
+
+    private static uint GetNextId()
     {
-        return ActiveMode?.Id == 0;
+        _nextId++;
+        return _nextId;
     }
 
-    /// <summary>
-    /// Current gamemode.
-    /// </summary>
-    public static CustomGameMode? ActiveMode { get; internal set; } = new DefaultMode();
-
-    /// <summary>
-    /// Set current gamemode.
-    /// </summary>
-    /// <param name="id">gamemode ID.</param>
-    public static void SetGameMode(int id)
-    {
-        if (GameModes.TryGetValue(id, out var gameMode))
-        {
-            ActiveMode = gameMode;
-            return;
-        }
-
-        Logger<MiraApiPlugin>.Error($"No gamemode with id {id} found!");
-    }
+    internal static uint LastId => _nextId;
 
     /// <summary>
     /// Register gamemode from type.
     /// </summary>
-    /// <param name="gameModeType">Type of gamemode class, should inherit from <see cref="CustomGameMode"/>.</param>
-    internal static void RegisterGameMode(Type gameModeType)
+    /// <param name="gameModeType">Type of gamemode class, should inherit from <see cref="AbstractGameMode"/>.</param>
+    /// <param name="pluginInfo">The custom plugin info of the mod.</param>
+    internal static void RegisterGameMode(Type gameModeType, MiraPluginInfo pluginInfo)
     {
-        if (!typeof(CustomGameMode).IsAssignableFrom(gameModeType))
+        if (!typeof(AbstractGameMode).IsAssignableFrom(gameModeType))
         {
-            Logger<MiraApiPlugin>.Warning($"{gameModeType.Name} does not inherit CustomGameMode!");
             return;
         }
 
-        var modeObj = Activator.CreateInstance(gameModeType);
+        var instance = Activator.CreateInstance(gameModeType);
 
-        if (modeObj is not CustomGameMode gameMode)
+        if (instance is not AbstractGameMode mode)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to create instance of {gameModeType.Name}");
             return;
         }
 
-        if (GameModes.Any(x => x.Key == gameMode.Id))
+        IdToModeMap.Add(GetNextId(), mode);
+        pluginInfo.GameModes.Add(_nextId, mode);
+
+        mode.ID = _nextId;
+    }
+
+    /// <summary>
+    /// Checks to see if the default game mode is on.
+    /// </summary>
+    /// <returns>True if the default mode is one.</returns>
+    public static bool IsDefault() => (uint)OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.Value == 0;
+
+    /// <summary>
+    /// Gets the current gamemode.
+    /// </summary>
+    public static AbstractGameMode? ActiveMode { get; internal set; }
+
+    internal static void RegisterDefaultMode()
+    {
+        var defaultMode = new DefaultMode();
+        IdToModeMap.Add(0, defaultMode);
+        defaultMode.ID = 0;
+    }
+
+    internal static void SetGameMode(uint id)
+    {
+        if (IdToModeMap.TryGetValue(id, out var mode))
         {
-            Logger<MiraApiPlugin>.Error($"ID for gamemode {gameMode.Name} already exists!");
+            ActiveMode = mode;
             return;
         }
 
-        GameModes.Add(gameMode.Id, gameMode);
+        ActiveMode = IdToModeMap[0];
+        Logger<MiraApiPlugin>.Warning($"Unable to find game mode of id {id}!");
+    }
+
+    internal static void GetAndSetGameMode()
+    {
+        var id = (uint)OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.Value;
+
+        if (IdToModeMap.TryGetValue(id, out var mode))
+        {
+            ActiveMode = mode;
+            return;
+        }
+
+        ActiveMode = IdToModeMap[0];
+        Logger<MiraApiPlugin>.Warning($"Unable to find game mode of id {id}!");
     }
 }

@@ -1,4 +1,6 @@
-﻿/*
+﻿using HarmonyLib;
+using MiraAPI.GameModes;
+
 /// <summary>
 /// Allow Impostors to kill each other if can kill is enabled in gamemode or friendly fire is toggled on
 /// </summary>
@@ -16,9 +18,8 @@ public static class ImpostorTargetPatch
         }
 
         __result = target is { Disconnected: false, IsDead: false } &&
-                   target.PlayerId != __instance.Player.PlayerId && !(target.Role == null) &&
-                   !(target.Object == null) && !target.Object.inVent && !target.Object.inMovingPlat;
+                    target.PlayerId != __instance.Player.PlayerId && target.Role != null &&
+                    target.Object != null && !target.Object.inVent && !target.Object.inMovingPlat;
         return false;
-
     }
-}*/
+}

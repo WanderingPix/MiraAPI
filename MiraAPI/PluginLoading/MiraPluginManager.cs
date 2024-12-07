@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
 using MiraAPI.Colors;
+using MiraAPI.GameModes;
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Hud;
@@ -29,6 +30,7 @@ public sealed class MiraPluginManager
     internal void Initialize()
     {
         Instance = this;
+
         IL2CPPChainloader.Instance.PluginLoad += (pluginInfo, assembly, plugin) =>
         {
             if (plugin is not IMiraPlugin miraPlugin)
@@ -46,21 +48,49 @@ public sealed class MiraPluginManager
 
             RegisterColorClasses(assembly);
 
+            RegisterGameModeAttribute(assembly, info);
+
             _registeredPlugins.Add(assembly, info);
 
             Logger<MiraApiPlugin>.Info($"Registering mod {pluginInfo.Metadata.GUID} with Mira API.");
         };
-        IL2CPPChainloader.Instance.Finished += PaletteManager.RegisterAllColors;
+        IL2CPPChainloader.Instance.Finished += FinishInitialisation;
+    }
+
+    private void FinishInitialisation()
+    {
+        var plugin = IL2CPPChainloader.Instance.Plugins["mira.api"];
+        var info = new MiraPluginInfo(MiraApiPlugin.Instance, plugin);
+        var assembly = typeof(MiraPluginManager).Assembly;
+
+        RegisterModifierAttribute(assembly);
+        RegisterAllOptions(assembly, info);
+
+        RegisterRoleAttribute(assembly, info);
+        RegisterButtonAttribute(assembly, info);
+
+        RegisterColorClasses(assembly);
+
+        RegisterGameModeAttribute(assembly, info);
+
+        _registeredPlugins.Add(assembly, info);
+
+        PaletteManager.RegisterAllColors();
+        CustomGameModeManager.RegisterDefaultMode();
+
+        CustomGameModeManager.GetAndSetGameMode();
+
+        Logger<MiraApiPlugin>.Info("Initialised mira stuff");
     }
 
     /// <summary>
     /// Get a mira plugin by its GUID.
     /// </summary>
-    /// <param name="guid">The plugin GUID.</param>
+    /// <param name="pluginGUID">The plugin GUID.</param>
     /// <returns>A MiraPluginInfo.</returns>
-    public static MiraPluginInfo GetPluginByGuid(string guid)
+    public static MiraPluginInfo GetPluginByGuid(string pluginGUID)
     {
-        return Instance._registeredPlugins.Values.First(plugin => plugin.PluginId == guid);
+        return Instance._registeredPlugins.Values.First(plugin => plugin.PluginId == pluginGUID);
     }
 
     private static void RegisterAllOptions(Assembly assembly, MiraPluginInfo pluginInfo)
@@ -177,6 +207,19 @@ public sealed class MiraPluginManager
             if (attribute != null)
             {
                 CustomButtonManager.RegisterButton(type, pluginInfo);
+            }
+        }
+    }
+
+    private static void RegisterGameModeAttribute(Assembly assembly, MiraPluginInfo pluginInfo)
+    {
+        foreach (var type in assembly.GetTypes())
+        {
+            var attribute = type.GetCustomAttribute<RegisterGameModeAttribute>();
+
+            if (attribute != null)
+            {
+                CustomGameModeManager.RegisterGameMode(type, pluginInfo);
             }
         }
     }

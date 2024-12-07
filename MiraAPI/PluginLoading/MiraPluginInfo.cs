@@ -3,12 +3,8 @@ using BepInEx.Configuration;
 using MiraAPI.GameModes;
 using MiraAPI.GameOptions;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Linq;
-using MiraAPI.GameOptions.OptionTypes;
 using MiraAPI.Hud;
-using MiraAPI.Roles;
 
 namespace MiraAPI.PluginLoading;
 
@@ -53,6 +49,15 @@ public class MiraPluginInfo
     }
 
     /// <summary>
+    /// Gets a read only dictionary of Game Mode IDs and the AbstractGameMode object they are associated with.
+    /// </summary>
+    /// <returns>Read only dictionary of IDs and Game Modes.</returns>
+    public ReadOnlyDictionary<uint, AbstractGameMode> GetModes()
+    {
+        return new ReadOnlyDictionary<uint, AbstractGameMode>(GameModes);
+    }
+
+    /// <summary>
     /// Gets a read only collection of this plugin's custom buttons.
     /// </summary>
     /// <returns>Read only collection of buttons.</returns>
@@ -67,7 +72,7 @@ public class MiraPluginInfo
 
     internal Dictionary<ushort, RoleBehaviour> CustomRoles { get; } = [];
 
-    internal Dictionary<int, CustomGameMode> GameModes { get; } = [];
+    internal Dictionary<uint, AbstractGameMode> GameModes { get; } = [];
 
     internal List<CustomActionButton> Buttons { get; } = [];
 

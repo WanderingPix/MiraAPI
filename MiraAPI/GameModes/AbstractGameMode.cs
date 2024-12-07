@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MiraAPI.GameModes;
 
 /// <summary>
 /// Base class for custom gamemodes.
 /// </summary>
-public abstract class CustomGameMode
+public abstract class AbstractGameMode
 {
     /// <summary>
     /// Gets the game mode name.
@@ -18,9 +19,14 @@ public abstract class CustomGameMode
     public abstract string Description { get; }
 
     /// <summary>
-    /// Gets the game mode ID.
+    /// Gets the game mode description.
     /// </summary>
-    public abstract int Id { get; }
+    public virtual Color Color { get; } = Color.white;
+
+    /// <summary>
+    /// Gets or sets the game mode id.
+    /// </summary>
+    public uint ID { get; set; }
 
     /// <summary>
     /// Called when Intro Cutscene is destroyed.

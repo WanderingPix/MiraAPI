@@ -1,4 +1,6 @@
-﻿/*
+﻿using HarmonyLib;
+using MiraAPI.GameModes;
+
 [HarmonyPatch]
 public static class GameLogicPatches
 {
@@ -17,4 +19,4 @@ public static class GameLogicPatches
         CustomGameModeManager.ActiveMode?.AssignRoles(out runOriginal, __instance);
         return runOriginal;
     }
-}*/
+}
