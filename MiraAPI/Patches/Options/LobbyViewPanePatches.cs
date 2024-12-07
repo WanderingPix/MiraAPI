@@ -188,8 +188,7 @@ public static class LobbyViewPanePatches
                     if (viewSettingsInfoPanel.titleText.text.Contains("Game Mode"))
                     {
                         viewSettingsInfoPanel.titleText.text = TranslationController.Instance.GetString(
-                            OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.StringName,
-                            $"<#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>"
+                            data.Title, $"<#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>"
                         );
                     }
                 }
