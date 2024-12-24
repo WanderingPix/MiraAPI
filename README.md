@@ -55,13 +55,13 @@ MyMiraMod/
 
 ## Roles
 Roles are very simple in Mira API. There are 3 things you need to do to create a custom role:
-1. Create a class that inherits from a base game role (like `CrewmateRole`, `ImpostorRole`, etc) 
+1. Create a class that inherits from a base game role (like `CrewmateRole`, `ImpostorRole`, etc)
 2. Implement the `ICustomRole` interface from Mira API.
 3. Add the `[RegisterCustomRole]` attribute to the class.
 
 **Disclaimer: Make sure your plugin class has the following attribute `[ReactorModFlags(ModFlags.RequireOnAllClients)]` or else your roles will not register correctly.**
 
-Note: For step 1, if you are making neutral roles, choose either `CrewmateRole` or `ImpostorRole` as the base depending on if it can kill or not! 
+Note: For step 1, if you are making neutral roles, choose either `CrewmateRole` or `ImpostorRole` as the base depending on if it can kill or not!
 
 Mira API handles everything else, from adding the proper options to the settings menu, to managing the role assignment at the start of the game. There are no extra steps on the developer's part.
 
@@ -92,7 +92,7 @@ Here is an example of a group class:
 public class MyOptionsGroup : AbstractOptionGroup
 {
     public override string GroupName => "My Options"; // this is required
-    
+
     [ModdedNumberOption("My Number Option", min: 0, max: 10)]
     public float MyNumberOption { get; set; } = 5f;
 }
@@ -106,7 +106,7 @@ Logger<MyPlugin>.Info(myGroup.MyNumberOption); // prints the value of the option
 ```
 
 Once you have an options group, there are two ways to make the actual options:
-- Use an Option Attribute with a property.  
+- Use an Option Attribute with a property.
 - Create a ModdedOption property.
 
 ### Option Attributes
@@ -121,7 +121,7 @@ public float SussyLevel { get; set; } = 4f; // You can set a default value here.
 Here are the available Option Attributes and their signatures:
 ```csharp
 ModdedEnumOption(string name, Type enumType, string[]? values = null, Type? roleType = null)
-    
+
 ModdedNumberOption(
     string name,
     float min,
@@ -141,7 +141,7 @@ And this is an example of a ModdedOption property:
 public ModdedToggleOption YeezusAbility { get; } = new ModdedToggleOption("Yeezus Ability", false);
 ```
 
-Here is a full list of ModdedOption classes you can use: 
+Here is a full list of ModdedOption classes you can use:
 - `ModdedEnumOption`
 - `ModdedNumberOption`
 - `ModdedToggleOption`
@@ -150,29 +150,30 @@ To see a full example of an options class, see [this file](https://github.com/Al
 
 ### Role Options
 
-You can also specify a role type for an option or option group.
+You can also specify a role or game mode type for an option or option group.
 
-To set the role type for an entire group, set the `AdvancedRole` property on that group like this: 
+For an entire group, you can do this:
 ```csharp
 public class MyOptionsGroup : AbstractOptionGroup
 {
     public override string GroupName => "My Options";
     public override Type AdvancedRole => typeof(MyRole); // this is the role that will have these options
-    
+    public override Type AdvancedMode => typeof(MyMode); // this is the mode that these options are attached to
+
     [ModdedNumberOption("Ability Uses", min: 0, max: 10)]
     public float AbilityUses { get; set; } = 5f;
 }
 ```
 
-To set the role type for individual options, specify the `roleType` parameter in the option like this:
+To set the role type for individual options, do this:
 ```csharp
 // this group doesnt specify a role, so it will show up in the global settings
 public class MyOptionsGroup : AbstractOptionGroup
 {
     public override string GroupName => "My Options";
-    
-    // this option will only show up in the settings for MyRole
-    [ModdedNumberOption("Ability Uses", min: 0, max: 10, roleType: typeof(MyRole))]
+
+    // this option will only show up in the settings for MyRole when the current mode is set to MyMode
+    [ModdedNumberOption("Ability Uses", min: 0, max: 10, roleType: typeof(MyRole), modeType: typeof(MyMode))]
     public float AbilityUses { get; set; } = 5f;
 }
 ```
@@ -182,7 +183,7 @@ An example can be found [here](https://github.com/All-Of-Us-Mods/MiraAPI/blob/ma
 ## Custom Murders
 Mira API provides it's own implementation for murders. Our implementation allows for more customization on kills, and helps bypass server checks.
 You can use `PlayerControl.RpcCustomMurder` to perform a networked custom murder, or `PlayerControl.CustomMurder` to normally perform a custom murder.
-For example: 
+For example:
 ```cs
 PlayerControl.LocalPlayer.RpcCustomMurder(Target, createDeadBody: false, teleportMurderer: false, playKillSound: false, resetKillTimer: false, showKillAnim: false);
 ```
@@ -220,17 +221,17 @@ Here is an example of a custom color class:
 [RegisterCustomColors]
 public static class MyCustomColors
 {
-    public static CustomColor Cerulean { get; } = new CustomColor("Cerulean", new Color(0.0f, 0.48f, 0.65f)); 
+    public static CustomColor Cerulean { get; } = new CustomColor("Cerulean", new Color(0.0f, 0.48f, 0.65f));
 
     public static CustomColor Rose { get; } = new CustomColor("Rose", new Color(0.98f, 0.26f, 0.62f));
-    
+
     public static CustomColor Gold { get; } = new CustomColor("Gold", new Color(1.0f, 0.84f, 0.0f));
 }
 ```
 
 ## Assets
 
-Mira API provides a simple, but expandable asset system. The core of the system is the `LoadableAsset<T>` class. This is a generic abstract class that provides a pattern for loading assets. 
+Mira API provides a simple, but expandable asset system. The core of the system is the `LoadableAsset<T>` class. This is a generic abstract class that provides a pattern for loading assets.
 
 Mira API comes with two asset loaders:
 1. `LoadableBundleAsset<T>`: This is used for loading assets from AssetBundles.
