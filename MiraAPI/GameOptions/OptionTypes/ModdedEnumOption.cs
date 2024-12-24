@@ -26,7 +26,8 @@ public class ModdedEnumOption : ModdedOption<int>
     /// <param name="enumType">The Enum type.</param>
     /// <param name="values">An option list of string values to use in place of the enum name.</param>
     /// <param name="roleType">An optional role type to specify for a specific role.</param>
-    public ModdedEnumOption(string title, int defaultValue, Type enumType, string[]? values = null, Type? roleType = null) : base(title, defaultValue, roleType)
+    /// <param name="modeType">An optional game mode type to specify for a specific mode.</param>
+    public ModdedEnumOption(string title, int defaultValue, Type enumType, string[]? values = null, Type? roleType = null, Type? modeType = null) : base(title, defaultValue, roleType, modeType)
     {
         Values = values ?? Enum.GetNames(enumType);
         Data = ScriptableObject.CreateInstance<StringGameSetting>();

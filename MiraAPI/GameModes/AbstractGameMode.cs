@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MiraAPI.GameModes;
@@ -27,6 +28,11 @@ public abstract class AbstractGameMode
     /// Gets or sets the game mode id.
     /// </summary>
     public uint ID { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether a custom intro sequence is implemented by the game mode.
+    /// </summary>
+    public virtual bool ShowGameModeIntroCutscene => false;
 
     /// <summary>
     /// Called when Intro Cutscene is destroyed.
@@ -92,28 +98,20 @@ public abstract class AbstractGameMode
     }
 
     /// <summary>
-    /// Should Roles Settings be available when this gamemode is selected.
-    /// </summary>
-    /// <returns>True if Role Settings are enabled in this game mode.</returns>
-    public virtual bool AreRoleSettingsEnabled() => true;
-
-    /// <summary>
-    /// Should Game Settings be available when this gamemode is selected.
-    /// </summary>
-    /// <returns>True if Game Settings are enabled in this mode.</returns>
-    public virtual bool AreGameSettingsEnabled() => true;
-
-    /// <summary>
     /// Custom winner selection.
     /// </summary>
     /// <returns>List of winners or null.</returns>
     public virtual List<NetworkedPlayerInfo>? CalculateWinners() => null;
 
     /// <summary>
-    /// Show gamemode in Intro Cutscene.
+    /// The IEnumerator that plays the intro cutscene for this gamemode.
     /// </summary>
-    /// <returns>True if the game mode should be shown in the intro cutscene.</returns>
-    public virtual bool ShowGameModeIntroCutscene() => false;
+    /// <param name="__instance">An instance of IntroCutscene.</param>
+    /// <returns>An IEnumerator to run the intro cutscene instead of the base game one.</returns>
+    public virtual IEnumerator IntroCutscene(IntroCutscene __instance)
+    {
+        yield return new WaitForEndOfFrame();
+    }
 
     /// <summary>
     /// Can Admin be used in this gamemode.

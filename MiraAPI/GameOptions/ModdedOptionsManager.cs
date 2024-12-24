@@ -121,6 +121,7 @@ public static class ModdedOptionsManager
 
         option.ParentMod = pluginInfo.MiraPlugin;
         option.AdvancedRole = group.AdvancedRole;
+        option.AdvancedMode = group.AdvancedMode;
 
         pluginInfo.Options.Add(option);
 

@@ -37,6 +37,11 @@ public abstract class AbstractOptionGroup
     /// </summary>
     public virtual Type? AdvancedRole => null;
 
+    /// <summary>
+    /// Gets the role the group is associated with. This is used for the advanced role options menu.
+    /// </summary>
+    public virtual Type? AdvancedMode => null;
+
     internal bool AllOptionsHidden { get; set; }
 
     internal CategoryHeaderMasked? Header { get; set; }

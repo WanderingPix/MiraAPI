@@ -1,9 +1,11 @@
 ﻿using BepInEx.Configuration;
+using MiraAPI.GameModes;
 using MiraAPI.Modifiers;
 using MiraAPI.PluginLoading;
 using MiraAPI.Utilities;
-using System.Text;
 using Reactor.Utilities;
+using System;
+using System.Text;
 using UnityEngine;
 
 namespace MiraAPI.Roles;
@@ -47,6 +49,11 @@ public interface ICustomRole
     /// Gets the parent mod of this role.
     /// </summary>
     MiraPluginInfo ParentMod => CustomRoleManager.FindParentMod(this);
+
+    /// <summary>
+    /// Gets the game mode this role is a part of.
+    /// </summary>
+    Type AssociatedGameMode => typeof(DefaultMode);
 
     /// <summary>
     /// This method runs on the PlayerControl.FixedUpdate method for ALL players with this role.

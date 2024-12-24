@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using MiraAPI.GameModes;
 using MiraAPI.Networking;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
@@ -18,7 +19,7 @@ using Object = UnityEngine.Object;
 namespace MiraAPI.Patches.Options;
 
 [HarmonyPatch(typeof(RolesSettingsMenu))]
-public static class RoleSettingMenuPatches
+internal static class RoleSettingMenuPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(RolesSettingsMenu.SetQuotaTab))]
@@ -56,7 +57,8 @@ public static class RoleSettingMenuPatches
 
         var crewRoles = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values
             .OfType<ICustomRole>()
-            .Where(role => role is { Team: ModdedRoleTeams.Crewmate, Configuration.HideSettings: false })
+            .Where(role => role is { Team: ModdedRoleTeams.Crewmate, Configuration.HideSettings: false } && (role.AssociatedGameMode is null || role.AssociatedGameMode ==
+                CustomGameModeManager.ActiveMode?.GetType()))
             .ToList() ?? [];
 
         if (crewRoles is { Count: > 0 })
@@ -82,7 +84,8 @@ public static class RoleSettingMenuPatches
 
         var impRoles = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values
             .OfType<ICustomRole>()
-            .Where(role => role is { Team: ModdedRoleTeams.Impostor, Configuration.HideSettings: false })
+            .Where(role => role is { Team: ModdedRoleTeams.Impostor, Configuration.HideSettings: false } && (role.AssociatedGameMode is null || role.AssociatedGameMode ==
+                CustomGameModeManager.ActiveMode?.GetType()))
             .ToList() ?? [];
 
         if (impRoles is { Count: > 0 })
@@ -109,7 +112,8 @@ public static class RoleSettingMenuPatches
 
         var neutRoles = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values
             .OfType<ICustomRole>()
-            .Where(role => role is { Team: ModdedRoleTeams.Neutral, Configuration.HideSettings: false })
+            .Where(role => role is { Team: ModdedRoleTeams.Neutral, Configuration.HideSettings: false } && (role.AssociatedGameMode is null || role.AssociatedGameMode ==
+                CustomGameModeManager.ActiveMode?.GetType()))
             .ToList() ?? [];
 
         if (neutRoles is { Count: > 0 })
@@ -208,7 +212,8 @@ public static class RoleSettingMenuPatches
 
         var num = -0.872f;
 
-        var filteredOptions = GameSettingMenuPatches.SelectedMod?.Options.Where(x => x.AdvancedRole == role.GetType()) ?? [];
+        var filteredOptions = GameSettingMenuPatches.SelectedMod?.Options?.Where(x => x.AdvancedRole == role.GetType() && (x.AdvancedMode is null || x.AdvancedMode ==
+            CustomGameModeManager.ActiveMode?.GetType())) ?? [];
 
         foreach (var option in filteredOptions)
         {

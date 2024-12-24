@@ -48,6 +48,7 @@ public class ModdedNumberOption : ModdedOption<float>
     /// <param name="suffixType">The suffix type.</param>
     /// <param name="zeroInfinity">Whether zero is infinity or not.</param>
     /// <param name="roleType">An optional role type.</param>
+    /// <param name="modeType">An optional game mode type.</param>
     public ModdedNumberOption(
         string title,
         float defaultValue,
@@ -56,7 +57,8 @@ public class ModdedNumberOption : ModdedOption<float>
         float increment,
         MiraNumberSuffixes suffixType,
         bool zeroInfinity = false,
-        Type? roleType = null) : base(title, defaultValue, roleType)
+        Type? roleType = null,
+        Type? modeType = null) : base(title, defaultValue, roleType, modeType)
     {
         Min = min;
         Max = max;

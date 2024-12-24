@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MiraAPI.GameModes;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Localization.Utilities;
@@ -32,7 +33,7 @@ public static class GameOptionsMenuPatch
         var num = 2.1f;
         var filteredGroups =
             GameSettingMenuPatches.SelectedMod?.OptionGroups.Where(
-                x => x.AdvancedRole is null) ?? [];
+                x => x.AdvancedRole is null && (x.AdvancedMode is null || x.AdvancedMode == CustomGameModeManager.ActiveMode?.GetType())) ?? [];
 
         foreach (var group in filteredGroups)
         {
@@ -99,7 +100,8 @@ public static class GameOptionsMenuPatch
 
         __instance.MapPicker.gameObject.SetActive(false);
 
-        var filteredGroups = GameSettingMenuPatches.SelectedMod?.OptionGroups.Where(x => x.AdvancedRole is null) ?? [];
+        var filteredGroups = GameSettingMenuPatches.SelectedMod?.OptionGroups.Where(x => x.AdvancedRole is null && (x.AdvancedMode is null || x.AdvancedMode ==
+            CustomGameModeManager.ActiveMode?.GetType())) ?? [];
 
         foreach (var group in filteredGroups)
         {

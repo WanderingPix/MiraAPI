@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using MiraAPI.GameModes;
 using MiraAPI.Networking;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
@@ -78,6 +79,11 @@ public abstract class ModdedOption<T> : IModdedOption
     public Type? AdvancedRole { get; set; }
 
     /// <summary>
+    /// Gets or sets the advanced mode of the option.
+    /// </summary>
+    public Type? AdvancedMode { get; set; }
+
+    /// <summary>
     /// Gets or sets the option behaviour of the option.
     /// </summary>
     public OptionBehaviour? OptionBehaviour { get; protected set; }
@@ -103,7 +109,8 @@ public abstract class ModdedOption<T> : IModdedOption
     /// <param name="title">The option title.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <param name="roleType">The Role Type or null if it doesn't belong to a role.</param>
-    protected ModdedOption(string title, T defaultValue, Type? roleType)
+    /// <param name="modeType">The Game Mode Type or null if it doesn't belong to a mode.</param>
+    protected ModdedOption(string title, T defaultValue, Type? roleType, Type? modeType)
     {
         Id = ModdedOptionsManager.NextId;
         Title = title;
@@ -115,6 +122,11 @@ public abstract class ModdedOption<T> : IModdedOption
         if (roleType is not null && roleType.IsAssignableTo(typeof(ICustomRole)))
         {
             AdvancedRole = roleType;
+        }
+
+        if (modeType is not null && modeType.IsAssignableTo(typeof(AbstractGameMode)))
+        {
+            AdvancedMode = modeType;
         }
     }
 

@@ -14,6 +14,7 @@ public interface IModdedOption
     IMiraPlugin? ParentMod { get; set; }
     BaseGameSetting Data { get; }
     Type? AdvancedRole { get; set; }
+    Type? AdvancedMode { get; set; }
     OptionBehaviour? OptionBehaviour { get; }
     Func<bool> Visible { get; set; }
     ConfigDefinition? ConfigDefinition { get; set; }
