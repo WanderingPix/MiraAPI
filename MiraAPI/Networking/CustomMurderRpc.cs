@@ -3,6 +3,8 @@ using System.Linq;
 using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using BepInEx.Unity.IL2CPP.Utils;
+using MiraAPI.Events;
+using MiraAPI.Events.Vanilla;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
@@ -39,6 +41,15 @@ public static class CustomMurderRpc
         bool playKillSound = true)
     {
         var murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
+
+        var beforeMurderEvent = new BeforeMurderEvent(source, target);
+        MiraEventManager.InvokeEvent(beforeMurderEvent);
+
+        if (beforeMurderEvent.IsCancelled)
+        {
+            murderResultFlags = MurderResultFlags.FailedError;
+        }
+
         var murderResultFlags2 = MurderResultFlags.DecisionByHost | murderResultFlags;
 
         source.CustomMurder(
@@ -268,5 +279,8 @@ public static class CustomMurderRpc
 
         PlayerControl.LocalPlayer.isKilling = false;
         source.isKilling = false;
+
+        var afterMurderEvent = new AfterMurderEvent(source, target);
+        MiraEventManager.InvokeEvent(afterMurderEvent);
     }
 }

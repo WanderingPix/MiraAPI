@@ -1,7 +1,11 @@
-﻿using MiraAPI.Utilities.Assets;
+﻿using System;
+using MiraAPI.Events;
+using MiraAPI.Events.Mira;
+using MiraAPI.Utilities.Assets;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace MiraAPI.Hud;
 
@@ -16,24 +20,29 @@ public abstract class CustomActionButton
     public abstract string Name { get; }
 
     /// <summary>
+    /// Gets the initial cooldown duration in seconds.
+    /// </summary>
+    public virtual float InitialCooldown => Cooldown;
+
+    /// <summary>
     /// Gets the button's cooldown duration in seconds.
     /// </summary>
     public abstract float Cooldown { get; }
 
     /// <summary>
+    /// Gets the sprite of the button. Use <see cref="LoadableResourceAsset"/> to load a sprite from a resource path. Use <see cref="LoadableBundleAsset{T}"/> to load a sprite from an asset bundle.
+    /// </summary>
+    public abstract LoadableAsset<Sprite> Sprite { get; }
+
+    /// <summary>
     /// Gets the button's effect duration in seconds. If the button has no effect, set to 0.
     /// </summary>
-    public abstract float EffectDuration { get; }
+    public virtual float EffectDuration => 0;
 
     /// <summary>
     /// Gets the maximum amount of uses the button has. If the button has infinite uses, set to 0.
     /// </summary>
-    public abstract int MaxUses { get; }
-
-    /// <summary>
-    /// Gets the sprite of the button. Use <see cref="LoadableResourceAsset"/> to load a sprite from a resource path. Use <see cref="LoadableBundleAsset{T}"/> to load a sprite from an asset bundle.
-    /// </summary>
-    public abstract LoadableAsset<Sprite> Sprite { get; }
+    public virtual int MaxUses => 0;
 
     /// <summary>
     /// Gets the location of the button on the screen.
@@ -78,7 +87,7 @@ public abstract class CustomActionButton
         }
 
         UsesLeft = MaxUses;
-        Timer = Cooldown;
+        Timer = AmongUsClient.Instance?.NetworkMode == NetworkModes.FreePlay ? 0 : InitialCooldown;
         EffectActive = false;
 
         Button = Object.Instantiate(HudManager.Instance.AbilityButton, parent);
@@ -95,7 +104,42 @@ public abstract class CustomActionButton
 
         var pb = Button.GetComponent<PassiveButton>();
         pb.OnClick = new Button.ButtonClickedEvent();
-        pb.OnClick.AddListener((UnityAction)ClickHandler);
+        pb.OnClick.AddListener((UnityAction)(() =>
+        {
+            // Invoke the generic button click event.
+            var genericEvent = new MiraButtonClickEvent(this);
+            MiraEventManager.InvokeEvent(genericEvent);
+            if (genericEvent.IsCancelled)
+            {
+                MiraEventManager.InvokeEvent(new MiraButtonCancelledEvent(this));
+            }
+
+            // Invoke the button click event for specific button.
+            var eventType = CustomButtonManager.ButtonEventTypes[GetType()];
+            var @event = (MiraCancelableEvent)Activator.CreateInstance(eventType, this, genericEvent)!;
+            var specificInvoked = MiraEventManager.InvokeEvent(@event, eventType);
+            if (@event.IsCancelled)
+            {
+                var cancelEventType = CustomButtonManager.ButtonCancelledEventTypes[GetType()];
+                var cancelEvent = (MiraEvent)Activator.CreateInstance(cancelEventType, this)!;
+                MiraEventManager.InvokeEvent(cancelEvent, cancelEventType);
+            }
+
+            if (specificInvoked)
+            {
+                if (!@event.IsCancelled)
+                {
+                    ClickHandler();
+                }
+            }
+            else
+            {
+                if (!genericEvent.IsCancelled)
+                {
+                    ClickHandler();
+                }
+            }
+        }));
     }
 
     /// <summary>
@@ -167,7 +211,7 @@ public abstract class CustomActionButton
     public void SetUses(int amount)
     {
         UsesLeft = Mathf.Clamp(amount, 0, int.MaxValue);
-        Button?.SetUsesRemaining(MaxUses);
+        Button?.SetUsesRemaining(UsesLeft);
     }
 
     /// <summary>
@@ -245,7 +289,7 @@ public abstract class CustomActionButton
     /// This method takes into account cooldowns, effects, and uses, before calling the <see cref="OnClick"/> method.
     /// It can be overridden for custom behavior.
     /// </summary>
-    protected virtual void ClickHandler()
+    public virtual void ClickHandler()
     {
         if (!CanUse())
         {

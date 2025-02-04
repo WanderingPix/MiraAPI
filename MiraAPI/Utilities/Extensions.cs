@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
@@ -8,6 +5,9 @@ using MiraAPI.Networking;
 using MiraAPI.Roles;
 using Reactor.Networking.Attributes;
 using Reactor.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MiraAPI.Utilities;
@@ -97,7 +97,7 @@ public static class Extensions
 
             if (length > chunkSize)
             {
-                Logger<MiraApiPlugin>.Error($"NetData length is greater than chunk size: {length} > {chunkSize}");
+                Logger<MiraApiPlugin>.Info($"NetData length is greater than chunk size: {length} > {chunkSize}");
                 continue;
             }
 
@@ -194,7 +194,7 @@ public static class Extensions
     public static bool HasModifier<T>(this PlayerControl? player) where T : BaseModifier
     {
         return player?.GetModifierComponent() != null &&
-               player.GetModifierComponent()!.ActiveModifiers.Exists(x => x is T);
+               player.GetModifierComponent()!.HasModifier<T>();
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public static class Extensions
     public static bool HasModifier(this PlayerControl? player, uint id)
     {
         return player?.GetModifierComponent() != null &&
-               player.GetModifierComponent()!.ActiveModifiers.Exists(x => x.ModifierId == id);
+               player.GetModifierComponent()!.HasModifier(id);
     }
 
     /// <summary>

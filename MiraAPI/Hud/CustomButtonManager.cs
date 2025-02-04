@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using MiraAPI.Events.Mira;
 using MiraAPI.PluginLoading;
 using Reactor.Utilities;
 
 namespace MiraAPI.Hud;
 
-internal static class CustomButtonManager
+/// <summary>
+/// Custom button manager for handling custom buttons.
+/// </summary>
+public static class CustomButtonManager
 {
     internal static readonly List<CustomActionButton> CustomButtons = [];
+    internal static readonly Dictionary<Type, Type> ButtonEventTypes = [];
+    internal static readonly Dictionary<Type, Type> ButtonCancelledEventTypes = [];
 
     internal static void RegisterButton(Type buttonType, MiraPluginInfo pluginInfo)
     {
         if (!typeof(CustomActionButton).IsAssignableFrom(buttonType))
         {
-            Logger<MiraApiPlugin>.Error($"{buttonType?.Name} does not inherit from CustomActionButton.");
+            Logger<MiraApiPlugin>.Error($"Skipping button {buttonType.Name}. Does not inherit CustomActionButton!");
             return;
         }
 
@@ -29,5 +35,8 @@ internal static class CustomButtonManager
         typeof(CustomButtonSingleton<>).MakeGenericType(buttonType)
             .GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic)!
             .SetValue(null, button);
+
+        ButtonEventTypes.Add(buttonType, typeof(MiraButtonClickEvent<>).MakeGenericType(buttonType));
+        ButtonCancelledEventTypes.Add(buttonType, typeof(MiraButtonCancelledEvent<>).MakeGenericType(buttonType));
     }
 }
