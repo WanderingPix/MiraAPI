@@ -1,8 +1,11 @@
-﻿namespace MiraAPI.GameModes;
+﻿using MiraAPI.PluginLoading;
+
+namespace MiraAPI.GameModes;
 
 /// <summary>
 /// The default game mode.
 /// </summary>
+[MiraDisable]
 public class DefaultMode : AbstractGameMode
 {
     /// <inheritdoc/>

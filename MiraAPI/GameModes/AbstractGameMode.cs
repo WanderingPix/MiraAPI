@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using MiraAPI.PluginLoading;
 using UnityEngine;
 
 namespace MiraAPI.GameModes;
@@ -7,6 +8,7 @@ namespace MiraAPI.GameModes;
 /// <summary>
 /// Base class for custom gamemodes.
 /// </summary>
+[MiraDisable]
 public abstract class AbstractGameMode
 {
     /// <summary>

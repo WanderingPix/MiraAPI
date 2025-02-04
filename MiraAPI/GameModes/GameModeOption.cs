@@ -14,7 +14,7 @@ public class GameModeOption : AbstractOptionGroup
     /// <summary>
     /// Gets or sets the game mode option.
     /// </summary>
-    public ModdedNumberOption CurrentMode { get; set; } = new("Game Mode: {0}", 0, 0, CustomGameModeManager.LastId, 1, Utilities.MiraNumberSuffixes.None)
+    public ModdedNumberOption CurrentMode { get; set; } = new("Game Mode: {0}", 0, 0, CustomGameModeManager.LastId-1, 1, Utilities.MiraNumberSuffixes.None)
     {
         ChangedEvent = x => CustomGameModeManager.SetGameMode((uint)x),
     };

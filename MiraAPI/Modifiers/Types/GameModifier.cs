@@ -1,8 +1,11 @@
-﻿namespace MiraAPI.Modifiers.Types;
+﻿using MiraAPI.PluginLoading;
+
+namespace MiraAPI.Modifiers.Types;
 
 /// <summary>
 /// The base class for a game modifier. Game modifiers are applied at the start of the game on top of the player's role.
 /// </summary>
+[MiraDisable]
 public abstract class GameModifier : BaseModifier
 {
     /// <summary>

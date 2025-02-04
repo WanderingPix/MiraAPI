@@ -1,8 +1,11 @@
-﻿namespace MiraAPI.Modifiers;
+﻿using MiraAPI.PluginLoading;
+
+namespace MiraAPI.Modifiers;
 
 /// <summary>
 /// Base class for all modifiers.
 /// </summary>
+[MiraDisable]
 public abstract class BaseModifier
 {
     /// <summary>

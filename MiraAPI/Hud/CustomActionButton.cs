@@ -1,6 +1,7 @@
 ﻿using System;
 using MiraAPI.Events;
 using MiraAPI.Events.Mira;
+using MiraAPI.PluginLoading;
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,6 +13,7 @@ namespace MiraAPI.Hud;
 /// <summary>
 /// Class for making custom action buttons. More customizable than the default Action/Ability buttons in the base game.
 /// </summary>
+[MiraDisable]
 public abstract class CustomActionButton
 {
     /// <summary>
@@ -353,6 +355,7 @@ public abstract class CustomActionButton
 /// Custom action button that has a target object.
 /// </summary>
 /// <typeparam name="T">The type of the target object.</typeparam>
+[MiraDisable]
 public abstract class CustomActionButton<T> : CustomActionButton where T : MonoBehaviour
 {
     /// <summary>

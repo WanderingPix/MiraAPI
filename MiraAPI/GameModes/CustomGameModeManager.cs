@@ -15,15 +15,13 @@ public static class CustomGameModeManager
 {
     private static readonly Dictionary<uint, AbstractGameMode> IdToModeMap = [];
 
-    private static uint _nextId;
-
     private static uint GetNextId()
     {
-        _nextId++;
-        return _nextId;
+        LastId++;
+        return LastId;
     }
 
-    internal static uint LastId => _nextId;
+    internal static uint LastId { get; private set; }
 
     /// <summary>
     /// Register gamemode from type.
@@ -45,9 +43,9 @@ public static class CustomGameModeManager
         }
 
         IdToModeMap.Add(GetNextId(), mode);
-        pluginInfo.GameModes.Add(_nextId, mode);
+        pluginInfo.GameModes.Add(LastId, mode);
 
-        mode.ID = _nextId;
+        mode.ID = LastId;
     }
 
     /// <summary>
@@ -83,7 +81,7 @@ public static class CustomGameModeManager
 
         if (OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour != null && ActiveMode != null)
         {
-            ((NumberOption)OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour).TitleText.SetText($"Game Mode: <#{ActiveMode.Color.ToHtmlStringRGBA()}>{ActiveMode}</color>");
+            ((NumberOption)OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour).TitleText.SetText($"Game Mode: <color=#{ActiveMode.Color.ToHtmlStringRGBA()}>{ActiveMode}</color>");
         }
     }
 

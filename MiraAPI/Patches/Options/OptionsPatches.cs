@@ -44,7 +44,7 @@ public static class OptionsPatches
         if (__instance == OptionGroupSingleton<GameModeOption>.Instance.CurrentMode.OptionBehaviour)
         {
             __instance.TitleText.text =
-                TranslationController.Instance.GetString(__instance.Title, $"<#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>");
+                TranslationController.Instance.GetString(__instance.Title, $"<color=#{CustomGameModeManager.ActiveMode?.Color.ToHtmlStringRGBA()}>{CustomGameModeManager.ActiveMode}</color>");
         }
         else
         {
