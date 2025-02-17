@@ -91,8 +91,12 @@ public struct CustomRoleConfiguration
     /// <summary>
     /// Gets or sets the Sprite used for the Role Icon.
     /// </summary>
-    public LoadableAsset<Sprite> Icon;
     public LoadableAsset<Sprite> Icon { get; set; } = MiraAssets.Empty;
+
+    /// <summary>
+    /// Gets or sets the game mode this role is a part of.
+    /// </summary>
+    public Type AssociatedGameMode { get; set; } = typeof(DefaultMode);
 
     /// <summary>
     /// Gets or sets a value indicating whether the role is affected by light affectors on Airship.
