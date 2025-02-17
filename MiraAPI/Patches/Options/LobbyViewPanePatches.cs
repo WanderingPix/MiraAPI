@@ -280,7 +280,7 @@ public static class LobbyViewPanePatches
                 viewSettingsInfoPanelRoleVariant.transform.localPosition = new Vector3(num2, num, -2f);
 
                 var advancedRoleOptions = SelectedMod.Options
-                    .Where(x => x.AdvancedRole == customRole.GetType() && (x.AdvancedMode is null || x.AdvancedMode == customRole.AssociatedGameMode))
+                    .Where(x => x.AdvancedRole == customRole.GetType() && (x.AdvancedMode is null || x.AdvancedMode == customRole.Configuration.AssociatedGameMode))
                     .ToList();
 
                 if (!flag && advancedRoleOptions.Count > 0)

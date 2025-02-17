@@ -8,7 +8,7 @@ namespace MiraAPI.GameOptions;
 /// <summary>
 /// Base class for option groups. An option group is a collection of options that are displayed together in the options menu.
 /// </summary>
-[MiraDisable]
+[MiraIgnore]
 public abstract class AbstractOptionGroup
 {
     internal List<IModdedOption> Options { get; } = [];

@@ -8,7 +8,7 @@ namespace MiraAPI.Modifiers.Types;
 /// <summary>
 /// The base class for all timed modifiers. Timed modifiers have a duration and can be started and stopped.
 /// </summary>
-[MiraDisable]
+[MiraIgnore]
 public abstract class TimedModifier : BaseModifier
 {
     /// <summary>

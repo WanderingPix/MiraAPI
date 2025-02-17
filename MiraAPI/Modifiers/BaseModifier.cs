@@ -5,7 +5,7 @@ namespace MiraAPI.Modifiers;
 /// <summary>
 /// Base class for all modifiers.
 /// </summary>
-[MiraDisable]
+[MiraIgnore]
 public abstract class BaseModifier
 {
     /// <summary>

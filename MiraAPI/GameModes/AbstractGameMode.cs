@@ -8,7 +8,7 @@ namespace MiraAPI.GameModes;
 /// <summary>
 /// Base class for custom gamemodes.
 /// </summary>
-[MiraDisable]
+[MiraIgnore]
 public abstract class AbstractGameMode
 {
     /// <summary>

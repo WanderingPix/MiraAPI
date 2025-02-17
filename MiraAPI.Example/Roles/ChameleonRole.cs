@@ -12,7 +12,7 @@ public class ChameloenRole : CrewmateRole, ICustomRole
     public Color RoleColor => Palette.AcceptedGreen;
     public ModdedRoleTeams Team => ModdedRoleTeams.Crewmate;
 
-    public CustomRoleConfiguration Configuration => new CustomRoleConfiguration(this)
+    public CustomRoleConfiguration Configuration => new(this)
     {
         OptionsScreenshot = ExampleAssets.Banner,
     };

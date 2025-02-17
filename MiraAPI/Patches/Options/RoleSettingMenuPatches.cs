@@ -62,6 +62,7 @@ internal static class RoleSettingMenuPatches
         var num3 = 0;
 
         var roleGroups = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values.OfType<ICustomRole>()
+            .Where(x => !x.Configuration.HideSettings)
             .ToLookup(x => x.Configuration.RoleGroup);
 
         if (roleGroups is null)
@@ -76,8 +77,7 @@ internal static class RoleSettingMenuPatches
 
         foreach (var grouping in sortedRoleGroups)
         {
-            if (!grouping.Any(role => role.AssociatedGameMode is null || role.AssociatedGameMode ==
-                    CustomGameModeManager.ActiveMode?.GetType()))
+            if (grouping.All(role => role.Configuration.AssociatedGameMode != CustomGameModeManager.ActiveMode?.GetType()))
             {
                 continue;
             }
@@ -147,11 +147,13 @@ internal static class RoleSettingMenuPatches
                     {
                         header.gameObject.Destroy();
                     }
+
                     CategoryHeaderEditRoles.Clear();
                     foreach (var option in RoleOptionSettings)
                     {
                         option.gameObject.Destroy();
                     }
+
                     RoleOptionSettings.Clear();
                     __instance.SetQuotaTab();
                 }));
@@ -162,6 +164,7 @@ internal static class RoleSettingMenuPatches
                 num -= 0.4f;
             }
         }
+
         __instance.scrollBar.CalculateAndSetYBounds(__instance.roleChances.Count + 5, 1f, 6f, 0.43f);
         return false;
     }

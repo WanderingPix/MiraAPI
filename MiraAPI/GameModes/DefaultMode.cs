@@ -5,7 +5,7 @@ namespace MiraAPI.GameModes;
 /// <summary>
 /// The default game mode.
 /// </summary>
-[MiraDisable]
+[MiraIgnore]
 public class DefaultMode : AbstractGameMode
 {
     /// <inheritdoc/>

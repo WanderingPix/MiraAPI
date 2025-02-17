@@ -51,11 +51,6 @@ public interface ICustomRole
     MiraPluginInfo ParentMod => CustomRoleManager.FindParentMod(this);
 
     /// <summary>
-    /// Gets the game mode this role is a part of.
-    /// </summary>
-    Type AssociatedGameMode => typeof(DefaultMode);
-
-    /// <summary>
     /// This method runs on the PlayerControl.FixedUpdate method for ALL players with this role.
     /// </summary>
     /// <param name="playerControl">The PlayerControl that has this role.</param>
