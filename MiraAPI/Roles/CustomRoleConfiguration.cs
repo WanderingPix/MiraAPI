@@ -1,5 +1,6 @@
 ﻿using System;
 using AmongUs.GameOptions;
+using MiraAPI.GameModes;
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ public record struct CustomRoleConfiguration
     /// <summary>
     /// Gets or sets the associated game mode for this role. This is used to determine if the role should be available in a specific game mode.
     /// </summary>
-    public Type? AssociatedGameMode { get; set; } = null;
+    public Type AssociatedGameMode { get; set; } = typeof(DefaultMode);
 
     /// <summary>
     /// Gets or sets a value indicating whether the role is affected by light affectors on Airship.

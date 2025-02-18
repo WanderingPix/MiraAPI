@@ -62,7 +62,6 @@ internal static class RoleSettingMenuPatches
         var num3 = 0;
 
         var roleGroups = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values.OfType<ICustomRole>()
-            .Where(x => !x.Configuration.HideSettings)
             .ToLookup(x => x.RoleOptionsGroup);
 
         if (roleGroups is null)
