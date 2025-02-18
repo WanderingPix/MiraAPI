@@ -1,4 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using System;
+using AmongUs.GameOptions;
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
@@ -63,6 +64,11 @@ public record struct CustomRoleConfiguration
     /// Gets or sets the Sprite used for the Role Icon.
     /// </summary>
     public LoadableAsset<Sprite> Icon { get; set; } = MiraAssets.Empty;
+
+    /// <summary>
+    /// Gets or sets the associated game mode for this role. This is used to determine if the role should be available in a specific game mode.
+    /// </summary>
+    public Type? AssociatedGameMode { get; set; } = null;
 
     /// <summary>
     /// Gets or sets a value indicating whether the role is affected by light affectors on Airship.
