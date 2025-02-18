@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Il2CppSystem.Threading.Tasks;
 using MiraAPI.GameOptions;
 using MiraAPI.PluginLoading;
 using Reactor.Utilities;

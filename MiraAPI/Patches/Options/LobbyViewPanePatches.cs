@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using MiraAPI.GameModes;
-using MiraAPI.GameOptions;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
