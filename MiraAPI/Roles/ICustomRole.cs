@@ -4,7 +4,6 @@ using MiraAPI.Modifiers;
 using MiraAPI.PluginLoading;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using System;
 using System.Text;
 using UnityEngine;
 
@@ -44,6 +43,26 @@ public interface ICustomRole
     /// Gets advanced settings of the role.
     /// </summary>
     CustomRoleConfiguration Configuration { get; }
+
+    /// <summary>
+    /// Gets the role options group.
+    /// </summary>
+    public RoleOptionsGroup RoleOptionsGroup => Team switch
+    {
+        ModdedRoleTeams.Crewmate => RoleOptionsGroup.Crewmate,
+        ModdedRoleTeams.Impostor => RoleOptionsGroup.Impostor,
+        ModdedRoleTeams.Custom => RoleOptionsGroup.Neutral,
+        _ => new RoleOptionsGroup(RoleName, RoleColor),
+    };
+
+    /// <summary>
+    /// Gets the role's TeamIntroCutscene configuration.
+    /// </summary>
+    public TeamIntroConfiguration? IntroConfiguration => Team switch
+    {
+        ModdedRoleTeams.Custom => TeamIntroConfiguration.Neutral,
+        _ => null,
+    };
 
     /// <summary>
     /// Gets the parent mod of this role.

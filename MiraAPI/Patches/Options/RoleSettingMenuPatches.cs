@@ -23,7 +23,7 @@ namespace MiraAPI.Patches.Options;
 [HarmonyPatch(typeof(RolesSettingsMenu))]
 internal static class RoleSettingMenuPatches
 {
-    private static Dictionary<RoleGroup, bool> RoleGroupHidden { get; } = [];
+    private static Dictionary<RoleOptionsGroup, bool> RoleGroupHidden { get; } = [];
     private static List<CategoryHeaderEditRole> CategoryHeaderEditRoles { get; } = [];
     private static List<RoleOptionSetting> RoleOptionSettings { get; } = [];
 
@@ -63,7 +63,7 @@ internal static class RoleSettingMenuPatches
 
         var roleGroups = GameSettingMenuPatches.SelectedMod?.CustomRoles.Values.OfType<ICustomRole>()
             .Where(x => !x.Configuration.HideSettings)
-            .ToLookup(x => x.Configuration.RoleGroup);
+            .ToLookup(x => x.RoleOptionsGroup);
 
         if (roleGroups is null)
         {
@@ -82,13 +82,15 @@ internal static class RoleSettingMenuPatches
                 continue;
             }
 
-            RoleGroupHidden.TryAdd(grouping.Key, false);
+            var group = grouping.Key;
 
-            var name = grouping.Key.Name switch
+            RoleGroupHidden.TryAdd(group, false);
+
+            var name = group.Name switch
             {
                 "Crewmate" => StringNames.CrewmateRolesHeader,
                 "Impostor" => StringNames.ImpostorRolesHeader,
-                _ => CustomStringName.CreateAndRegister(grouping.Key.Name),
+                _ => CustomStringName.CreateAndRegister(group.Name),
             };
 
             var categoryHeaderEditRole = Object.Instantiate(
@@ -97,15 +99,26 @@ internal static class RoleSettingMenuPatches
                 Quaternion.identity,
                 __instance.RoleChancesSettings.transform);
             categoryHeaderEditRole.SetHeader(name, 20);
+            if (name is not (StringNames.CrewmateRolesHeader or StringNames.ImpostorRolesHeader))
+            {
+                var darkColor = group.Color.DarkenColor(.25f);
+                var veryDarkColor = group.Color.DarkenColor(.35f);
+                categoryHeaderEditRole.Title.color = veryDarkColor;
+                categoryHeaderEditRole.blankLabel.color = veryDarkColor;
+                categoryHeaderEditRole.Background.color = group.Color;
+                categoryHeaderEditRole.chanceLabel.color = darkColor;
+                categoryHeaderEditRole.countLabel.color = darkColor;
+            }
+
             categoryHeaderEditRole.transform.localPosition = new Vector3(4.986f, num, -2f);
             categoryHeaderEditRole.transform.Find("LabelSprite").transform.localScale = new Vector3(1.3f, 1, 0.5529f);
-            categoryHeaderEditRole.transform.Find("QuotaHeader").gameObject.SetActive(!RoleGroupHidden[grouping.Key]);
+            categoryHeaderEditRole.transform.Find("QuotaHeader").gameObject.SetActive(!RoleGroupHidden[group]);
 
             CategoryHeaderEditRoles.Add(categoryHeaderEditRole);
 
             num -= 0.522f;
 
-            var label = RoleGroupHidden[grouping.Key]
+            var label = RoleGroupHidden[group]
                 ? "(Click to open)"
                 : "(Click to close)";
             var newText = Object.Instantiate(categoryHeaderEditRole.Title, categoryHeaderEditRole.transform);
@@ -113,7 +126,7 @@ internal static class RoleSettingMenuPatches
             newText.transform.localPosition = new Vector3(-3.3425f, -0.1706f, -1);
             newText.gameObject.GetComponent<TextTranslatorTMP>().Destroy();
 
-            if (!RoleGroupHidden[grouping.Key])
+            if (!RoleGroupHidden[group])
             {
                 foreach (var role in grouping)
                 {
@@ -142,7 +155,10 @@ internal static class RoleSettingMenuPatches
             headerBtn.OnClick.AddListener(
                 (UnityAction)(() =>
                 {
-                    RoleGroupHidden[grouping.Key] = !RoleGroupHidden[grouping.Key];
+                    if (RoleGroupHidden.TryGetValue(group, out var value))
+                    {
+                        RoleGroupHidden[group] = !value;
+                    }
                     foreach (var header in CategoryHeaderEditRoles)
                     {
                         header.gameObject.Destroy();
@@ -159,7 +175,7 @@ internal static class RoleSettingMenuPatches
                 }));
             headerBtn.SetButtonEnableState(true);
 
-            if (!RoleGroupHidden[grouping.Key])
+            if (!RoleGroupHidden[group])
             {
                 num -= 0.4f;
             }
@@ -330,6 +346,11 @@ internal static class RoleSettingMenuPatches
         if (role is not ICustomRole customRole)
         {
             Logger<MiraApiPlugin>.Error($"Role {role.NiceName} is not a custom role.");
+            return null;
+        }
+
+        if (customRole.Configuration.HideSettings)
+        {
             return null;
         }
 

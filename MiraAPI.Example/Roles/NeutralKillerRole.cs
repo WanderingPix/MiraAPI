@@ -16,8 +16,14 @@ public class NeutralKillerRole : ImpostorRole, ICustomRole
         UseVanillaKillButton = true,
         CanGetKilled = true,
         CanUseVent = true,
-        RoleGroup = new RoleGroup("Outcast", Color.gray),
     };
+
+    public RoleOptionsGroup RoleOptionsGroup { get; } = new("Outcast", Color.gray);
+
+    public TeamIntroConfiguration? IntroConfiguration { get; } = new(
+        Color.gray,
+        "NEUTRAL",
+        "You are an Outcast. You do not have a team.");
 
     public override void SpawnTaskHeader(PlayerControl playerControl)
     {

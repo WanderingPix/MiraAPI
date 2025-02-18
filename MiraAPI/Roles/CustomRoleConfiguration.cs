@@ -1,6 +1,4 @@
-﻿using System;
-using AmongUs.GameOptions;
-using MiraAPI.GameModes;
+﻿using AmongUs.GameOptions;
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
@@ -9,7 +7,7 @@ namespace MiraAPI.Roles;
 /// <summary>
 /// Used to configure the specific settings of a role.
 /// </summary>
-public struct CustomRoleConfiguration
+public record struct CustomRoleConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CustomRoleConfiguration"/> struct.
@@ -34,34 +32,7 @@ public struct CustomRoleConfiguration
         TasksCountForProgress = role.Team is ModdedRoleTeams.Crewmate;
         HideSettings = roleBehaviour?.IsDead == true;
         ShowInFreeplay = roleBehaviour?.IsDead == false;
-        IntroTeamColor = role.Team switch
-        {
-            ModdedRoleTeams.Custom => Color.gray,
-            _ => null,
-        };
-        IntroTeamTitle = role.Team switch
-        {
-            ModdedRoleTeams.Custom => "NEUTRAL",
-            _ => null,
-        };
-        IntroTeamDescription = role.Team switch
-        {
-            ModdedRoleTeams.Custom => "You are Neutral. You do not have a team.",
-            _ => null,
-        };
-        RoleGroup = role.Team switch
-        {
-            ModdedRoleTeams.Crewmate => RoleGroup.Crewmate,
-            ModdedRoleTeams.Impostor => RoleGroup.Impostor,
-            ModdedRoleTeams.Custom => RoleGroup.Neutral,
-            _ => new RoleGroup(role.RoleName, role.RoleColor),
-        };
     }
-
-    /// <summary>
-    /// Gets or sets the role group for the options menu.
-    /// </summary>
-    public RoleGroup RoleGroup { get; set; }
 
     /// <summary>
     /// Gets or sets the hard limit of players that can have this role. This property is used to set a limit in the Role Options menu. If set to 0, the role will not be assigned at start.
@@ -92,11 +63,6 @@ public struct CustomRoleConfiguration
     /// Gets or sets the Sprite used for the Role Icon.
     /// </summary>
     public LoadableAsset<Sprite> Icon { get; set; } = MiraAssets.Empty;
-
-    /// <summary>
-    /// Gets or sets the game mode this role is a part of.
-    /// </summary>
-    public Type AssociatedGameMode { get; set; } = typeof(DefaultMode);
 
     /// <summary>
     /// Gets or sets a value indicating whether the role is affected by light affectors on Airship.
@@ -137,21 +103,6 @@ public struct CustomRoleConfiguration
     /// Gets or sets a value indicating whether the role should show up in the Freeplay Role Selection menu.
     /// </summary>
     public bool ShowInFreeplay { get; set; }
-
-    /// <summary>
-    /// Gets or sets the color to show during the "Team" part of the intro cutscene.
-    /// </summary>
-    public Color? IntroTeamColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets the title text to show during the "Team" part of the intro cutscene.
-    /// </summary>
-    public string? IntroTeamTitle { get; set; }
-
-    /// <summary>
-    /// Gets or sets the description text to show during the "Team" part of the intro cutscene.
-    /// </summary>
-    public string? IntroTeamDescription { get; set; }
 
     /// <summary>
     /// Gets or sets the outline color for the KillButton if <see cref="UseVanillaKillButton"/> is true.
