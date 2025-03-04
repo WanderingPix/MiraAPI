@@ -16,6 +16,8 @@ public static class HudManagerPatches
     // Custom buttons parent.
     private static GameObject? _bottomLeft;
 
+    private static GameObject? center;
+
     /*
     /// <summary>
     /// Trigger hudstart on current custom gamemode
@@ -42,12 +44,6 @@ public static class HudManagerPatches
         {
             _bottomLeft = Object.Instantiate(bottomRight.gameObject, buttons);
         }
-
-        foreach (var t in _bottomLeft.GetComponentsInChildren<ActionButton>(true))
-        {
-            t.gameObject.Destroy();
-        }
-
         var gridArrange = _bottomLeft.GetComponent<GridArrange>();
         var aspectPosition = _bottomLeft.GetComponent<AspectPosition>();
 
@@ -55,12 +51,31 @@ public static class HudManagerPatches
         gridArrange.Alignment = GridArrange.StartAlign.Right;
         aspectPosition.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
 
+        if (center == null)
+        {
+            center = Object.Instantiate(bottomRight.gameObject, buttons);
+        }
+        var gridArrange2 = center.GetComponent<GridArrange>();
+        var aspectPosition2 = center.GetComponent<AspectPosition>();
+
+        center.name = "BottomLeft";
+        gridArrange2.Alignment = GridArrange.StartAlign.Value = 0.5f;
+        aspectPosition2.Alignment = AspectPosition.EdgeAlignments.Center;
+        
+        foreach (var t in _bottomLeft.GetComponentsInChildren<ActionButton>(true))
+        {
+            t.gameObject.Destroy();
+        }
+
+        
+
         foreach (var button in CustomButtonManager.CustomButtons)
         {
             var location = button.Location switch
             {
                 ButtonLocation.BottomLeft => _bottomLeft.transform,
                 ButtonLocation.BottomRight => bottomRight,
+                ButtonLocation.Center => center
                 _ => null,
             };
 
