@@ -75,7 +75,7 @@ public static class HudManagerPatches
             {
                 ButtonLocation.BottomLeft => _bottomLeft.transform,
                 ButtonLocation.BottomRight => bottomRight,
-                ButtonLocation.Center => center
+                ButtonLocation.Center => center,
                 _ => null,
             };
 
