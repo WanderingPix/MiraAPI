@@ -91,6 +91,11 @@ public static class HudManagerPatches
         gridArrange.ArrangeChilds();
 
         aspectPosition.AdjustPosition();
+
+        gridArrange2.Start();
+        gridArrange2.ArrangeChilds();
+
+        aspectPosition2.AdjustPosition();
     }
 
     /// <summary>
