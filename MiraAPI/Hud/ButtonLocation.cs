@@ -11,6 +11,12 @@ public enum ButtonLocation
     BottomLeft,
 
     /// <summary>
+    /// Placed inbetween BottomLeft and BottomRight
+    /// Note: Don't put too many of these in the center or it'll look cluttered
+    /// <summary>
+    Center,
+
+    /// <summary>
     /// Placed in the bottom right.
     /// </summary>
     BottomRight,
