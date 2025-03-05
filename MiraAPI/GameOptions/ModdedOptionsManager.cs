@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Networking;
 using MiraAPI.PluginLoading;
@@ -26,6 +27,29 @@ public static class ModdedOptionsManager
 
     internal static uint NextId => _nextId++;
     private static uint _nextId = 1;
+
+    internal static bool RegisterGroup(Type type)
+    {
+        if (Activator.CreateInstance(type) is not AbstractOptionGroup group)
+        {
+            return false;
+        }
+
+        if (TypeToGroup.ContainsKey(type))
+        {
+            Logger<MiraApiPlugin>.Error($"Group {type.Name} already exists.");
+            return false;
+        }
+
+        Groups.Add(group);
+        TypeToGroup.Add(type, group);
+
+        typeof(OptionGroupSingleton<>).MakeGenericType(type)
+            .GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic)!
+            .SetValue(null, group);
+
+        return true;
+    }
 
     internal static bool RegisterGroup(Type type, MiraPluginInfo pluginInfo)
     {

@@ -12,7 +12,7 @@ namespace MiraAPI.GameModes;
 /// </summary>
 public static class CustomGameModeManager
 {
-    private static readonly Dictionary<uint, AbstractGameMode> IdToModeMap = [];
+    public static readonly Dictionary<uint, AbstractGameMode> IdToModeMap = [];
 
     private static uint GetNextId()
     {

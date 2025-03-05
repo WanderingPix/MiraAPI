@@ -6,6 +6,7 @@ namespace MiraAPI.GameModes;
 /// <summary>
 /// The game mode option.
 /// </summary>
+// TODO: Replace this with a proper gamemode selection.
 public class GameModeOption : AbstractOptionGroup
 {
     /// <inheritdoc/>

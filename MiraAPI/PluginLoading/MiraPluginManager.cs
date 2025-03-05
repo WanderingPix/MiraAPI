@@ -6,8 +6,10 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
+using Il2CppInterop.Runtime.Injection;
 using MiraAPI.Colors;
 using MiraAPI.Events;
+using MiraAPI.GameEnd;
 using MiraAPI.GameModes;
 using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
@@ -15,6 +17,7 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
+using Reactor.Localization.Utilities;
 using Reactor.Networking;
 using Reactor.Utilities;
 
@@ -34,6 +37,7 @@ public sealed class MiraPluginManager
     internal void Initialize()
     {
         Instance = this;
+        ModdedOptionsManager.RegisterGroup(typeof(GameModeOption)); // TODO: dont do this
         CustomGameModeManager.RegisterDefaultMode();
         CustomGameModeManager.GetAndSetGameMode();
         IL2CPPChainloader.Instance.PluginLoad += RegisterPlugin;
@@ -43,6 +47,20 @@ public sealed class MiraPluginManager
         IL2CPPChainloader.Instance.Finished += () =>
         {
             CustomButtonManager.Buttons = new ReadOnlyCollection<CustomActionButton>(CustomButtonManager.CustomButtons);
+        };
+        IL2CPPChainloader.Instance.Finished += () =>
+        {
+            var dict = new Dictionary<string, object>();
+            foreach (var (key, value) in CustomGameModeManager.IdToModeMap)
+            {
+                if (value is DefaultMode)
+                {
+                    continue;
+                }
+                dict.Add(value.Name, key);
+                GameModesHelpers.ModeToName.Add((AmongUs.GameOptions.GameModes)key, CustomStringName.CreateAndRegister(value.Name));
+            }
+            EnumInjector.InjectEnumValues<AmongUs.GameOptions.GameModes>(dict);
         };
     }
 
@@ -63,56 +81,56 @@ public sealed class MiraPluginManager
                 continue;
             }
 
-                foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public))
+            foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public))
+            {
+                var eventAttribute = method.GetCustomAttribute<RegisterEventAttribute>();
+                if (eventAttribute != null)
                 {
-                    var eventAttribute = method.GetCustomAttribute<RegisterEventAttribute>();
-                    if (eventAttribute != null)
+                    var parameters = method.GetParameters();
+                    if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
                     {
-                        var parameters = method.GetParameters();
-                        if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
-                        {
-                            Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
-                            continue;
-                        }
-
-                        var paramType = parameters[0].ParameterType;
-                        MiraEventManager.RegisterEventHandler(paramType, method, eventAttribute.Priority);
+                        Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
+                        continue;
                     }
-                }
 
-                if (RegisterModifier(type, info))
-                {
-                    continue;
+                    var paramType = parameters[0].ParameterType;
+                    MiraEventManager.RegisterEventHandler(paramType, method, eventAttribute.Priority);
                 }
-
-                if (RegisterOptions(type, info))
-                {
-                    continue;
-                }
-
-                if (RegisterRoleAttribute(type, info, out var role))
-                {
-                    roles.Add(role);
-                    continue;
-                }
-
-                if (RegisterButtonAttribute(type, info))
-                {
-                    continue;
-                }
-
-                if (RegisterGameOver(type))
-                {
-                    continue;
-                }
-
-                if (RegisterGameModeAttribute(type, info))
-                {
-                    continue;
-                }
-
-                RegisterColorClasses(type);
             }
+
+            if (RegisterModifier(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterOptions(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterRoleAttribute(type, info, out var role))
+            {
+                roles.Add(role);
+                continue;
+            }
+
+            if (RegisterButtonAttribute(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterGameOver(type))
+            {
+                continue;
+            }
+
+            if (RegisterGameModeAttribute(type, info))
+            {
+                continue;
+            }
+
+            RegisterColorClasses(type);
+        }
 
         info.OptionGroups.Sort((x, y) => x.GroupPriority.CompareTo(y.GroupPriority));
         CustomRoleManager.RegisterRoleTypes(roles, info);
@@ -181,6 +199,7 @@ public sealed class MiraPluginManager
         {
             Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e}");
         }
+
         return false;
     }
 
@@ -207,6 +226,7 @@ public sealed class MiraPluginManager
         {
             Logger<MiraApiPlugin>.Error($"Failed to register role for {type.Name}: {e}");
         }
+
         return false;
     }
 
