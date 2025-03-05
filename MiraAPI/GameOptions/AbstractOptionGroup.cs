@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MiraAPI.PluginLoading;
 using UnityEngine;
 
 namespace MiraAPI.GameOptions;
@@ -8,7 +7,6 @@ namespace MiraAPI.GameOptions;
 /// <summary>
 /// Base class for option groups. An option group is a collection of options that are displayed together in the options menu.
 /// </summary>
-[MiraIgnore]
 public abstract class AbstractOptionGroup
 {
     internal List<IModdedOption> Options { get; } = [];
@@ -17,6 +15,17 @@ public abstract class AbstractOptionGroup
     /// Gets the name of the group. Visible in options menu.
     /// </summary>
     public abstract string GroupName { get; }
+
+    /// <summary>
+    /// Gets the Optionable type of the group.
+    /// </summary>
+    public virtual Type? OptionableType => null;
+
+    /// <summary>
+    /// Gets a value indicating whether the group should be shown in the modifiers menu.
+    /// </summary>
+    // TODO: make this not a boolean
+    public virtual bool ShowInModifiersMenu => false;
 
     /// <summary>
     /// Gets the function that determines whether the group should be visible or not.
@@ -34,17 +43,17 @@ public abstract class AbstractOptionGroup
     /// </summary>
     public virtual uint GroupPriority => uint.MaxValue;
 
-    /// <summary>
-    /// Gets the role the group is associated with. This is used for the advanced role options menu.
-    /// </summary>
-    public virtual Type? AdvancedRole => null;
-
-    /// <summary>
-    /// Gets the role the group is associated with. This is used for the advanced role options menu.
-    /// </summary>
-    public virtual Type? AdvancedMode => null;
-
     internal bool AllOptionsHidden { get; set; }
 
     internal CategoryHeaderMasked? Header { get; set; }
+}
+
+/// <summary>
+/// Base class for option groups. An option group is a collection of options that are displayed together in the options menu.
+/// </summary>
+/// <typeparam name="T">The type of the optionable that this group contains.</typeparam>
+public abstract class AbstractOptionGroup<T> : AbstractOptionGroup where T : IOptionable
+{
+    /// <inheritdoc />
+    public override Type OptionableType => typeof(T);
 }

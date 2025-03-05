@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -15,7 +17,6 @@ using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking;
 using Reactor.Utilities;
-using System.Collections.ObjectModel;
 
 namespace MiraAPI.PluginLoading;
 
@@ -33,14 +34,10 @@ public sealed class MiraPluginManager
     internal void Initialize()
     {
         Instance = this;
-        RegisterPlugin(
-            IL2CPPChainloader.Instance.Plugins[MiraApiPlugin.Id],
-            typeof(MiraApiPlugin).Assembly,
-            MiraApiPlugin.Instance);
         CustomGameModeManager.RegisterDefaultMode();
         CustomGameModeManager.GetAndSetGameMode();
-
         IL2CPPChainloader.Instance.PluginLoad += RegisterPlugin;
+
         IL2CPPChainloader.Instance.Finished += PaletteManager.RegisterAllColors;
         IL2CPPChainloader.Instance.Finished += MiraEventManager.SortAllHandlers;
         IL2CPPChainloader.Instance.Finished += () =>
@@ -66,34 +63,56 @@ public sealed class MiraPluginManager
                 continue;
             }
 
-            if (RegisterModifier(type))
-            {
-                continue;
-            }
+                foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public))
+                {
+                    var eventAttribute = method.GetCustomAttribute<RegisterEventAttribute>();
+                    if (eventAttribute != null)
+                    {
+                        var parameters = method.GetParameters();
+                        if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
+                        {
+                            Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
+                            continue;
+                        }
 
-            if (RegisterOptions(type, info))
-            {
-                continue;
-            }
+                        var paramType = parameters[0].ParameterType;
+                        MiraEventManager.RegisterEventHandler(paramType, method, eventAttribute.Priority);
+                    }
+                }
 
-            if (RegisterRoleAttribute(type, info, out var role))
-            {
-                roles.Add(role!);
-                continue;
-            }
+                if (RegisterModifier(type, info))
+                {
+                    continue;
+                }
 
-            if (RegisterButtonAttribute(type, info))
-            {
-                continue;
-            }
+                if (RegisterOptions(type, info))
+                {
+                    continue;
+                }
 
-            if (RegisterGameModeAttribute(type, info))
-            {
-                continue;
-            }
+                if (RegisterRoleAttribute(type, info, out var role))
+                {
+                    roles.Add(role);
+                    continue;
+                }
 
-            RegisterColorClasses(type);
-        }
+                if (RegisterButtonAttribute(type, info))
+                {
+                    continue;
+                }
+
+                if (RegisterGameOver(type))
+                {
+                    continue;
+                }
+
+                if (RegisterGameModeAttribute(type, info))
+                {
+                    continue;
+                }
+
+                RegisterColorClasses(type);
+            }
 
         info.OptionGroups.Sort((x, y) => x.GroupPriority.CompareTo(y.GroupPriority));
         CustomRoleManager.RegisterRoleTypes(roles, info);
@@ -107,9 +126,22 @@ public sealed class MiraPluginManager
     /// </summary>
     /// <param name="pluginId">The plugin GUID.</param>
     /// <returns>A MiraPluginInfo.</returns>
-    public static MiraPluginInfo GetPluginByGuid(string pluginId)
+    public static MiraPluginInfo? GetPluginByGuid(string pluginId)
     {
-        return Instance._registeredPlugins.Values.First(plugin => plugin.PluginId == pluginId);
+        return Instance._registeredPlugins.Values.FirstOrDefault(plugin => plugin.PluginId == pluginId);
+    }
+
+    private static bool RegisterGameOver(Type type)
+    {
+        try
+        {
+            return GameOverManager.RegisterGameOver(type);
+        }
+        catch (Exception e)
+        {
+            Logger<MiraApiPlugin>.Error($"Failed to register game over {type.Name}: {e}");
+            return false;
+        }
     }
 
     private static bool RegisterOptions(Type type, MiraPluginInfo pluginInfo)
@@ -152,7 +184,7 @@ public sealed class MiraPluginManager
         return false;
     }
 
-    private static bool RegisterRoleAttribute(Type type, MiraPluginInfo pluginInfo, out Type? role)
+    private static bool RegisterRoleAttribute(Type type, MiraPluginInfo pluginInfo, [NotNullWhen(true)] out Type? role)
     {
         role = null;
         try
@@ -215,11 +247,11 @@ public sealed class MiraPluginManager
         }
     }
 
-    private static bool RegisterModifier(Type type)
+    private static bool RegisterModifier(Type type, MiraPluginInfo info)
     {
         try
         {
-            return ModifierManager.RegisterModifier(type);
+            return ModifierManager.RegisterModifier(type, info);
         }
         catch (Exception e)
         {

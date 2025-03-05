@@ -1,9 +1,9 @@
-﻿using MiraAPI.Events;
+﻿using System;
+using System.Globalization;
+using MiraAPI.Events;
 using MiraAPI.Events.Mira;
-using MiraAPI.PluginLoading;
-using MiraAPI.Utilities.Assets;
-using System;
 using MiraAPI.Patches;
+using MiraAPI.Utilities.Assets;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -14,7 +14,6 @@ namespace MiraAPI.Hud;
 /// <summary>
 /// Class for making custom action buttons. More customizable than the default Action/Ability buttons in the base game.
 /// </summary>
-[MiraIgnore]
 public abstract class CustomActionButton
 {
     /// <summary>
@@ -46,6 +45,11 @@ public abstract class CustomActionButton
     /// Gets the maximum amount of uses the button has. If the button has infinite uses, set to 0.
     /// </summary>
     public virtual int MaxUses => 0;
+
+    /// <summary>
+    /// Gets the button's text outline color.
+    /// </summary>
+    public virtual Color TextOutlineColor => Color.clear;
 
     /// <summary>
     /// Gets the location of the button on the screen.
@@ -113,6 +117,11 @@ public abstract class CustomActionButton
         if (MaxUses <= 0)
         {
             Button.SetInfiniteUses();
+        }
+
+        if (TextOutlineColor != Color.clear)
+        {
+            SetTextOutline(TextOutlineColor);
         }
 
         var pb = Button.GetComponent<PassiveButton>();
@@ -206,6 +215,16 @@ public abstract class CustomActionButton
         }
 
         EffectActive = false;
+    }
+
+    /// <summary>
+    /// A utility function to change the outline color of the button's text.
+    /// </summary>
+    /// <param name="color">The new color.</param>
+    /// <param name="thickness">The thickness of the outline. Set to 0 if you want to remove it.</param>
+    public virtual void SetTextOutline(Color color)
+    {
+        Button?.buttonLabelText.SetOutlineColor(color);
     }
 
     /// <summary>
@@ -423,7 +442,7 @@ public abstract class CustomActionButton
         {
             Button?.SetFillUp(Timer, EffectDuration);
 
-            Button!.cooldownTimerText.text = Mathf.CeilToInt(Timer).ToString();
+            Button!.cooldownTimerText.text = Mathf.CeilToInt(Timer).ToString(NumberFormatInfo.InvariantInfo);
             Button!.cooldownTimerText.gameObject.SetActive(true);
         }
         else
@@ -439,7 +458,6 @@ public abstract class CustomActionButton
 /// Custom action button that has a target object.
 /// </summary>
 /// <typeparam name="T">The type of the target object.</typeparam>
-[MiraIgnore]
 public abstract class CustomActionButton<T> : CustomActionButton where T : MonoBehaviour
 {
     /// <summary>

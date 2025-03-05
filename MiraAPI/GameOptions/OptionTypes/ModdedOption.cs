@@ -1,11 +1,9 @@
-﻿using BepInEx.Configuration;
-using MiraAPI.GameModes;
+using System;
+using BepInEx.Configuration;
 using MiraAPI.Networking;
 using MiraAPI.PluginLoading;
-using MiraAPI.Roles;
 using Reactor.Localization.Utilities;
 using Reactor.Networking.Rpc;
-using System;
 using UnityEngine;
 
 namespace MiraAPI.GameOptions.OptionTypes;
@@ -74,16 +72,6 @@ public abstract class ModdedOption<T> : IModdedOption
     public Func<bool> Visible { get; set; }
 
     /// <summary>
-    /// Gets or sets the advanced role of the option.
-    /// </summary>
-    public Type? AdvancedRole { get; set; }
-
-    /// <summary>
-    /// Gets or sets the advanced mode of the option.
-    /// </summary>
-    public Type? AdvancedMode { get; set; }
-
-    /// <summary>
     /// Gets or sets the option behaviour of the option.
     /// </summary>
     public OptionBehaviour? OptionBehaviour { get; protected set; }
@@ -108,9 +96,7 @@ public abstract class ModdedOption<T> : IModdedOption
     /// </summary>
     /// <param name="title">The option title.</param>
     /// <param name="defaultValue">The default value.</param>
-    /// <param name="roleType">The Role Type or null if it doesn't belong to a role.</param>
-    /// <param name="modeType">The Game Mode Type or null if it doesn't belong to a mode.</param>
-    protected ModdedOption(string title, T defaultValue, Type? roleType, Type? modeType)
+    protected ModdedOption(string title, T defaultValue)
     {
         Id = ModdedOptionsManager.NextId;
         Title = title;
@@ -118,16 +104,6 @@ public abstract class ModdedOption<T> : IModdedOption
         Value = defaultValue;
         StringName = CustomStringName.CreateAndRegister(Title);
         Visible = () => true;
-
-        if (roleType is not null && roleType.IsAssignableTo(typeof(ICustomRole)))
-        {
-            AdvancedRole = roleType;
-        }
-
-        if (modeType is not null && modeType.IsAssignableTo(typeof(AbstractGameMode)))
-        {
-            AdvancedMode = modeType;
-        }
     }
 
     internal void ValueChanged(OptionBehaviour optionBehaviour)

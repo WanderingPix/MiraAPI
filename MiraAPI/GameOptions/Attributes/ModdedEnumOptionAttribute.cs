@@ -1,24 +1,19 @@
-﻿using MiraAPI.GameOptions.OptionTypes;
-using System;
+﻿using System;
 using System.Reflection;
+using MiraAPI.GameOptions.OptionTypes;
 
 namespace MiraAPI.GameOptions.Attributes;
 
 /// <summary>
 /// Attribute for creating an enum option.
 /// </summary>
-/// <param name="title">The title of the option.</param>
-/// <param name="enumType">The Enum type.</param>
-/// <param name="values">An option list of string values to use in place of the enum name.</param>
-/// <param name="roleType">An optional role type.</param>
-/// <param name="modeType">An optional game mode type.</param>
 [AttributeUsage(AttributeTargets.Property)]
-public class ModdedEnumOptionAttribute(string title, Type enumType, string[]? values = null, Type? roleType = null, Type? modeType = null)
-    : ModdedOptionAttribute(title, roleType, modeType)
+public class ModdedEnumOptionAttribute(string title, Type enumType, string[]? values = null)
+    : ModdedOptionAttribute(title)
 {
     internal override IModdedOption CreateOption(object? value, PropertyInfo property)
     {
-        var opt = new ModdedEnumOption(Title, (int)(value ?? 0), enumType, values, RoleType, ModeType);
+        var opt = new ModdedEnumOption(Title, (int)(value ?? 0), enumType, values);
         return opt;
     }
 

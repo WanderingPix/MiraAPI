@@ -8,6 +8,9 @@ namespace MiraAPI.Modifiers.Types;
 [MiraIgnore]
 public abstract class GameModifier : BaseModifier
 {
+    /// <inheritdoc />
+    public override bool ShowInFreeplay => true;
+
     /// <summary>
     /// Gets the chance of the modifier being assigned to a player.
     /// </summary>

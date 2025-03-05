@@ -1,13 +1,13 @@
-using HarmonyLib;
-using MiraAPI.GameOptions;
-using MiraAPI.Modifiers;
-using MiraAPI.Networking;
-using MiraAPI.Roles;
-using Reactor.Networking.Attributes;
-using Reactor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HarmonyLib;
+using MiraAPI.GameOptions;
+using MiraAPI.Networking;
+using MiraAPI.Roles;
+using Reactor.Utilities;
+using TMPro;
 using UnityEngine;
 
 namespace MiraAPI.Utilities;
@@ -37,6 +37,84 @@ public static class Extensions
         return new NetData(
             RoleId.Get(role.GetType()),
             BitConverter.GetBytes(count.Value).AddRangeToArray(BitConverter.GetBytes(chance.Value)));
+    }
+
+    /// <summary>
+    /// Determines if a float is an integer.
+    /// </summary>
+    /// <param name="number">The float number.</param>
+    /// <returns>True if the float is an integer, false otherwise.</returns>
+    public static bool IsInteger(this float number)
+    {
+        return Mathf.Approximately(number, Mathf.Round(number));
+    }
+
+    /// <summary>
+    /// Gets the best constructor for a type based on the specified arguments.
+    /// </summary>
+    /// <param name="type">The type to get the constructor from.</param>
+    /// <param name="args">The arguments to pass into the constructor.</param>
+    /// <returns>The best constructor.</returns>
+    public static ConstructorInfo? GetBestConstructor(this Type type, params object[] args)
+    {
+        return type.GetValidConstructors(args)
+            .OrderBy(
+                ctor => ctor.GetParameters()
+                    .Select((p, i) => GetInheritanceDistance(args[i].GetType(), p.ParameterType))
+                    .Sum())
+            .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Gets the constructors of a type that match the specified arguments.
+    /// </summary>
+    /// <param name="type">The type to get constructors from.</param>
+    /// <param name="args">The arguments to pass into the constructor.</param>
+    /// <returns>A collection of valid constructors.</returns>
+    public static IEnumerable<ConstructorInfo> GetValidConstructors(this Type type, params object[] args)
+    {
+        return type.GetConstructors().Where(
+            x =>
+            {
+                var parameters = x.GetParameters();
+                return parameters.Length == args.Length && Array.TrueForAll(
+                    parameters,
+                    t => t.ParameterType.IsInstanceOfType(args[t.Position]));
+            });
+    }
+
+    /// <summary>
+    /// Calculates the inheritance distance from the given type to its target base type.
+    /// Lower values mean the type is a closer match.
+    /// </summary>
+    /// <param name="from">The derived type.</param>
+    /// <param name="to">The base type.</param>
+    /// <returns>The distance between the types.</returns>
+    public static int GetInheritanceDistance(Type from, Type to)
+    {
+        if (!from.IsAssignableFrom(to))
+        {
+            return int.MaxValue;
+        }
+
+        var type = from;
+        var distance = 0;
+        while (type != null && type != to)
+        {
+            type = type.BaseType;
+            distance++;
+        }
+        return type == to ? distance : int.MaxValue;
+    }
+
+    /// <summary>
+    /// Enables stencil masking on a TMP text object.
+    /// </summary>
+    /// <param name="text">The TMP text.</param>
+    public static void EnableStencilMasking(this TMP_Text text)
+    {
+        text.fontMaterial.SetFloat(ShaderID.Stencil, 1);
+        text.fontMaterial.SetFloat(ShaderID.StencilComp, 4);
     }
 
     /// <summary>
@@ -130,30 +208,6 @@ public static class Extensions
             opt => opt.OptionBehaviour && opt.OptionBehaviour == optionBehaviour);
     }
 
-    internal static Dictionary<PlayerControl, ModifierComponent> ModifierComponents { get; } = [];
-
-    /// <summary>
-    /// Gets the ModifierComponent for a player.
-    /// </summary>
-    /// <param name="player">The PlayerControl object.</param>
-    /// <returns>A ModifierComponent if there is one, null otherwise.</returns>
-    public static ModifierComponent? GetModifierComponent(this PlayerControl player)
-    {
-        if (ModifierComponents.TryGetValue(player, out var component))
-        {
-            return component;
-        }
-
-        component = player.GetComponent<ModifierComponent>();
-        if (component == null)
-        {
-            return null;
-        }
-
-        ModifierComponents[player] = component;
-        return component;
-    }
-
     /// <summary>
     /// Randomizes a list.
     /// </summary>
@@ -172,105 +226,6 @@ public static class Extensions
         }
 
         return randomizedList;
-    }
-
-    /// <summary>
-    /// Gets a modifier by its type, or null if the player doesn't have it.
-    /// </summary>
-    /// <param name="player">The PlayerControl object.</param>
-    /// <typeparam name="T">The Type of the Modifier.</typeparam>
-    /// <returns>The Modifier if it is found, null otherwise.</returns>
-    public static T? GetModifier<T>(this PlayerControl? player) where T : BaseModifier
-    {
-        return player?.GetModifierComponent()?.ActiveModifiers.Find(x => x is T) as T;
-    }
-
-    /// <summary>
-    /// Checks if a player has a modifier.
-    /// </summary>
-    /// <param name="player">The PlayerControl object.</param>
-    /// <typeparam name="T">The Type of the Modifier.</typeparam>
-    /// <returns>True if the Modifier is present, false otherwise.</returns>
-    public static bool HasModifier<T>(this PlayerControl? player) where T : BaseModifier
-    {
-        return player?.GetModifierComponent() != null &&
-               player.GetModifierComponent()!.HasModifier<T>();
-    }
-
-    /// <summary>
-    /// Checks if a player has a modifier by its ID.
-    /// </summary>
-    /// <param name="player">The PlayerControl object.</param>
-    /// <param name="id">The Modifier ID.</param>
-    /// <returns>True if the Modifier is present, false otherwise.</returns>
-    public static bool HasModifier(this PlayerControl? player, uint id)
-    {
-        return player?.GetModifierComponent() != null &&
-               player.GetModifierComponent()!.HasModifier(id);
-    }
-
-    /// <summary>
-    /// Remote Procedure Call to remove a modifier from a player.
-    /// </summary>
-    /// <param name="target">The player to remove the modifier from.</param>
-    /// <param name="modifierId">The ID of the modifier.</param>
-    [MethodRpc((uint)MiraRpc.RemoveModifier)]
-    public static void RpcRemoveModifier(this PlayerControl target, uint modifierId)
-    {
-        target.GetModifierComponent()?.RemoveModifier(modifierId);
-    }
-
-    /// <summary>
-    /// Remote Procedure Call to remove a modifier from a player.
-    /// </summary>
-    /// <param name="player">The player to remove the modifier from.</param>
-    /// <typeparam name="T">The Type of the Modifier.</typeparam>
-    public static void RpcRemoveModifier<T>(this PlayerControl player) where T : BaseModifier
-    {
-        var id = ModifierManager.GetModifierId(typeof(T));
-
-        if (id == null)
-        {
-            Logger<MiraApiPlugin>.Error($"Cannot add modifier {typeof(T).Name} because it is not registered.");
-            return;
-        }
-
-        player.RpcRemoveModifier(id.Value);
-    }
-
-    /// <summary>
-    /// Remote Procedure Call to add a modifier to a player.
-    /// </summary>
-    /// <param name="target">The player to add the modifier to.</param>
-    /// <param name="modifierId">The modifier ID.</param>
-    [MethodRpc((uint)MiraRpc.AddModifier)]
-    public static void RpcAddModifier(this PlayerControl target, uint modifierId)
-    {
-        var type = ModifierManager.GetModifierType(modifierId);
-        if (type == null)
-        {
-            Logger<MiraApiPlugin>.Error($"Cannot add modifier with id {modifierId} because it is not registered.");
-            return;
-        }
-
-        target.GetModifierComponent()?.AddModifier(type);
-    }
-
-    /// <summary>
-    /// Remote Procedure Call to add a modifier to a player.
-    /// </summary>
-    /// <param name="player">The player to add the modifier to.</param>
-    /// <typeparam name="T">The modifier Type.</typeparam>
-    public static void RpcAddModifier<T>(this PlayerControl player) where T : BaseModifier
-    {
-        var id = ModifierManager.GetModifierId(typeof(T));
-        if (id == null)
-        {
-            Logger<MiraApiPlugin>.Error($"Cannot add modifier {typeof(T).Name} because it is not registered.");
-            return;
-        }
-
-        player.RpcAddModifier(id.Value);
     }
 
     /// <summary>
@@ -328,6 +283,7 @@ public static class Extensions
             .GetNearestDeadBodies(playerControl.GetTruePosition(), radius, Helpers.CreateFilter(Constants.NotShipMask))
             .Find(component => component && !component.Reported);
     }
+
     /// <summary>
     /// Finds the nearest object of a specified type to a player. It will only work if the object has a collider.
     /// </summary>
@@ -376,10 +332,6 @@ public static class Extensions
         return predicate != null ? filteredPlayers.Find(predicate) : filteredPlayers.FirstOrDefault();
     }
 
-    private static readonly int _outline = Shader.PropertyToID("_Outline");
-    private static readonly int _outlineColor = Shader.PropertyToID("_OutlineColor");
-    private static readonly int _addColor = Shader.PropertyToID("_AddColor");
-
     /// <summary>
     /// Fixed version of Reactor's SetOutline.
     /// </summary>
@@ -387,8 +339,8 @@ public static class Extensions
     /// <param name="color">The outline color.</param>
     public static void UpdateOutline(this Renderer renderer, Color? color)
     {
-        renderer.material.SetFloat(_outline, color.HasValue ? 1 : 0);
-        renderer.material.SetColor(_outlineColor, color.HasValue ? color.Value : Color.clear);
-        renderer.material.SetColor(_addColor, color.HasValue ? color.Value : Color.clear);
+        renderer.material.SetFloat(ShaderID.Outline, color.HasValue ? 1 : 0);
+        renderer.material.SetColor(ShaderID.OutlineColor, color ?? Color.clear);
+        renderer.material.SetColor(ShaderID.AddColor, color ?? Color.clear);
     }
 }

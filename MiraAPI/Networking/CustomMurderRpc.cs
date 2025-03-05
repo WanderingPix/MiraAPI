@@ -1,4 +1,6 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections;
+using System.Linq;
+using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using BepInEx.Unity.IL2CPP.Utils;
 using MiraAPI.Events;
@@ -6,8 +8,6 @@ using MiraAPI.Events.Vanilla.Gameplay;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities.Extensions;
-using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 namespace MiraAPI.Networking;
@@ -263,6 +263,9 @@ public static class CustomMurderRpc
             deadBody.enabled = true;
         }
 
+        var afterMurderEvent = new AfterMurderEvent(source, target);
+        MiraEventManager.InvokeEvent(afterMurderEvent);
+
         if (!isParticipant)
         {
             yield break;
@@ -275,8 +278,5 @@ public static class CustomMurderRpc
 
         PlayerControl.LocalPlayer.isKilling = false;
         source.isKilling = false;
-
-        var afterMurderEvent = new AfterMurderEvent(source, target);
-        MiraEventManager.InvokeEvent(afterMurderEvent);
     }
 }

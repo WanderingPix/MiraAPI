@@ -1,9 +1,10 @@
-﻿using BepInEx.Configuration;
+﻿using System.Text;
+using BepInEx.Configuration;
+using MiraAPI.GameOptions;
 using MiraAPI.Modifiers;
 using MiraAPI.PluginLoading;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
-using System.Text;
 using UnityEngine;
 
 namespace MiraAPI.Roles;
@@ -11,7 +12,7 @@ namespace MiraAPI.Roles;
 /// <summary>
 /// Interface for custom roles.
 /// </summary>
-public interface ICustomRole
+public interface ICustomRole : IOptionable
 {
     /// <summary>
     /// Gets the name of the role.
@@ -46,7 +47,7 @@ public interface ICustomRole
     /// <summary>
     /// Gets the role options group.
     /// </summary>
-    public RoleOptionsGroup RoleOptionsGroup => Team switch
+    RoleOptionsGroup RoleOptionsGroup => Team switch
     {
         ModdedRoleTeams.Crewmate => RoleOptionsGroup.Crewmate,
         ModdedRoleTeams.Impostor => RoleOptionsGroup.Impostor,
@@ -57,7 +58,7 @@ public interface ICustomRole
     /// <summary>
     /// Gets the role's TeamIntroCutscene configuration.
     /// </summary>
-    public TeamIntroConfiguration? IntroConfiguration => Team switch
+    TeamIntroConfiguration? IntroConfiguration => Team switch
     {
         ModdedRoleTeams.Custom => TeamIntroConfiguration.Neutral,
         _ => null,
@@ -156,6 +157,26 @@ public interface ICustomRole
     public virtual bool CanLocalPlayerSeeRole(PlayerControl player)
     {
         return (PlayerControl.LocalPlayer.Data.Role.IsImpostor && player.Data.Role.IsImpostor) || PlayerControl.LocalPlayer.Data.IsDead;
+    }
+
+    /// <summary>
+    /// Allows the role to specify who is shown on the intro team screen.
+    /// </summary>
+    /// <param name="instance">The intro cutscene instance.</param>
+    /// <param name="yourTeam">The reference to the list of player in the team.</param>
+    /// <returns>True to use the original team intro code, false to skip.</returns>
+    public virtual bool SetupIntroTeam(IntroCutscene instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    {
+        if (Team == ModdedRoleTeams.Custom)
+        {
+            var team = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+
+            team.Add(PlayerControl.LocalPlayer);
+
+            yourTeam = team;
+        }
+
+        return true;
     }
 
     /// <summary>

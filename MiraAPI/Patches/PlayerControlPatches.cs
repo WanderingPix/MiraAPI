@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Events.Vanilla.Player;
@@ -6,7 +7,6 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities.Extensions;
-using System.Linq;
 
 namespace MiraAPI.Patches;
 
@@ -126,6 +126,6 @@ public static class PlayerControlPatches
     [HarmonyPatch(nameof(PlayerControl.OnDestroy))]
     public static void PlayerControlOnDestroyPrefix(PlayerControl __instance)
     {
-        Utilities.Extensions.ModifierComponents.Remove(__instance);
+        ModifierExtensions.ModifierComponents.Remove(__instance);
     }
 }
