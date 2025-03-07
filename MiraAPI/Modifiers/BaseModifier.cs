@@ -1,6 +1,7 @@
 ﻿using System;
 using MiraAPI.GameOptions;
 using MiraAPI.PluginLoading;
+using UnityEngine;
 
 namespace MiraAPI.Modifiers;
 
