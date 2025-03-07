@@ -42,7 +42,7 @@ public interface ICustomRole : IOptionable
     /// <summary>
     /// Speed multiplier, the normal player speed chosen by the host will be multiplied by this value.
     /// <summary>
-    virtual float Speed { get; set; } = 1f;
+    virtual Vector2 Speed { get; set; } = new Vector2(1f, 1f);
 
 
     /// <summary>
