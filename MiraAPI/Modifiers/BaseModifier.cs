@@ -33,7 +33,7 @@ public abstract class BaseModifier : IOptionable
     /// <summary>
     /// Speed multiplier, the normal player speed chosen by the host will be multiplied by this value.
     /// <summary>
-    public Vector2 Speed
+    public abstract Vector2 Speed
     {
         get => new Vector2(1f, 1f);
         set => Speed = value;
