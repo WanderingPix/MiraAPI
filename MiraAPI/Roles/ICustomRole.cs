@@ -39,15 +39,6 @@ public interface ICustomRole : IOptionable
     /// </summary>
     ModdedRoleTeams Team { get; }
 
-    /// <summary>
-    /// Speed multiplier, the normal player speed chosen by the host will be multiplied by this value.
-    /// <summary>
-    public Vector2 Speed
-    {
-        get => new Vector2(1f, 1f);
-        set => Speed = value;
-    }
-
 
     /// <summary>
     /// Gets advanced settings of the role.
@@ -221,17 +212,5 @@ public interface ICustomRole : IOptionable
     bool IsModifierApplicable(BaseModifier modifier)
     {
         return true;
-    }
-    public virtual void ChangeSpeed(Vector2 newspeed)
-    {
-        Speed = newspeed;
-    }
-    public virtual void DecreaseSpeed(float amountX, float amountY)
-    {
-        Speed = new Vector2(Speed.x - amountX, Speed.y - amountY);
-    }
-    public virtual void IncreaseSpeed(float amountX, float amountY)
-    {
-        Speed = new Vector2(Speed.x + amountX, Speed.y + amountY);
     }
 }
