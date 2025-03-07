@@ -7,6 +7,7 @@ using MiraAPI.Hud;
 using MiraAPI.Modifiers;
 using MiraAPI.Roles;
 using Reactor.Utilities.Extensions;
+using UnityEngine;
 
 namespace MiraAPI.Patches;
 
@@ -17,7 +18,7 @@ namespace MiraAPI.Patches;
 public static class PlayerPhysicsPatches
 {
       /// <summary>
-      /// Applies the role's speed modifier 
+      /// Applies the role's and modifiers' speed to the player's velocity. 
       /// </summary>
       /// <param name="__instance">PlayerPhysics instance.</param>
       [HarmonyPostfix]
@@ -26,9 +27,19 @@ public static class PlayerPhysicsPatches
       {
             if (__instance.AmOwner && PlayerControl.LocalPlayer.Data.Role is ICustomRole customRole)
             {
+                  var ModifierSpeeds = new Vector2(0f,0f);
+
                   var Vel = __instance.Velocity;
-                  Vel.x *= customRole.Speed.x;
-                  Vel.y *= customRole.Speed.y;
+
+
+                  foreach (var Modifier in PlayerControl.LocalPlayer.GetModifierComponent().ActiveModifiers.Where(x => x.Speed != new Vector2(1f,1f)))
+                  {
+                        ModifierSpeeds.x = ModifierSpeeds.x + Modifier.Speed.x;
+                  }
+                  
+                  Vel.x *= customRole.Speed.x + ModifierSpeeds.x;
+                  Vel.y *= customRole.Speed.y + ModifierSpeeds.y;
             }
       }
 }
+
