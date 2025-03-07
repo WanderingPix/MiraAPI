@@ -18,14 +18,14 @@ namespace MiraAPI.Patches;
 public static class PlayerPhysicsPatches
 {
       /// <summary>
-      /// Applies the role's and modifiers' speed to the player's velocity. 
+      /// Applies the and modifier speed to the player's velocity. 
       /// </summary>
       /// <param name="__instance">PlayerPhysics instance.</param>
       [HarmonyPostfix]
       [HarmonyPatch(nameof(PlayerPhysics.FixedUpdate))]
       public static void ApplySpeedMod(PlayerPhysics __instance)
       {
-            if (__instance.AmOwner && PlayerControl.LocalPlayer.Data.Role is ICustomRole customRole)
+            if (__instance.AmOwner)
             {
                   var ModifierSpeeds = new Vector2(0f,0f);
 
@@ -37,8 +37,8 @@ public static class PlayerPhysicsPatches
                         ModifierSpeeds.x = ModifierSpeeds.x + Modifier.Speed.x;
                   }
                   
-                  Vel.x *= customRole.Speed.x + ModifierSpeeds.x;
-                  Vel.y *= customRole.Speed.y + ModifierSpeeds.y;
+                  Vel.x *= ModifierSpeeds.x;
+                  Vel.y *= ModifierSpeeds.y;
             }
       }
 }
