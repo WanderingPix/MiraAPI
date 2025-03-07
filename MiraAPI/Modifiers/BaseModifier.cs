@@ -119,4 +119,17 @@ public abstract class BaseModifier : IOptionable
     /// </summary>
     /// <returns>True if the player can vent, false otherwise. Null for no effect.</returns>
     public virtual bool? CanVent() => null;
+    
+    public void ChangeSpeed(Vector2 newspeed)
+    {
+        Speed = newspeed;
+    }
+    public void DecreaseSpeed(float amountX, float amountY)
+    {
+        Speed = new Vector2(Speed.x - amountX, Speed.y - amountY);
+    }
+    public void IncreaseSpeed(float amountX, float amountY)
+    {
+        Speed = new Vector2(Speed.x + amountX, Speed.y + amountY);
+    }
 }
