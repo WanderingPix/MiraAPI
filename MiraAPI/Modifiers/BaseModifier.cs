@@ -30,6 +30,15 @@ public abstract class BaseModifier : IOptionable
     public Guid UniqueId { get; internal set; } = Guid.Empty;
 
     /// <summary>
+    /// Speed multiplier, the normal player speed chosen by the host will be multiplied by this value.
+    /// <summary>
+    public Vector2 Speed
+    {
+        get => new Vector2(1f, 1f);
+        set => Speed = value;
+    }
+
+    /// <summary>
     /// Gets the type ID of the modifier.
     /// </summary>
     public uint TypeId => ModifierManager.GetModifierTypeId(GetType()) ?? throw new InvalidOperationException("Modifier is not registered.");
