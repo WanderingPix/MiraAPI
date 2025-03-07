@@ -26,8 +26,9 @@ public static class PlayerPhysicsPatches
       {
             if (__instance.AmOwner && PlayerControl.LocalPlayer.Data.Role is ICustomRole customRole)
             {
-                  __instance.velocity.x *= customRole.Speed.x;
-                  __instance.velocity.y *= customRole.Speed.y;
+                  var Vel = __instance.Velocity;
+                  Vel.x *= customRole.Speed.x;
+                  Vel.y *= customRole.Speed.y;
             }
       }
 }
