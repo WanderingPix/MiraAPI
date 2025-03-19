@@ -104,7 +104,7 @@ public class ModdedEnumOption : ModdedOption<int>
 /// An option for selecting an enum value.
 /// </summary>
 /// <typeparam name="T">The enum type.</typeparam>
-public class ModdedEnumOption<T> : ModdedOption<T> where T : Enum
+public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
 {
     /// <summary>
     /// Gets the string values of the enum.
@@ -119,17 +119,17 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : Enum
     /// <param name="values">An option list of string values to use in place of the enum name.</param>
     public ModdedEnumOption(string title, T defaultValue, string[]? values = null) : base(title, defaultValue)
     {
-        Values = values ?? Enum.GetNames(typeof(T));
+        Values = values ?? Enum.GetNames<T>();
         Data = ScriptableObject.CreateInstance<StringGameSetting>();
         var data = (StringGameSetting)Data;
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
-        data.Values = values is null ?
-            Enum.GetNames(typeof(T)).Select(CustomStringName.CreateAndRegister).ToArray()
-            : values.Select(CustomStringName.CreateAndRegister).ToArray();
+        data.Values = (values is null
+            ? Enum.GetNames<T>().Select(CustomStringName.CreateAndRegister)
+            : values.Select(CustomStringName.CreateAndRegister)).ToArray();
 
-        data.Index = Convert.ToInt32(Value);
+        data.Index = Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
     }
 
     /// <inheritdoc />
@@ -138,9 +138,9 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : Enum
         var stringOption = Object.Instantiate(stringOpt, container);
 
         stringOption.SetUpFromData(Data, 20);
-        stringOption.OnValueChanged = (Il2CppSystem.Action<OptionBehaviour>)ValueChanged;
+        stringOption.OnValueChanged = (Action<OptionBehaviour>)ValueChanged;
 
-        // SetUpFromData method doesnt work correctly so we must set the values manually
+        // SetUpFromData method doesn't work correctly so we must set the values manually
         stringOption.Title = StringName;
         stringOption.Values = (Data as StringGameSetting)?.Values ?? new Il2CppStructArray<StringNames>(0);
         stringOption.Value = Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
