@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -37,7 +39,7 @@ public static class Helpers
                 return true;
             default:
             {
-                var num = Random.RandomRangeInt(1, 101);
+                var num = UnityEngine.Random.RandomRangeInt(1, 101);
                 return num <= probability;
             }
         }
@@ -375,6 +377,7 @@ public static class Helpers
             MiraNumberSuffixes.Multiplier => "x",
             MiraNumberSuffixes.Seconds => "s",
             MiraNumberSuffixes.Percent => "%",
+            MiraNumberSuffixes.Distance => MiraApiPlugin.DistanceSuffix?.Value ?? "unit",
             _ => string.Empty,
         };
     }
@@ -397,7 +400,34 @@ public static class Helpers
     /// <returns>The random string.</returns>
     public static string RandomString(int length, string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
     {
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.RandomRangeInt(0, s.Length)]).ToArray());
+        return new string([.. Enumerable.Repeat(chars, length).Select(s => s[UnityEngine.Random.RandomRangeInt(0, s.Length)])]);
+    }
+
+    /// <summary>
+    /// Shorthand for <see cref="string.Split(char, StringSplitOptions)"/> that removes empty entries and trims leading and ending spaces.
+    /// </summary>
+    /// <param name="value">The string to split.</param>
+    /// <param name="separator">The separator.</param>
+    /// <returns>An array of substrings.</returns>
+    public static string[] TrueSplit(this string value, char separator) => value.Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    /// <summary>
+    /// Joins a collection of items that are separated by a character.
+    /// </summary>
+    /// <param name="separator">The separator.</param>
+    /// <param name="items">The collection of items to string together.</param>
+    /// <typeparam name="T">The type of the items.</typeparam>
+    /// <returns>A string formed by concatenating the ToString results of each item, each separated by a separator.</returns>
+    public static string Join<T>(char separator, IEnumerable<T> items) => Join(separator.ToString(), items);
+
+    /// <inheritdoc cref="Join{T}(char, IEnumerable{T})"/>
+    public static string Join<T>(string separator, IEnumerable<T> items)
+    {
+        if (!items.Any())
+            return string.Empty;
+
+        var result = string.Empty;
+        items.Do(x => result += $"{separator}{x}");
+        return result[separator.Length..];
     }
 }
