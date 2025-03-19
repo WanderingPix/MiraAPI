@@ -35,9 +35,10 @@ public class ModdedEnumOption : ModdedOption<int>
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
-        data.Values = values is null ?
-            Enum.GetNames(enumType).Select(CustomStringName.CreateAndRegister).ToArray()
-            : values.Select(CustomStringName.CreateAndRegister).ToArray();
+        data.Values = (values is null
+            ? Enum.GetNames(enumType)
+            : values)
+            .Select(CustomStringName.CreateAndRegister).ToArray();
 
         data.Index = Value;
     }
@@ -50,7 +51,7 @@ public class ModdedEnumOption : ModdedOption<int>
         stringOption.SetUpFromData(Data, 20);
         stringOption.OnValueChanged = (Il2CppSystem.Action<OptionBehaviour>)ValueChanged;
 
-        // SetUpFromData method doesnt work correctly so we must set the values manually
+        // SetUpFromData method doesn't work correctly so we must set the values manually
         stringOption.Title = StringName;
         stringOption.Values = (Data as StringGameSetting)?.Values ?? new Il2CppStructArray<StringNames>(0);
         stringOption.Value = Value;
@@ -126,8 +127,9 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
         data.Values = (values is null
-            ? Enum.GetNames<T>().Select(CustomStringName.CreateAndRegister)
-            : values.Select(CustomStringName.CreateAndRegister)).ToArray();
+            ? Enum.GetNames<T>()
+            : values)
+            .Select(CustomStringName.CreateAndRegister).ToArray();
 
         data.Index = Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
     }
