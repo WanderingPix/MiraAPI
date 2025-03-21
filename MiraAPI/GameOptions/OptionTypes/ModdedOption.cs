@@ -14,31 +14,19 @@ namespace MiraAPI.GameOptions.OptionTypes;
 /// <typeparam name="T">The value type.</typeparam>
 public abstract class ModdedOption<T> : IModdedOption where T : struct
 {
-    private IMiraPlugin? _parentMod;
-
-    /// <summary>
-    /// Gets the unique identifier of the option.
-    /// </summary>
+    /// <inheritdoc />
     public uint Id { get; }
 
-    /// <summary>
-    /// Gets the title of the option.
-    /// </summary>
+    /// <inheritdoc />
     public string Title { get; }
 
-    /// <summary>
-    /// Gets the StringName object of the option.
-    /// </summary>
+    /// <inheritdoc />
     public StringNames StringName { get; }
 
-    /// <summary>
-    /// Gets the BaseGameSetting data of the option.
-    /// </summary>
+    /// <inheritdoc />
     public BaseGameSetting? Data { get; protected init; }
 
-    /// <summary>
-    /// Gets or sets the parent mod of the option.
-    /// </summary>
+    /// <inheritdoc />
     public IMiraPlugin? ParentMod
     {
         get => _parentMod;
@@ -50,6 +38,8 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
             Value = entry.Value;
         }
     }
+
+    private IMiraPlugin? _parentMod;
 
     /// <summary>
     /// Gets or sets the value of the option.
@@ -66,30 +56,14 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
     /// </summary>
     public Action<T>? ChangedEvent { get; set; }
 
-    /// <summary>
-    /// Gets or sets the visibility of the option.
-    /// </summary>
+    /// <inheritdoc />
     public Func<bool> Visible { get; set; }
 
-    /// <summary>
-    /// Gets or sets the option behaviour of the option.
-    /// </summary>
+    /// <inheritdoc />
     public OptionBehaviour? OptionBehaviour { get; protected set; }
 
-    /// <summary>
-    /// Gets or sets the config definition of the option.
-    /// </summary>
-    public ConfigDefinition? ConfigDefinition
-    {
-        get => _configDefinition;
-        set
-        {
-            if (_configDefinition is not null) return;
-            _configDefinition = value;
-        }
-    }
-
-    private ConfigDefinition? _configDefinition;
+    /// <inheritdoc />
+    public ConfigDefinition? ConfigDefinition { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ModdedOption{T}"/> class.
@@ -138,22 +112,13 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
         OnValueChanged(newValue);
     }
 
-    /// <summary>
-    /// Gets the float data of the option.
-    /// </summary>
-    /// <returns>A float object representing the option's value.</returns>
+    /// <inheritdoc />
     public abstract float GetFloatData();
 
-    /// <summary>
-    /// Gets the net data of the option.
-    /// </summary>
-    /// <returns>A NetData object representing this option's data.</returns>
+    /// <inheritdoc />
     public abstract NetData GetNetData();
 
-    /// <summary>
-    /// Handles incoming net data.
-    /// </summary>
-    /// <param name="data">The NetData's byte array.</param>
+    /// <inheritdoc />
     public abstract void HandleNetData(byte[] data);
 
     /// <summary>
@@ -169,14 +134,7 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
     /// <returns>The value.</returns>
     public abstract T GetValueFromOptionBehaviour(OptionBehaviour optionBehaviour);
 
-    /// <summary>
-    /// Creates the option behaviour.
-    /// </summary>
-    /// <param name="toggleOpt">The ToggleOption prefab.</param>
-    /// <param name="numberOpt">The NumberOption prefab.</param>
-    /// <param name="stringOpt">The StringOption prefab.</param>
-    /// <param name="container">The options container.</param>
-    /// <returns>A new OptionBehaviour for this modded option.</returns>
+    /// <inheritdoc />
     public abstract OptionBehaviour CreateOption(
         ToggleOption toggleOpt,
         NumberOption numberOpt,

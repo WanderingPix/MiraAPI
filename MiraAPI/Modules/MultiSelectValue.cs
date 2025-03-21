@@ -112,7 +112,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// Serializes the current instance to an array of bytes.
     /// </summary>
     /// <returns>An array of bytes representing the current instance.</returns>
-    public readonly byte[] ToBytes() => [.. values.Select(Helpers.EnumToBytes).SelectMany(x => x)];
+    public readonly byte[] ToBytes() => Helpers.EnumsToBytes(this);
 
     /// <summary>
     /// Converts the collection to its string representation.
@@ -143,7 +143,9 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// </summary>
     /// <param name="bytes">The bytes to deserialize from.</param>
     /// <returns>An instance of <see cref="MultiSelectValue{T}"/>.</returns>
+#pragma warning disable CA1000 // Do not declare static members on generic types
     public static MultiSelectValue<T> FromBytes(byte[] bytes) => new([.. Helpers.EnumsFromBytes<T>(bytes)]);
+#pragma warning restore CA1000 // Do not declare static members on generic types
 
     /// <summary>
     /// Converts the current instance to its string representation.

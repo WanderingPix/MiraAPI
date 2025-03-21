@@ -44,8 +44,8 @@ public class ModdedMultiSelectOption<T> : ModdedOption<MultiSelectValue<T>> wher
         Values = values ?? Enum.GetNames<T>();
         All = all;
         None = none;
-        Data = ScriptableObject.CreateInstance<StringGameSetting>();
-        var data = (StringGameSetting)Data;
+        Data = ScriptableObject.CreateInstance<MultiSelectGameSetting>();
+        var data = (MultiSelectGameSetting)Data;
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
@@ -53,8 +53,6 @@ public class ModdedMultiSelectOption<T> : ModdedOption<MultiSelectValue<T>> wher
             ? Enum.GetNames<T>()
             : values)
             .Select(CustomStringName.CreateAndRegister).ToArray();
-
-        data.Index = Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
     }
 
     /// <inheritdoc />

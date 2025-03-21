@@ -1,4 +1,5 @@
-#pragma warning disable // TODO: Remove later before completing the pr
+// TODO: Remove later before completing the pr
+#pragma warning disable
 using System;
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;

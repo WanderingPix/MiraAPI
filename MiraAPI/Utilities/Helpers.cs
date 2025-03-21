@@ -464,9 +464,16 @@ public static class Helpers
             throw new ArgumentException("Unknown underlying type for " + enumType.Name);
     }
 
-    public static T BytesToEnum<T>(byte[] bytes, int offset) where T : struct, Enum => BytesToEnum<T>(bytes, offset, typeof(T).GetEnumUnderlyingType());
-
-    public static T BytesToEnum<T>(byte[] bytes, int offset, Type underlyingType) where T : struct, Enum // This version exists purely for performance and optimisation
+    /// <summary>
+    /// Converts an array of bytes to an enum using the provided offset and the enum's underlying type.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="bytes">The array of bytes to deserialize from.</param>
+    /// <param name="offset">The index to convert from.</param>
+    /// <param name="underlyingType">The underlying type of the enum type.</param>
+    /// <returns>An enum value from the provided byte array.</returns>
+    /// <exception cref="ArgumentException">The enum type had an unknown underlying type.</exception>
+    public static T EnumFromBytes<T>(byte[] bytes, int offset, Type underlyingType) where T : struct, Enum // This version exists purely for performance and optimisation
     {
         var enumType = typeof(T);
 
@@ -488,12 +495,29 @@ public static class Helpers
             throw new ArgumentException("Unknown underlying type for " + enumType.Name);
     }
 
+    /// <inheritdoc cref="EnumFromBytes{T}(byte[], int, Type)"/>
+    public static T EnumFromBytes<T>(byte[] bytes, int offset) where T : struct, Enum => EnumFromBytes<T>(bytes, offset, typeof(T).GetEnumUnderlyingType());
+
+    /// <summary>
+    /// Converts the provided byte array into a collection of enum values.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="bytes">The array of bytes to deserialize from.</param>
+    /// <returns>A collection of enum values.</returns>
     public static IEnumerable<T> EnumsFromBytes<T>(byte[] bytes) where T : struct, Enum
     {
         var underlyingType = typeof(T).GetEnumUnderlyingType();
         var size = underlyingType.GetManagedSize();
 
         for (var i = 0; i < bytes.Length; i += size)
-            yield return BytesToEnum<T>(bytes, i, underlyingType);
+            yield return EnumFromBytes<T>(bytes, i, underlyingType);
     }
+
+    /// <summary>
+    /// Converts a collection of enum values to an array of bytes.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="values">The values to serialize to bytes to.</param>
+    /// <returns>An array of bytes serialized from the collection of enum values.</returns>
+    public static byte[] EnumsToBytes<T>(IEnumerable<T> values) where T : struct, Enum => [.. values.Select(EnumToBytes).SelectMany(x => x)];
 }
