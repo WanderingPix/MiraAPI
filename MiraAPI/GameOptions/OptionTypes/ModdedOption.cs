@@ -32,10 +32,8 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
         get => _parentMod;
         set
         {
-            if (_parentMod != null || value == null) return;
             _parentMod = value;
-            var entry = _parentMod.GetConfigFile().Bind(ConfigDefinition, DefaultValue);
-            Value = entry.Value;
+            BindConfig();
         }
     }
 
@@ -140,6 +138,18 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
         NumberOption numberOpt,
         StringOption stringOpt,
         Transform container);
+
+    /// <summary>
+    /// Binds the option to the configuration file of the parent mod, if available.
+    /// </summary>
+    public virtual void BindConfig()
+    {
+        var entry = ParentMod?.GetConfigFile().Bind(ConfigDefinition, DefaultValue);
+        if (entry != null)
+        {
+            Value = entry.Value;
+        }
+    }
 
     /// <summary>
     /// Implicitly converts the option to type of <typeparamref name="T"/>.

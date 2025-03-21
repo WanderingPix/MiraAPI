@@ -5,6 +5,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using MiraAPI.Modules;
 using MiraAPI.Networking;
 using Reactor.Localization.Utilities;
+using Reactor.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -49,10 +50,25 @@ public class ModdedMultiSelectOption<T> : ModdedOption<MultiSelectValue<T>> wher
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
-        data.Values = (values is null
-            ? Enum.GetNames<T>()
-            : values)
-            .Select(CustomStringName.CreateAndRegister).ToArray();
+        data.Values = (values ?? Enum.GetNames<T>()).Select(CustomStringName.CreateAndRegister).ToArray();
+    }
+
+    /// <inheritdoc />
+    public override void BindConfig()
+    {
+        var entry = ParentMod?.GetConfigFile().Bind(ConfigDefinition, DefaultValue.ToString());
+        if (entry != null)
+        {
+            try
+            {
+                Value = new MultiSelectValue<T>([.. entry.Value.Split(",").Select(x => Enum.Parse<T>(x.Trim()))]);
+            }
+            catch (Exception e)
+            {
+                Value = DefaultValue;
+                Logger<MiraApiPlugin>.Error($"Failed to bind config for {Title}: {e.Message}");
+            }
+        }
     }
 
     /// <inheritdoc />

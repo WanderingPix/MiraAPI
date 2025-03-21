@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using HarmonyLib;
 using MiraAPI.Utilities;
-using MonoMod.Utils;
 
 namespace MiraAPI.Modules;
 
@@ -22,22 +19,22 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// </summary>
     public string Values
     {
-        readonly get => Helpers.Join(',', values);
-        set => values = [.. value.TrueSplit(',').Select(Enum.Parse<T>)];
+        readonly get => Helpers.Join(',', _values);
+        set => _values = [.. value.TrueSplit(',').Select(Enum.Parse<T>)];
     }
-    private HashSet<T> values = [.. values];
+    private HashSet<T> _values = [.. values];
 
     /// <summary>
     /// Gets the number of values contained within.
     /// </summary>
-    public readonly int Count => values.Count;
+    public readonly int Count => _values.Count;
 
     /// <summary>
     /// Adds a single enum value to the end of the collection.
     /// </summary>
     /// <param name="item">The enum value to add.</param>
     /// <returns><c>true</c> if successfully added; otherwise, <c>false</c>.</returns>
-    public readonly bool Add(T item) => values.Add(item);
+    public readonly bool Add(T item) => _values.Add(item);
 
     /// <summary>
     /// Removes the first occurrence of the specified enum value.<br/>
@@ -45,7 +42,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// </summary>
     /// <param name="item">The enum value to remove.</param>
     /// <returns><c>true</c> if successfully removed; otherwise, <c>false</c>.</returns>
-    public readonly bool Remove(T item) => values.Remove(item);
+    public readonly bool Remove(T item) => _values.Remove(item);
 
     /// <summary>
     /// Adds multiple enum values to the end of the collection.
@@ -54,7 +51,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     public readonly void AddRange(IEnumerable<T> items)
     {
         foreach (var item in items)
-            values.Add(item);
+            _values.Add(item);
     }
 
     /// <summary>
@@ -76,7 +73,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// </summary>
     /// <param name="item">The enum value to locate.</param>
     /// <returns>true if the item is found in the collection; otherwise, false.</returns>
-    public readonly bool Contains(T item) => values.Contains(item);
+    public readonly bool Contains(T item) => _values.Contains(item);
 
     /// <summary>
     /// Removes all enum values that match the specified predicate condition.<br/>
@@ -100,43 +97,43 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// <summary>
     /// Removes all enum values from the collection.
     /// </summary>
-    public readonly void Clear() => values.Clear();
+    public readonly void Clear() => _values.Clear();
 
     /// <summary>
     /// Gets the first value in the collection.
     /// </summary>
     /// <returns>Returns the first value.</returns>
-    public readonly T First() => values.First();
+    public readonly T First() => _values.First();
 
     /// <summary>
     /// Serializes the current instance to an array of bytes.
     /// </summary>
     /// <returns>An array of bytes representing the current instance.</returns>
-    public readonly byte[] ToBytes() => Helpers.EnumsToBytes(this);
+    public readonly byte[] ToBytes() => EnumSerializer.EnumsToBytes(this);
 
     /// <summary>
     /// Converts the collection to its string representation.
     /// </summary>
     /// <returns>A comma-separated string of enum values.</returns>
-    public override readonly string ToString() => Values;
+    public readonly override string ToString() => Values;
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is MultiSelectValue<T> other && Equals(other);
+    public readonly override bool Equals(object? obj) => obj is MultiSelectValue<T> other && Equals(other);
 
     /// <inheritdoc/>
-    public readonly bool Equals(MultiSelectValue<T> other) => values.SetEquals(other.values);
+    public readonly bool Equals(MultiSelectValue<T> other) => _values.SetEquals(other._values);
 
     /// <inheritdoc/>
-    public override readonly int GetHashCode() => Values?.GetHashCode() ?? 0;
+    public readonly override int GetHashCode() => Values.GetHashCode();
 
     /// <inheritdoc/>
-    public readonly IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)values).GetEnumerator();
+    public readonly IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)_values).GetEnumerator();
 
     /// <inheritdoc/>
     readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <inheritdoc/>
-    public readonly void Dispose() => values.Clear();
+    public readonly void Dispose() => _values.Clear();
 
     /// <summary>
     /// Creates an instance of <see cref="MultiSelectValue{T}"/> from the provided byte array.
@@ -144,7 +141,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// <param name="bytes">The bytes to deserialize from.</param>
     /// <returns>An instance of <see cref="MultiSelectValue{T}"/>.</returns>
 #pragma warning disable CA1000 // Do not declare static members on generic types
-    public static MultiSelectValue<T> FromBytes(byte[] bytes) => new([.. Helpers.EnumsFromBytes<T>(bytes)]);
+    public static MultiSelectValue<T> FromBytes(byte[] bytes) => new([.. EnumSerializer.EnumsFromBytes<T>(bytes)]);
 #pragma warning restore CA1000 // Do not declare static members on generic types
 
     /// <summary>
@@ -157,7 +154,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     /// Converts the current instance to its array representation of values.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    public static implicit operator T[](MultiSelectValue<T> value) => [.. value.values];
+    public static implicit operator T[](MultiSelectValue<T> value) => [.. value._values];
 
     /// <summary>
     /// Converts the current instance to one singular value.
@@ -167,7 +164,7 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
 #pragma warning disable S3877 // Exceptions should not be thrown from unexpected methods
     public static implicit operator T(MultiSelectValue<T> value) =>
         value.Count == 1
-            ? value.values.First()
+            ? value._values.First()
             : throw new ConversionFailException($"Tried to convert multiple or no values ({value.Values}) to a singular one");
 #pragma warning restore S3877 // Exceptions should not be thrown from unexpected methods
 

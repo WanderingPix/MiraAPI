@@ -21,6 +21,12 @@ public class ExampleOptions2 : AbstractOptionGroup
     {
         ChangedEvent = x => Logger<ExamplePlugin>.Info($"changed Enum Opt to {x}"),
     };
+
+    public ModdedMultiSelectOption<TestingData> MultiSelectOption { get; } = new(
+        "Emotions",
+        TestingData.Happy,
+        TestingData.All,
+        TestingData.None);
 }
 
 public enum TestingData : ulong
@@ -28,4 +34,6 @@ public enum TestingData : ulong
     Happy,
     Sad,
     Neutral,
+    All,
+    None,
 }
