@@ -12,7 +12,7 @@ namespace MiraAPI.GameOptions.OptionTypes;
 /// Represents a modded option.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
-public abstract class ModdedOption<T> : IModdedOption
+public abstract class ModdedOption<T> : IModdedOption where T : struct
 {
     private IMiraPlugin? _parentMod;
 
@@ -34,7 +34,7 @@ public abstract class ModdedOption<T> : IModdedOption
     /// <summary>
     /// Gets the BaseGameSetting data of the option.
     /// </summary>
-    public BaseGameSetting Data { get; protected init; }
+    public BaseGameSetting? Data { get; protected init; }
 
     /// <summary>
     /// Gets or sets the parent mod of the option.
@@ -120,7 +120,7 @@ public abstract class ModdedOption<T> : IModdedOption
         var oldVal = Value;
         Value = newValue;
 
-        if (Value?.Equals(oldVal) == false)
+        if (!Value.Equals(oldVal))
         {
             ChangedEvent?.Invoke(Value);
         }

@@ -44,9 +44,11 @@ public static class ModdedOptionsManager
         TypeToGroup.Add(type, group);
         pluginInfo.OptionGroups.Add(group);
 
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
         typeof(OptionGroupSingleton<>).MakeGenericType(type)
             .GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic)!
             .SetValue(null, group);
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
         return true;
     }

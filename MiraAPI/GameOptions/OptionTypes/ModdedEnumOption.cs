@@ -116,7 +116,7 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
     /// Initializes a new instance of the <see cref="ModdedEnumOption{T}"/> class.
     /// </summary>
     /// <param name="title">The title of the option.</param>
-    /// <param name="defaultValue">The default value as an int.</param>
+    /// <param name="defaultValue">The default value.</param>
     /// <param name="values">An option list of string values to use in place of the enum name.</param>
     public ModdedEnumOption(string title, T defaultValue, string[]? values = null) : base(title, defaultValue)
     {
@@ -167,19 +167,19 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
     /// <inheritdoc />
     public override void HandleNetData(byte[] data)
     {
-        SetValue((T)Enum.Parse(typeof(T), Encoding.Unicode.GetString(data)));
+        SetValue(Enum.Parse<T>(Encoding.Unicode.GetString(data)));
     }
 
     /// <inheritdoc />
     public override T GetValueFromOptionBehaviour(OptionBehaviour optionBehaviour)
     {
-        return (T)Enum.Parse(typeof(T), optionBehaviour.GetInt().ToString(NumberFormatInfo.InvariantInfo));
+        return Enum.Parse<T>(optionBehaviour.GetInt().ToString(NumberFormatInfo.InvariantInfo));
     }
 
     /// <inheritdoc />
     protected override void OnValueChanged(T newValue)
     {
-        HudManager.Instance.Notifier.AddSettingsChangeMessage(StringName, Data.GetValueString(Convert.ToInt32(newValue, NumberFormatInfo.InvariantInfo)), false);
+        HudManager.Instance.Notifier.AddSettingsChangeMessage(StringName, Data!.GetValueString(Convert.ToInt32(newValue, NumberFormatInfo.InvariantInfo)), false);
         if (!OptionBehaviour)
         {
             return;

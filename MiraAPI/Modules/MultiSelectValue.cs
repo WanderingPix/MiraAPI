@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using HarmonyLib;
 using MiraAPI.Utilities;
+using MonoMod.Utils;
 
 namespace MiraAPI.Modules;
 
@@ -12,7 +15,7 @@ namespace MiraAPI.Modules;
 /// <typeparam name="T">The enum type that this collection will store.</typeparam>
 /// <param name="values">One or more enum values to initialize the collection with.</param>
 [Serializable]
-public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatable<MultiSelectValue<T>> where T : struct, Enum
+public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatable<MultiSelectValue<T>>, IDisposable where T : struct, Enum
 {
     /// <summary>
     /// Gets or sets the underlying comma-separated string representation of enum values.
@@ -106,6 +109,12 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
     public readonly T First() => values.First();
 
     /// <summary>
+    /// Serializes the current instance to an array of bytes.
+    /// </summary>
+    /// <returns>An array of bytes representing the current instance.</returns>
+    public readonly byte[] ToBytes() => [.. values.Select(Helpers.EnumToBytes).SelectMany(x => x)];
+
+    /// <summary>
     /// Converts the collection to its string representation.
     /// </summary>
     /// <returns>A comma-separated string of enum values.</returns>
@@ -125,6 +134,16 @@ public struct MultiSelectValue<T>(params T[] values) : IEnumerable<T>, IEquatabl
 
     /// <inheritdoc/>
     readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <inheritdoc/>
+    public readonly void Dispose() => values.Clear();
+
+    /// <summary>
+    /// Creates an instance of <see cref="MultiSelectValue{T}"/> from the provided byte array.
+    /// </summary>
+    /// <param name="bytes">The bytes to deserialize from.</param>
+    /// <returns>An instance of <see cref="MultiSelectValue{T}"/>.</returns>
+    public static MultiSelectValue<T> FromBytes(byte[] bytes) => new([.. Helpers.EnumsFromBytes<T>(bytes)]);
 
     /// <summary>
     /// Converts the current instance to its string representation.

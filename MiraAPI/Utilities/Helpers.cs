@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using HarmonyLib;
+using MonoMod.Utils;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -429,5 +430,70 @@ public static class Helpers
         var result = string.Empty;
         items.Do(x => result += $"{separator}{x}");
         return result[separator.Length..];
+    }
+
+    /// <summary>
+    /// Serializes an enum to an array of bytes.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="value">The value to serialize.</param>
+    /// <returns>An array of bytes representing the enum value.</returns>
+    /// <exception cref="ArgumentException">The enum type had an unknown underlying type.</exception>
+    public static byte[] EnumToBytes<T>(T value) where T : struct, Enum
+    {
+        var enumType = typeof(T);
+        var underlyingType = enumType.GetEnumUnderlyingType();
+
+        if (underlyingType == typeof(byte))
+            return [Convert.ToByte(value, NumberFormatInfo.InvariantInfo)];
+        else if (underlyingType == typeof(sbyte))
+            return [(byte)Convert.ToSByte(value, NumberFormatInfo.InvariantInfo)];
+        else if (underlyingType == typeof(short))
+            return BitConverter.GetBytes(Convert.ToInt16(value, NumberFormatInfo.InvariantInfo));
+        else if (underlyingType == typeof(ushort))
+            return BitConverter.GetBytes(Convert.ToUInt16(value, NumberFormatInfo.InvariantInfo));
+        else if (underlyingType == typeof(int))
+            return BitConverter.GetBytes(Convert.ToInt32(value, NumberFormatInfo.InvariantInfo));
+        else if (underlyingType == typeof(uint))
+            return BitConverter.GetBytes(Convert.ToUInt32(value, NumberFormatInfo.InvariantInfo));
+        else if (underlyingType == typeof(long))
+            return BitConverter.GetBytes(Convert.ToInt64(value, NumberFormatInfo.InvariantInfo));
+        else if (underlyingType == typeof(ulong))
+            return BitConverter.GetBytes(Convert.ToUInt64(value, NumberFormatInfo.InvariantInfo));
+        else
+            throw new ArgumentException("Unknown underlying type for " + enumType.Name);
+    }
+
+    public static T BytesToEnum<T>(byte[] bytes, int offset) where T : struct, Enum => BytesToEnum<T>(bytes, offset, typeof(T).GetEnumUnderlyingType());
+
+    public static T BytesToEnum<T>(byte[] bytes, int offset, Type underlyingType) where T : struct, Enum // This version exists purely for performance and optimisation
+    {
+        var enumType = typeof(T);
+
+        if (underlyingType == typeof(byte) || underlyingType == typeof(sbyte))
+            return (T)(object)bytes[offset];
+        else if (underlyingType == typeof(short))
+            return (T)(object)BitConverter.ToInt16(bytes, offset);
+        else if (underlyingType == typeof(ushort))
+            return (T)(object)BitConverter.ToUInt16(bytes, offset);
+        else if (underlyingType == typeof(int))
+            return (T)(object)BitConverter.ToInt32(bytes, offset);
+        else if (underlyingType == typeof(uint))
+            return (T)(object)BitConverter.ToUInt32(bytes, offset);
+        else if (underlyingType == typeof(long))
+            return (T)(object)BitConverter.ToInt64(bytes, offset);
+        else if (underlyingType == typeof(ulong))
+            return (T)(object)BitConverter.ToUInt64(bytes, offset);
+        else
+            throw new ArgumentException("Unknown underlying type for " + enumType.Name);
+    }
+
+    public static IEnumerable<T> EnumsFromBytes<T>(byte[] bytes) where T : struct, Enum
+    {
+        var underlyingType = typeof(T).GetEnumUnderlyingType();
+        var size = underlyingType.GetManagedSize();
+
+        for (var i = 0; i < bytes.Length; i += size)
+            yield return BytesToEnum<T>(bytes, i, underlyingType);
     }
 }
