@@ -431,4 +431,50 @@ public static class Helpers
         items.Do(x => result += $"{separator}{x}");
         return result[separator.Length..];
     }
+
+    /// <summary>
+    /// Shorthand helper for overriding the on click listeners for PassiveButton.
+    /// </summary>
+    /// <param name="passive">The PassiveButton being modified.</param>
+    /// <param name="action">The action that's replacing the original listeners.</param>
+    public static void OverrideOnClickListeners(this PassiveButton passive, Action action)
+    {
+        if (!passive)
+            return;
+
+        passive.OnClick?.RemoveAllListeners();
+        passive.OnClick = new();
+        passive.OnClick.AddListener(action);
+        passive.enabled = true;
+    }
+
+    /// <summary>
+    /// Shorthand helper for overriding the on mouse over listeners for PassiveButton.
+    /// </summary>
+    /// <inheritdoc cref="OverrideOnClickListeners"/>
+    public static void OverrideOnMouseOverListeners(this PassiveButton passive, Action action)
+    {
+        if (!passive)
+            return;
+
+        passive.OnMouseOver?.RemoveAllListeners();
+        passive.OnMouseOver = new();
+        passive.OnMouseOver.AddListener(action);
+        passive.enabled = true;
+    }
+
+    /// <summary>
+    /// Shorthand helper for overriding the on mouse out listeners for PassiveButton.
+    /// </summary>
+    /// <inheritdoc cref="OverrideOnClickListeners"/>
+    public static void OverrideOnMouseOutListeners(this PassiveButton passive, Action action)
+    {
+        if (!passive)
+            return;
+
+        passive.OnMouseOut?.RemoveAllListeners();
+        passive.OnMouseOut = new();
+        passive.OnMouseOut.AddListener(action);
+        passive.enabled = true;
+    }
 }

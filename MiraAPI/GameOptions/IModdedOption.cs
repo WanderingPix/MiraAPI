@@ -78,4 +78,14 @@ public interface IModdedOption
     /// </summary>
     /// <param name="data">The NetData's byte array.</param>
     void HandleNetData(byte[] data);
+
+    /// <summary>
+    /// Changes the scales and positions of the option if it's attached to the game options menu.
+    /// </summary>
+    void ChangeGameSetting();
+
+    /// <summary>
+    /// Changes the scales and positions of the option if it's attached to the roles settings menu.
+    /// </summary>
+    void ChangeRoleSetting();
 }

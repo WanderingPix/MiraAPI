@@ -139,6 +139,15 @@ public abstract class ModdedOption<T> : IModdedOption where T : struct
         StringOption stringOpt,
         Transform container);
 
+    /// <inheritdoc />
+    public abstract void ChangeGameSetting();
+
+    /// <inheritdoc />
+    public virtual void ChangeRoleSetting()
+    {
+        // TODO: Implement this as an abstract
+    }
+
     /// <summary>
     /// Binds the option to the configuration file of the parent mod, if available.
     /// </summary>

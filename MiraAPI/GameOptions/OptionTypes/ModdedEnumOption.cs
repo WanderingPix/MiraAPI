@@ -35,10 +35,7 @@ public class ModdedEnumOption : ModdedOption<int>
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
-        data.Values = (values is null
-            ? Enum.GetNames(enumType)
-            : values)
-            .Select(CustomStringName.CreateAndRegister).ToArray();
+        data.Values = Values.Select(CustomStringName.CreateAndRegister).ToArray();
 
         data.Index = Value;
     }
@@ -51,6 +48,10 @@ public class ModdedEnumOption : ModdedOption<int>
         stringOption.SetUpFromData(Data, 20);
         stringOption.OnValueChanged = (Il2CppSystem.Action<OptionBehaviour>)ValueChanged;
 
+        // Changing the button text to make them more distinct from number options
+        stringOption.MinusBtn.ChangeButtonText("<");
+        stringOption.PlusBtn.ChangeButtonText(">");
+
         // SetUpFromData method doesn't work correctly so we must set the values manually
         stringOption.Title = StringName;
         stringOption.Values = (Data as StringGameSetting)?.Values ?? new Il2CppStructArray<StringNames>(0);
@@ -59,6 +60,32 @@ public class ModdedEnumOption : ModdedOption<int>
         OptionBehaviour = stringOption;
 
         return stringOption;
+    }
+
+    /// <inheritdoc />
+    public override void ChangeGameSetting()
+    {
+        var stringOption = OptionBehaviour as StringOption;
+
+        stringOption!.MinusBtn.transform.localPosition += new Vector3(0.6f, 0f, 0f);
+        stringOption.PlusBtn.transform.localPosition += new Vector3(1.5f, 0f, 0f);
+
+        // The value box itself becomes the button
+        stringOption.PlusBtn.gameObject.SetActive(false);
+        stringOption.MinusBtn.gameObject.SetActive(false);
+
+        var background = stringOption.transform.GetChild(0);
+        background.localPosition += new Vector3(-0.8f, 0f, 0f);
+        background.localScale += new Vector3(1f, 0f, 0f);
+
+        var title = stringOption.TitleText;
+        title.transform.localPosition = new(-2.0466f, 0f, -2.9968f);
+        title.GetComponent<RectTransform>().sizeDelta = new(5.8f, 0.458f);
+        title.fontSize = 2.9f; // Why is it different for string options??
+
+        var valueBox = stringOption.transform.GetChild(5);
+        valueBox.localPosition += new Vector3(1.05f, 0f, 0f);
+        valueBox.localScale += new Vector3(0.2f, 0f, 0f);
     }
 
     /// <inheritdoc />
@@ -126,10 +153,7 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
 
         data.Title = StringName;
         data.Type = global::OptionTypes.String;
-        data.Values = (values is null
-            ? Enum.GetNames<T>()
-            : values)
-            .Select(CustomStringName.CreateAndRegister).ToArray();
+        data.Values = Values.Select(CustomStringName.CreateAndRegister).ToArray();
 
         data.Index = Convert.ToInt32(Value, NumberFormatInfo.InvariantInfo);
     }
@@ -142,6 +166,10 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
         stringOption.SetUpFromData(Data, 20);
         stringOption.OnValueChanged = (Action<OptionBehaviour>)ValueChanged;
 
+        // Changing the button text to make them more distinct from number options
+        stringOption.MinusBtn.ChangeButtonText("<");
+        stringOption.PlusBtn.ChangeButtonText(">");
+
         // SetUpFromData method doesn't work correctly so we must set the values manually
         stringOption.Title = StringName;
         stringOption.Values = (Data as StringGameSetting)?.Values ?? new Il2CppStructArray<StringNames>(0);
@@ -150,6 +178,32 @@ public class ModdedEnumOption<T> : ModdedOption<T> where T : struct, Enum
         OptionBehaviour = stringOption;
 
         return stringOption;
+    }
+
+    /// <inheritdoc />
+    public override void ChangeGameSetting()
+    {
+        var stringOption = OptionBehaviour as StringOption;
+
+        stringOption!.MinusBtn.transform.localPosition += new Vector3(0.6f, 0f, 0f);
+        stringOption.PlusBtn.transform.localPosition += new Vector3(1.5f, 0f, 0f);
+
+        // The value box itself becomes the button
+        stringOption.PlusBtn.gameObject.SetActive(false);
+        stringOption.MinusBtn.gameObject.SetActive(false);
+
+        var background = stringOption.transform.GetChild(0);
+        background.localPosition += new Vector3(-0.8f, 0f, 0f);
+        background.localScale += new Vector3(1f, 0f, 0f);
+
+        var title = stringOption.TitleText;
+        title.transform.localPosition = new(-2.0466f, 0f, -2.9968f);
+        title.GetComponent<RectTransform>().sizeDelta = new(5.8f, 0.458f);
+        title.fontSize = 2.9f; // Why is it different for string options??
+
+        var valueBox = stringOption.transform.GetChild(5);
+        valueBox.localPosition += new Vector3(1.05f, 0f, 0f);
+        valueBox.localScale += new Vector3(0.2f, 0f, 0f);
     }
 
     /// <inheritdoc />

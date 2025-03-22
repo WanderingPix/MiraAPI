@@ -226,6 +226,8 @@ public static class GameOptionsMenuPatch
                 menu.stringOptionOrigin,
                 menu.settingsContainer));
 
+        group.Options.ForEach(x => x.ChangeGameSetting());
+
         foreach (var newOpt in options)
         {
             newOpt.SetClickMask(menu.ButtonClickMask);

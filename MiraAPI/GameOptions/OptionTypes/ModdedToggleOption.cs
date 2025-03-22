@@ -42,6 +42,21 @@ public class ModdedToggleOption : ModdedOption<bool>
     }
 
     /// <inheritdoc />
+    public override void ChangeGameSetting()
+    {
+        var toggleOption = OptionBehaviour as ToggleOption;
+        toggleOption!.transform.GetChild(1).localPosition += new Vector3(2.2f, 0f, 0f); // Checkbox
+
+        var title = toggleOption.TitleText;
+        title.transform.localPosition = new(-2.0466f, 0f, -2.9968f);
+        title.GetComponent<RectTransform>().sizeDelta = new(5.8f, 0.458f);
+
+        var background = toggleOption.transform.GetChild(2);
+        background.localPosition += new Vector3(-0.8f, 0f, 0f);
+        background.localScale += new Vector3(1f, 0f, 0f);
+    }
+
+    /// <inheritdoc />
     public override float GetFloatData()
     {
         return Value ? 1 : 0;

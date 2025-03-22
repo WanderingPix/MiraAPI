@@ -325,6 +325,7 @@ public static class RoleSettingMenuPatches
 
             newOpt.transform.localPosition = new Vector3(hasImage ? 2.17f : 1.1f, num, -2f);
             newOpt.SetClickMask(__instance.ButtonClickMask);
+            option.ChangeRoleSetting();
 
             SpriteRenderer[] componentsInChildren = newOpt.GetComponentsInChildren<SpriteRenderer>(true);
             foreach (var renderer in componentsInChildren)
