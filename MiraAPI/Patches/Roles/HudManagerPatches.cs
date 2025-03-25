@@ -5,29 +5,15 @@ using Reactor.Utilities.Extensions;
 
 namespace MiraAPI.Patches.Roles;
 
-/// <summary>
-/// HudManager patches for roles.
-/// </summary>
 [HarmonyPatch(typeof(HudManager))]
-public static class HudManagerPatches
+internal static class HudManagerPatches
 {
-    // Custom role tab.
     private static TaskPanelBehaviour? _roleTab;
 
-    /// <summary>
-    /// Fixes Kill Button not showing for Neutral killing role.
-    /// </summary>
-    /// <param name="__instance">HudManager instance.</param>
-    /// <param name="localPlayer">The local PlayerControl.</param>
-    /// <param name="role">The player's RoleBehaviour.</param>
-    /// <param name="isActive">Whether the Hud should be set active or not.</param>
     [HarmonyPostfix]
     [HarmonyPatch(nameof(HudManager.SetHudActive), typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool))]
-    public static void SetHudActivePostfix(
-        HudManager __instance,
-        PlayerControl localPlayer,
-        RoleBehaviour role,
-        bool isActive)
+    // ReSharper disable once InconsistentNaming
+    public static void SetHudActivePostfix(HudManager __instance, PlayerControl localPlayer, RoleBehaviour role, bool isActive)
     {
         var flag = localPlayer.Data != null && localPlayer.Data.IsDead;
 
@@ -44,11 +30,9 @@ public static class HudManagerPatches
         }
     }
 
-    /// <summary>
-    /// Update custom role tab and custom role hud elements.
-    /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch(nameof(HudManager.Update))]
+    // ReSharper disable once InconsistentNaming
     public static void UpdatePostfix(HudManager __instance)
     {
         var local = PlayerControl.LocalPlayer;
@@ -62,8 +46,6 @@ public static class HudManagerPatches
 
         if (role is ICustomRole { Configuration.RoleHintType: RoleHintType.RoleTab } customRole)
         {
-            customRole.HudUpdate(__instance);
-
             if (_roleTab == null)
             {
                 _roleTab = CustomRoleManager.CreateRoleTab(customRole);
@@ -71,9 +53,9 @@ public static class HudManagerPatches
 
             CustomRoleManager.UpdateRoleTab(_roleTab, customRole);
         }
-        else if (_roleTab)
+        else if (_roleTab != null)
         {
-            _roleTab?.gameObject.Destroy();
+            _roleTab.gameObject.Destroy();
         }
     }
 }
