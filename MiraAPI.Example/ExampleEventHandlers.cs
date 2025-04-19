@@ -9,7 +9,10 @@ using MiraAPI.Events.Vanilla.Player;
 using MiraAPI.Example.Buttons.Freezer;
 using MiraAPI.Example.Roles;
 using MiraAPI.Utilities;
+using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
+using TMPro;
+using UnityEngine;
 
 namespace MiraAPI.Example;
 
@@ -38,12 +41,9 @@ public static class ExampleEventHandlers
     [RegisterEvent]
     public static void StartMeetingEvent(StartMeetingEvent _)
     {
-        foreach (var plr in PlayerControl.AllPlayerControls)
+        foreach (var plr in PlayerControl.AllPlayerControls.ToArray().Where(player => player.Data.Role is MayorRole))
         {
-            if (plr.Data.Role is MayorRole)
-            {
-                plr.GetVoteData().IncreaseRemainingVotes(1);
-            }
+            plr.GetVoteData().IncreaseRemainingVotes(1);
         }
     }
 
