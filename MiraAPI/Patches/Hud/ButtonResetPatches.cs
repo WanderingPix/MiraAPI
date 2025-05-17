@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using MiraAPI.Hud;
+using Reactor.Utilities;
 
 namespace MiraAPI.Patches.Hud;
 
@@ -26,7 +27,8 @@ public static class ButtonResetPatches
     /// Resets the cooldown and effect of all custom buttons after the exile screen is closed.
     /// </summary>
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(ExileController), nameof(ExileController.ReEnableGameplay))]
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
+    [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
     public static void ExileControllerReEnableGameplayPostfix()
     {
         foreach (var customActionButton in CustomButtonManager.CustomButtons)
