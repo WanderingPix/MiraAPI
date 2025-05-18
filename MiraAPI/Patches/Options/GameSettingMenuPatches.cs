@@ -468,12 +468,12 @@ internal static class GameSettingMenuPatches
             }
         }
 
-        if (roles.roleChances != null && SelectedMod?.CustomRoles.Count > 0)
+        if (roles.roleChances != null && SelectedMod?.InternalRoles.Count > 0)
         {
             CleanupRoleSettings(roles);
         }
 
-        if (settings.Children != null && SelectedMod?.OptionGroups.Count > 0)
+        if (settings.Children != null && SelectedMod?.InternalOptionGroups.Count > 0)
         {
             CleanupSettings(settings);
         }
