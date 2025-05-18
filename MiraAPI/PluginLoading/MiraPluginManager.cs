@@ -44,7 +44,7 @@ public sealed class MiraPluginManager
                 RegisterPlugin(miraInfo, assembly);
                 _registeredPlugins.Add(assembly, miraInfo);
             }
-            if (plugin is IMiraExtension miraExtension)
+            else if (plugin is IMiraExtension miraExtension)
             {
                 var basePlugin = miraExtension.GetBasePluginType();
                 var basePluginInfo = _registeredPlugins.Values.FirstOrDefault(x => x.MiraPlugin.GetType() == basePlugin);
@@ -61,6 +61,7 @@ public sealed class MiraPluginManager
         IL2CPPChainloader.Instance.Finished += () =>
         {
             CustomButtonManager.Buttons = new ReadOnlyCollection<CustomActionButton>(CustomButtonManager.CustomButtons);
+            RegisteredPlugins = [.. _registeredPlugins.Values];
         };
     }
 
@@ -76,6 +77,8 @@ public sealed class MiraPluginManager
 
     private void RegisterPlugin(MiraPluginInfo info, Assembly assembly)
     {
+        Logger<MiraApiPlugin>.Info($"Registering plugin {info.PluginId} with Mira API.");
+
         var roles = new List<Type>();
 
         var oldConfigSetting = info.PluginConfig.SaveOnConfigSet;
@@ -153,7 +156,7 @@ public sealed class MiraPluginManager
         info.SavePublicCollections();
         PresetManager.CreateDefaultPreset(info);
         PresetManager.LoadPresets(info);
-        Logger<MiraApiPlugin>.Info($"Registering mod {info.PluginId} with Mira API.");
+        Logger<MiraApiPlugin>.Info($"{info.PluginId} finished registering.");
     }
 
     private static bool RegisterGameOver(Type type)
