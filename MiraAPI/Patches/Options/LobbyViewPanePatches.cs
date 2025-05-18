@@ -143,7 +143,7 @@ public static class LobbyViewPanePatches
         }
 
         var filteredGroups = SelectedMod.InternalOptionGroups
-            .Where(x => x.OptionableType == null && x.GroupVisible.Invoke());
+            .Where(x => x is { ShowInModifiersMenu: false, OptionableType: null } && x.GroupVisible.Invoke());
         DrawOptions(__instance, filteredGroups);
         return false;
     }
