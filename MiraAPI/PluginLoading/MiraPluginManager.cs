@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using MiraAPI.Colors;
 using MiraAPI.Events;
@@ -35,86 +36,24 @@ public sealed class MiraPluginManager
         Instance = this;
         IL2CPPChainloader.Instance.PluginLoad += (pluginInfo, assembly, plugin) =>
         {
-            if (plugin is not IMiraPlugin miraPlugin)
+            if (plugin is IMiraPlugin miraPlugin)
             {
-                return;
+                var miraInfo = new MiraPluginInfo(miraPlugin, pluginInfo);
+                RegisterPlugin(miraInfo, assembly);
+                _registeredPlugins.Add(assembly, miraInfo);
             }
-
-            var info = new MiraPluginInfo(miraPlugin, pluginInfo);
-            var roles = new List<Type>();
-
-            var oldConfigSetting = info.PluginConfig.SaveOnConfigSet;
-            info.PluginConfig.SaveOnConfigSet = false;
-
-            foreach (var type in assembly.GetTypes())
+            if (plugin is IMiraExtension miraExtension)
             {
-                if (type.GetCustomAttribute<MiraIgnoreAttribute>() != null)
+                var basePlugin = miraExtension.GetBasePluginType();
+                var basePluginInfo = _registeredPlugins.Values.FirstOrDefault(x => x.MiraPlugin.GetType() == basePlugin);
+                if (basePluginInfo == null)
                 {
-                    continue;
+                    Logger<MiraApiPlugin>.Error($"Base plugin {basePlugin.Name} not found for extension {pluginInfo.Metadata.GUID}.");
+                    return;
                 }
 
-                foreach (var method in type.GetMethods())
-                {
-                    var eventAttribute = method.GetCustomAttribute<RegisterEventAttribute>();
-                    if (eventAttribute == null)
-                    {
-                        continue;
-                    }
-
-                    if (!method.IsStatic)
-                    {
-                        Logger<MiraApiPlugin>.Error($"Event method {method.Name} in {type.Name} must be static.");
-                        continue;
-                    }
-
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
-                    {
-                        Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
-                        continue;
-                    }
-
-                    var paramType = parameters[0].ParameterType;
-                    MiraEventManager.RegisterEventHandler(paramType, method, eventAttribute.Priority);
-                }
-
-                if (RegisterModifier(type, info))
-                {
-                    continue;
-                }
-
-                if (RegisterOptions(type, info))
-                {
-                    continue;
-                }
-
-                if (RegisterRole(type, info, out var role))
-                {
-                    roles.Add(role);
-                    continue;
-                }
-
-                if (RegisterButton(type, info))
-                {
-                    continue;
-                }
-
-                if (RegisterGameOver(type))
-                {
-                    continue;
-                }
-
-                RegisterColorClasses(type);
+                RegisterPlugin(basePluginInfo, assembly);
             }
-
-            info.PluginConfig.Save();
-            info.PluginConfig.SaveOnConfigSet = oldConfigSetting;
-
-            info.OptionGroups.Sort((x, y) => x.GroupPriority.CompareTo(y.GroupPriority));
-            QueuedRoleRegistrations.Add(info, roles);
-
-            _registeredPlugins.Add(assembly, info);
-            Logger<MiraApiPlugin>.Info($"Registering mod {pluginInfo.Metadata.GUID} with Mira API.");
         };
         IL2CPPChainloader.Instance.Finished += PaletteManager.RegisterAllColors;
         IL2CPPChainloader.Instance.Finished += () =>
@@ -131,6 +70,84 @@ public sealed class MiraPluginManager
     public static MiraPluginInfo? GetPluginByGuid(string pluginId)
     {
         return Instance._registeredPlugins.Values.FirstOrDefault(plugin => plugin.PluginId == pluginId);
+    }
+
+    private void RegisterPlugin(MiraPluginInfo info, Assembly assembly)
+    {
+        var roles = new List<Type>();
+
+        var oldConfigSetting = info.PluginConfig.SaveOnConfigSet;
+        info.PluginConfig.SaveOnConfigSet = false;
+
+        foreach (var type in assembly.GetTypes())
+        {
+            if (type.GetCustomAttribute<MiraIgnoreAttribute>() != null)
+            {
+                continue;
+            }
+
+            foreach (var method in type.GetMethods())
+            {
+                var eventAttribute = method.GetCustomAttribute<RegisterEventAttribute>();
+                if (eventAttribute == null)
+                {
+                    continue;
+                }
+
+                if (!method.IsStatic)
+                {
+                    Logger<MiraApiPlugin>.Error($"Event method {method.Name} in {type.Name} must be static.");
+                    continue;
+                }
+
+                var parameters = method.GetParameters();
+                if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
+                {
+                    Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
+                    continue;
+                }
+
+                var paramType = parameters[0].ParameterType;
+                MiraEventManager.RegisterEventHandler(paramType, method, eventAttribute.Priority);
+            }
+
+            if (RegisterModifier(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterOptions(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterRole(type, info, out var role))
+            {
+                roles.Add(role);
+                continue;
+            }
+
+            if (RegisterButton(type, info))
+            {
+                continue;
+            }
+
+            if (RegisterGameOver(type))
+            {
+                continue;
+            }
+
+            RegisterColorClasses(type);
+        }
+
+        info.PluginConfig.Save();
+        info.PluginConfig.SaveOnConfigSet = oldConfigSetting;
+
+        info.OptionGroups.Sort((x, y) => x.GroupPriority.CompareTo(y.GroupPriority));
+        QueuedRoleRegistrations.TryAdd(info, []);
+        QueuedRoleRegistrations[info].AddRange(roles);
+
+        Logger<MiraApiPlugin>.Info($"Registering mod {info.PluginId} with Mira API.");
     }
 
     private static bool RegisterGameOver(Type type)

@@ -51,7 +51,7 @@ public static class ExampleEventHandlers
     [RegisterEvent(15)]
     public static void HandleVoteEvent(HandleVoteEvent @event)
     {
-        if (@event.VoteData.Owner.Data.Role is not NeutralKillerRole) return;
+        if (@event.VoteData.Owner.Data.Role is not FreezerRole) return;
 
         @event.VoteData.SetRemainingVotes(0);
 

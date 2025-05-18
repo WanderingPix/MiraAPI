@@ -1,9 +1,9 @@
-﻿using MiraAPI.Example.Roles;
+﻿using MiraAPI.Example.Extension.Roles;
 using MiraAPI.GameEnd;
 using MiraAPI.Utilities;
 using UnityEngine;
 
-namespace MiraAPI.Example.GameOver;
+namespace MiraAPI.Example.Extension.GameOver;
 
 public class NeutralKillerGameOver : CustomGameOver
 {
