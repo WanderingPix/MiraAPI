@@ -411,6 +411,21 @@ internal static class GameSettingMenuPatches
 
     private static void CleanupTab(GameOptionsMenu settings, RolesSettingsMenu roles)
     {
+        if (roles.roleChances != null)
+        {
+            CleanupRoleSettings(roles);
+        }
+
+        if (settings.Children != null)
+        {
+            CleanupSettings(settings);
+        }
+
+        if (_modifiersTab?.Children?.Count > 0)
+        {
+            CleanupSettings(_modifiersTab);
+        }
+
         void CleanupRoleSettings(RolesSettingsMenu rolesMenu)
         {
             if (rolesMenu.advancedSettingChildren != null)
@@ -466,21 +481,6 @@ internal static class GameSettingMenuPatches
             {
                 gameOptMenu.scrollBar.ScrollToTop();
             }
-        }
-
-        if (roles.roleChances != null && SelectedMod?.InternalRoles.Count > 0)
-        {
-            CleanupRoleSettings(roles);
-        }
-
-        if (settings.Children != null && SelectedMod?.InternalOptionGroups.Count > 0)
-        {
-            CleanupSettings(settings);
-        }
-
-        if (_modifiersTab?.Children?.Count > 0)
-        {
-            CleanupSettings(_modifiersTab);
         }
     }
 }
