@@ -16,7 +16,7 @@ public class FreezeButton : CustomActionButton<PlayerControl>
 
     public override float Cooldown => OptionGroupSingleton<FreezerRoleSettings>.Instance.FreezeDuration;
 
-    public override int MaxUses => (int)OptionGroupSingleton<FreezerRoleSettings>.Instance.FreezeUses;
+    public override int MaxUses => 1;
 
     public override LoadableAsset<Sprite> Sprite => ExampleAssets.ExampleButton;
 

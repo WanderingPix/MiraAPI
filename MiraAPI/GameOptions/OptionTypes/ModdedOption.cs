@@ -27,7 +27,7 @@ public abstract class ModdedOption<T> : IModdedOption
     public StringNames StringName { get; }
 
     /// <inheritdoc />
-    public BaseGameSetting Data { get; protected init; } = null!;
+    public BaseGameSetting Data { get; protected set; } = null!;
 
     /// <inheritdoc />
     public IMiraPlugin? ParentMod

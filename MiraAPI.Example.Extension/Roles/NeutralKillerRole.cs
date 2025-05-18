@@ -1,16 +1,20 @@
-﻿using MiraAPI.Example.GameOver;
+﻿using MiraAPI.Example.Extension.GameOver;
 using MiraAPI.GameEnd;
 using MiraAPI.Roles;
 using UnityEngine;
 
-namespace MiraAPI.Example.Roles;
+namespace MiraAPI.Example.Extension.Roles;
 
 public class NeutralKillerRole : ImpostorRole, ICustomRole
 {
     public string RoleName => "Outcast Killer";
+
     public string RoleDescription => "Outcast who can kill.";
-    public string RoleLongDescription => RoleDescription;
+
+    public string RoleLongDescription => this.RoleDescription;
+
     public Color RoleColor => Color.magenta;
+
     public ModdedRoleTeams Team => ModdedRoleTeams.Custom;
 
     public CustomRoleConfiguration Configuration => new(this)

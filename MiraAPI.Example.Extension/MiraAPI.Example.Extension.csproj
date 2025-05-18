@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>1.0.0</Version>
+        <Description>Example extension for Mira API</Description>
+        <Authors>Angxl, XtraCube</Authors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MiraAPI\MiraAPI.csproj" />
+        <ProjectReference Include="..\MiraAPI.Example\MiraAPI.Example.csproj" />
+    </ItemGroup>
+
+    <Import Project="..\AmongUs.props" />
+</Project>

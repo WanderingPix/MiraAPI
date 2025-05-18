@@ -45,7 +45,9 @@ public static class ModdedOptionsManager
         pluginInfo.InternalOptionGroups.Add(group);
 
         typeof(OptionGroupSingleton<>).MakeGenericType(type)
+#pragma warning disable S3011
             .GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic)!
+#pragma warning restore S3011
             .SetValue(null, group);
 
         return true;
@@ -173,7 +175,7 @@ public static class ModdedOptionsManager
     /// </summary>
     /// <param name="__originalMethod">The original setter method.</param>
     /// <param name="value">The new object value.</param>
-    // ReSharper disable once InconsistentNaming
+    // ReSharper disable InconsistentNaming
     public static void PropertySetterPatch(MethodBase __originalMethod, object value)
     {
         var attribute = OptionAttributes.First(pair => pair.Key.GetSetMethod() == __originalMethod).Value;
@@ -186,8 +188,8 @@ public static class ModdedOptionsManager
     /// <param name="__originalMethod">The original getter method.</param>
     /// <param name="__result">The result of the property getter.</param>
     /// <returns>False so the original getter gets skipped.</returns>
-    // ReSharper disable InconsistentNaming
     public static bool PropertyGetterPatch(MethodBase __originalMethod, ref object __result)
+    // ReSharper restore InconsistentNaming
     {
         var attribute = OptionAttributes.First(pair => pair.Key.GetGetMethod() == __originalMethod).Value;
         __result = attribute.GetValue();

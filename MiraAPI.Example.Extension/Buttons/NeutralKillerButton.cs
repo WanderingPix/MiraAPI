@@ -1,17 +1,20 @@
-﻿using MiraAPI.Example.GameOver;
-using MiraAPI.Example.Roles;
+﻿using MiraAPI.Example.Extension.GameOver;
+using MiraAPI.Example.Extension.Roles;
 using MiraAPI.GameEnd;
 using MiraAPI.Hud;
 using MiraAPI.Utilities.Assets;
 using UnityEngine;
 
-namespace MiraAPI.Example.Buttons;
+namespace MiraAPI.Example.Extension.Buttons;
 
 public class NeutralKillerButton : CustomActionButton
 {
     public override string Name => "Win Game";
+
     public override float Cooldown => 0f;
+
     public override LoadableAsset<Sprite> Sprite => ExampleAssets.ExampleButton;
+
     protected override void OnClick()
     {
         CustomGameOver.Trigger<NeutralKillerGameOver>([PlayerControl.LocalPlayer.Data]);

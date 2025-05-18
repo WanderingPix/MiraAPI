@@ -31,7 +31,7 @@ internal static class GameSettingMenuPatches
     private static PassiveButton? _modifiersButton;
     private static PassiveButton? _smallRolesButton;
 
-    private static Dictionary<int, Vector3> OptionScrolls = [];
+    private static Dictionary<int, Vector3> OptionsPositions { get; } = [];
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab))]
@@ -115,11 +115,11 @@ internal static class GameSettingMenuPatches
         passiveButton.OnClick.AddListener(
             (UnityAction)(() =>
             {
-                RoleSettingMenuPatches.Scrolls[SelectedModIdx] =
-                    __instance.RoleSettingsTab.scrollBar.Inner.localPosition;
-                OptionScrolls[SelectedModIdx] =
-                    __instance.GameSettingsTab.scrollBar.Inner.localPosition;
-
+                if (!__instance.RoleSettingsTab.AdvancedRolesSettings.active)
+                {
+                    RoleSettingMenuPatches.RolePositions[SelectedModIdx] = __instance.RoleSettingsTab.scrollBar.Inner.localPosition;
+                }
+                OptionsPositions[SelectedModIdx] = __instance.GameSettingsTab.scrollBar.Inner.localPosition;
                 SelectedModIdx += 1;
                 if (SelectedModIdx > MiraPluginManager.Instance.RegisteredPlugins.Length)
                 {
@@ -138,11 +138,11 @@ internal static class GameSettingMenuPatches
         backButton.gameObject.GetComponent<PassiveButton>().OnClick.AddListener(
             (UnityAction)(() =>
             {
-                RoleSettingMenuPatches.Scrolls[SelectedModIdx] =
-                    __instance.RoleSettingsTab.scrollBar.Inner.localPosition;
-                OptionScrolls[SelectedModIdx] =
-                    __instance.GameSettingsTab.scrollBar.Inner.localPosition;
-
+                if (!__instance.RoleSettingsTab.AdvancedRolesSettings.active)
+                {
+                    RoleSettingMenuPatches.RolePositions[SelectedModIdx] = __instance.RoleSettingsTab.scrollBar.Inner.localPosition;
+                }
+                OptionsPositions[SelectedModIdx] = __instance.GameSettingsTab.scrollBar.Inner.localPosition;
                 SelectedModIdx -= 1;
                 if (SelectedModIdx < 0)
                 {
@@ -411,43 +411,6 @@ internal static class GameSettingMenuPatches
 
     private static void CleanupTab(GameOptionsMenu settings, RolesSettingsMenu roles)
     {
-        if (roles.roleChances != null)
-        {
-            CleanupRoleSettings(roles);
-        }
-
-        if (settings.Children != null)
-        {
-            CleanupSettings(settings);
-        }
-
-        if (_modifiersTab?.Children?.Count > 0)
-        {
-            CleanupSettings(_modifiersTab);
-        }
-
-        void CleanupSettings(GameOptionsMenu gameOptMenu)
-        {
-            ClearOptions(gameOptMenu.Children);
-            gameOptMenu.Children = null;
-
-            gameOptMenu.settingsContainer
-                .GetComponentsInChildren<CategoryHeaderMasked>()
-                .ToList()
-                .ForEach(header => header.gameObject.DestroyImmediate());
-
-            gameOptMenu.Initialize();
-            if (OptionScrolls.TryGetValue(SelectedModIdx, out var pos))
-            {
-                gameOptMenu.scrollBar.Inner.localPosition = pos;
-                gameOptMenu.scrollBar.UpdateScrollBars();
-            }
-            else
-            {
-                gameOptMenu.scrollBar.ScrollToTop();
-            }
-        }
-
         void CleanupRoleSettings(RolesSettingsMenu rolesMenu)
         {
             if (rolesMenu.advancedSettingChildren != null)
@@ -472,18 +435,52 @@ internal static class GameSettingMenuPatches
             rolesMenu.AdvancedRolesSettings.gameObject.SetActive(false);
             rolesMenu.RoleChancesSettings.gameObject.SetActive(true);
             rolesMenu.SetQuotaTab();
-            if (SelectedModIdx == 0)
+            if (RoleSettingMenuPatches.RolePositions.TryGetValue(SelectedModIdx, out var pos))
             {
-                if (RoleSettingMenuPatches.Scrolls.TryGetValue(0, out var pos))
-                {
-                    rolesMenu.scrollBar.Inner.localPosition = pos;
-                    rolesMenu.scrollBar.UpdateScrollBars();
-                }
-                else
-                {
-                    rolesMenu.scrollBar.ScrollToTop();
-                }
+                rolesMenu.scrollBar.Inner.localPosition = pos;
+                rolesMenu.scrollBar.UpdateScrollBars();
             }
+            else
+            {
+                rolesMenu.scrollBar.ScrollToTop();
+            }
+        }
+
+        void CleanupSettings(GameOptionsMenu gameOptMenu)
+        {
+            ClearOptions(gameOptMenu.Children);
+            gameOptMenu.Children = null;
+
+            gameOptMenu.settingsContainer
+                .GetComponentsInChildren<CategoryHeaderMasked>()
+                .ToList()
+                .ForEach(header => header.gameObject.DestroyImmediate());
+
+            gameOptMenu.Initialize();
+            if (OptionsPositions.TryGetValue(SelectedModIdx, out var pos))
+            {
+                gameOptMenu.scrollBar.Inner.localPosition = pos;
+                gameOptMenu.scrollBar.UpdateScrollBars();
+            }
+            else
+            {
+                gameOptMenu.scrollBar.ScrollToTop();
+            }
+        }
+
+        if (roles.roleChances != null && SelectedMod?.CustomRoles.Count > 0)
+        {
+            CleanupRoleSettings(roles);
+        }
+
+        if (settings.Children != null && SelectedMod?.OptionGroups.Count > 0)
+        {
+            CleanupSettings(settings);
+        }
+
+        if (_modifiersTab?.Children?.Count > 0)
+        {
+            CleanupSettings(_modifiersTab);
         }
     }
 }
