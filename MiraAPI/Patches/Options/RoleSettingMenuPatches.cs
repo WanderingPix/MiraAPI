@@ -211,9 +211,10 @@ public static class RoleSettingMenuPatches
             headerBtn.OnClick.AddListener(
                 (UnityAction)(() =>
                 {
-                    if (RoleGroupHidden.TryGetValue(group, out var value))
+                    RolePositions[GameSettingMenuPatches.SelectedModIdx] = __instance.scrollBar.Inner.localPosition;
+                    if (RoleGroupHidden.TryGetValue(group, out var val))
                     {
-                        RoleGroupHidden[group] = !value;
+                        RoleGroupHidden[group] = !val;
                     }
                     foreach (var header in Headers)
                     {
@@ -246,7 +247,7 @@ public static class RoleSettingMenuPatches
             return;
         }
 
-        scroller.CalculateAndSetYBounds(1.5f * Headers.Count + RoleOptionSettings.Count, 1f, 6f, 0.43f);
+        scroller.CalculateAndSetYBounds(1 + 1.5f * Headers.Count + RoleOptionSettings.Count, 1f, 6f, 0.43f);
         if (RolePositions.TryGetValue(GameSettingMenuPatches.SelectedModIdx, out var scroll))
         {
             scroller.Inner.localPosition = scroll;
