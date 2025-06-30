@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using MiraAPI.Colors;
 using MiraAPI.Events;
@@ -62,6 +61,7 @@ public sealed class MiraPluginManager
         {
             CustomButtonManager.Buttons = new ReadOnlyCollection<CustomActionButton>(CustomButtonManager.CustomButtons);
             RegisteredPlugins = [.. _registeredPlugins.Values];
+            ModifierManager.Modifiers = new ReadOnlyCollection<BaseModifier>(ModifierManager.InternalModifiers);
         };
     }
 
