@@ -35,6 +35,16 @@ public static class CustomRoleManager
     public static readonly LoadableAsset<AudioClip> ImpostorIntroSound =
         CustomRoleUtils.GetIntroSound(RoleTypes.Impostor)!;
 
+    /// <summary>
+    /// Gets the list of custom roles as RoleBehaviour objects.
+    /// </summary>
+    public static IReadOnlyList<RoleBehaviour> CustomRoleBehaviours { get; private set; } = [];
+
+    /// <summary>
+    /// Gets the list of custom roles as ICustomRole objects.
+    /// </summary>
+    public static IReadOnlyList<ICustomRole> CustomMiraRoles { get; private set; } = [];
+
     internal static readonly Dictionary<ushort, RoleBehaviour> CustomRoles = [];
     internal static readonly Dictionary<Type, ushort> RoleIds = [];
 
@@ -53,6 +63,9 @@ public static class CustomRoleManager
         {
             RoleManager.GhostRoles.Add(role.Role);
         }
+
+        CustomRoleBehaviours = CustomRoles.Values.ToList();
+        CustomMiraRoles = CustomRoles.Values.OfType<ICustomRole>().ToList();
     }
 
     internal static void RegisterRoleTypes(List<Type> roles, MiraPluginInfo pluginInfo)
@@ -72,7 +85,7 @@ public static class CustomRoleManager
                 continue;
             }
 
-            pluginInfo.CustomRoles.Add((ushort)role.Role, role);
+            pluginInfo.InternalRoles.Add((ushort)role.Role, role);
         }
 
         pluginInfo.PluginConfig.Save();
@@ -161,7 +174,7 @@ public static class CustomRoleManager
     /// <returns>A MiraPluginInfo object representing the parent mod of the role.</returns>
     public static MiraPluginInfo FindParentMod(ICustomRole role)
     {
-        return MiraPluginManager.Instance.RegisteredPlugins().First(plugin => plugin.CustomRoles.ContainsValue(role as RoleBehaviour ?? throw new InvalidOperationException()));
+        return MiraPluginManager.Instance.RegisteredPlugins.First(plugin => plugin.InternalRoles.ContainsValue(role as RoleBehaviour ?? throw new InvalidOperationException()));
     }
 
     /// <summary>
@@ -236,7 +249,7 @@ public static class CustomRoleManager
         // we dont know how other plugins handle their configs
         // this way, all the options are saved at once, instead of one by one
         var oldConfigSetting = new Dictionary<MiraPluginInfo, bool>();
-        foreach (var plugin in MiraPluginManager.Instance.RegisteredPlugins())
+        foreach (var plugin in MiraPluginManager.Instance.RegisteredPlugins)
         {
             oldConfigSetting.Add(plugin, plugin.PluginConfig.SaveOnConfigSet);
             plugin.PluginConfig.SaveOnConfigSet = false;
@@ -271,7 +284,7 @@ public static class CustomRoleManager
             }
         }
 
-        foreach (var plugin in MiraPluginManager.Instance.RegisteredPlugins())
+        foreach (var plugin in MiraPluginManager.Instance.RegisteredPlugins)
         {
             plugin.PluginConfig.Save();
             plugin.PluginConfig.SaveOnConfigSet = oldConfigSetting[plugin];

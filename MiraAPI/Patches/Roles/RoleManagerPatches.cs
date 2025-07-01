@@ -14,6 +14,8 @@ public static class RoleManagerPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(RoleManager.SetRole))]
+    // NOTE: As of 2025.5.20 update, this is INLINED in ONE place: GameManager::ReviveEveryoneFreeplay(void).
+    // Should not affect normal gameplay, but may cause issues in Freeplay.
     public static bool SetRolePatch(RoleManager __instance, PlayerControl targetPlayer, RoleTypes roleType)
     {
         if (!targetPlayer)
@@ -63,7 +65,7 @@ public static class RoleManagerPatches
     [HarmonyPatch(nameof(RoleManager.SelectRoles))]
     public static void ModifierSelectionPatches(RoleManager __instance)
     {
-        if (!AmongUsClient.Instance.AmHost)
+        if (!AmongUsClient.Instance.AmHost || !ModifierManager.MiraAssignsModifiers)
         {
             return;
         }
