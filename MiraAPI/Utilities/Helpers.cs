@@ -374,7 +374,7 @@ public static class Helpers
         Transform parent,
         AspectPosition.EdgeAlignments alignment,
         Vector3 distance,
-        SpriteAsset SpriteAsset = null,
+        TMP_SpriteAsset SpriteAsset = null,
         float fontSize = 2f,
         font font = HudManager.Instance.TaskPanel.taskText.font,
         TextAlignmentOptions textAlignment = TextAlignmentOptions.Center)
