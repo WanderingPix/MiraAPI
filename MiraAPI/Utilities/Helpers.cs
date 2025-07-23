@@ -364,6 +364,8 @@ public static class Helpers
     /// <param name="fontSize">The font size.</param>
     /// <param name="textAlignment">The text alignment.</param>
     /// <param name="font">The font to be used when creating the TMP object.</param>
+    /// <param name="TextColor">The color which which will be used for the text.</param>
+    /// <param name="SpriteAsset">The TMP Sprite Asset to be used when creating the TMP object.</param>
     /// <returns>A new TMP object.</returns>
     public static TextMeshPro CreateTextLabel(
         string ObjectName,
@@ -372,7 +374,7 @@ public static class Helpers
         Transform parent,
         AspectPosition.EdgeAlignments alignment,
         Vector3 distance,
-        SpriteAsset Asset = null,
+        SpriteAsset SpriteAsset = null,
         float fontSize = 2f,
         font font = HudManager.Instance.TaskPanel.taskText.font,
         TextAlignmentOptions textAlignment = TextAlignmentOptions.Center)
@@ -393,9 +395,9 @@ public static class Helpers
         textMeshPro.TextColor = TextColor;
         textMeshPro.fontMaterial = HudManager.Instance.TaskPanel.taskText.fontMaterial;
 
-        if (Asset != null)
+        if (SpriteAsset != null)
         {
-            textMeshPro.m_spriteAsset = Asset;s
+            textMeshPro.m_spriteAsset = SpriteAsset;
         }
 
         var aspectPosition = textObj.AddComponent<AspectPosition>();
