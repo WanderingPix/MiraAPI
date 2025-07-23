@@ -321,7 +321,6 @@ public static class Helpers
     /// <param name="fontSize">The font size.</param>
     /// <param name="textAlignment">The text alignment.</param>
     /// <returns>A new TMP object.</returns>
-    [Obsolete]
     public static TextMeshPro CreateTextLabel(
         string name,
         Transform parent,
@@ -367,7 +366,7 @@ public static class Helpers
     /// <param name="TextColor">The color which which will be used for the text.</param>
     /// <param name="SpriteAsset">The TMP Sprite Asset to be used when creating the TMP object.</param>
     /// <returns>A new TMP object.</returns>
-    public static TextMeshPro CreateTextLabel(
+    public static TextMeshPro CreateTextObject(
         string ObjectName,
         string Text,
         Color TextColor = Color.white,
