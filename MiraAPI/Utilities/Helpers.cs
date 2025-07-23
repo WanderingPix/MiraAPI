@@ -321,6 +321,7 @@ public static class Helpers
     /// <param name="fontSize">The font size.</param>
     /// <param name="textAlignment">The text alignment.</param>
     /// <returns>A new TMP object.</returns>
+    [Obsolete]
     public static TextMeshPro CreateTextLabel(
         string name,
         Transform parent,
@@ -343,6 +344,59 @@ public static class Helpers
         textMeshPro.alignment = textAlignment;
         textMeshPro.font = HudManager.Instance.TaskPanel.taskText.font;
         textMeshPro.fontMaterial = HudManager.Instance.TaskPanel.taskText.fontMaterial;
+
+        var aspectPosition = textObj.AddComponent<AspectPosition>();
+        aspectPosition.Alignment = alignment;
+        aspectPosition.DistanceFromEdge = distance;
+        aspectPosition.AdjustPosition();
+
+        return textMeshPro;
+    }
+
+    /// <summary>
+    /// Creates a TextMeshPro object with the specified parameters.
+    /// </summary>
+    /// <param name="ObjectName">The name of the object.</param>
+    /// <param name="Text">The text that will be set.</param>
+    /// <param name="parent">The object parent.</param>
+    /// <param name="alignment">The alignment of the TMP object.</param>
+    /// <param name="distance">The distance from the edge.</param>
+    /// <param name="fontSize">The font size.</param>
+    /// <param name="textAlignment">The text alignment.</param>
+    /// <param name="font">The font to be used when creating the TMP object.</param>
+    /// <returns>A new TMP object.</returns>
+    public static TextMeshPro CreateTextLabel(
+        string ObjectName,
+        string Text,
+        Color TextColor = Color.white,
+        Transform parent,
+        AspectPosition.EdgeAlignments alignment,
+        Vector3 distance,
+        SpriteAsset Asset = null,
+        float fontSize = 2f,
+        font font = HudManager.Instance.TaskPanel.taskText.font,
+        TextAlignmentOptions textAlignment = TextAlignmentOptions.Center)
+    {
+        var textObj = new GameObject(ObjectName)
+        {
+            transform =
+            {
+                parent = parent,
+            },
+            layer = LayerMask.NameToLayer("UI"),
+        };
+
+        var textMeshPro = textObj.AddComponent<TextMeshPro>();
+        textMeshPro.fontSize = fontSize;
+        textMeshPro.alignment = textAlignment;
+        textMeshPro.font = font;
+        textMeshPro.TextColor = TextColor;
+        textMeshPro.fontMaterial = HudManager.Instance.TaskPanel.taskText.fontMaterial;
+
+        if (Asset != null)
+        {
+            textMeshPro.m_spriteAsset = Asset;s
+        }
 
         var aspectPosition = textObj.AddComponent<AspectPosition>();
         aspectPosition.Alignment = alignment;
