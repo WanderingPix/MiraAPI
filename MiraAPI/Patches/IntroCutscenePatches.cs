@@ -65,7 +65,12 @@ public static class IntroCutscenePatches
             return;
         }
 
-        MiraEventManager.InvokeEvent(new IntroEndEvent(__instance.__4__this));
+        MiraEventManager.InvokeEvent(new IntroEndEvent(__instance));
+
+        var @event = new BeforeRoundStartEvent(true);
+        MiraEventManager.InvokeEvent(@event);
+
+        if (@event.IsCancelled) return;
         MiraEventManager.InvokeEvent(new RoundStartEvent(true));
     }
 }
