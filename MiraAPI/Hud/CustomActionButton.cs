@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using MiraAPI.Events;
 using MiraAPI.Events.Mira;
 using MiraAPI.Keybinds;
@@ -78,26 +77,9 @@ public abstract class CustomActionButton
     public virtual ButtonUsesMode UsesMode => ButtonUsesMode.PerGame;
 
     /// <summary>
-    /// Gets the current key binding for this button. If null, no keybind will be added.
+    /// Gets the keybind for this button. If null, no keybind will be added.
     /// </summary>
-    public virtual KeyboardKeyCode? DefaultKeybind { get; }
-
-    /// <summary>
-    /// Gets the first optional modifier key (e.g., Control, Shift, Alt) that must be held with the main key to activate the button.
-    /// </summary>
-    public virtual ModifierKey Modifier1 => ModifierKey.None;
-
-    /// <summary>
-    /// Gets the second optional modifier key.
-    /// Set to <see cref="ModifierKey.None"/> if unused.
-    /// </summary>
-    public virtual ModifierKey Modifier2 => ModifierKey.None;
-
-    /// <summary>
-    /// Gets the third optional modifier key.
-    /// Set to <see cref="ModifierKey.None"/> if unused.
-    /// </summary>
-    public virtual ModifierKey Modifier3 => ModifierKey.None;
+    public virtual MiraKeybind? Keybind => null;
 
     /// <summary>
     /// Gets the button's text outline color.
@@ -143,11 +125,6 @@ public abstract class CustomActionButton
     /// Gets the gameObject used for the keybind icon.
     /// </summary>
     public GameObject? KeybindIcon { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the keybind entry for the button.
-    /// </summary>
-    private KeybindManager.KeybindEntry? KeybindEntry { get; set; }
 
     /// <summary>
     /// Gets or sets the keybind icon text.
@@ -226,13 +203,20 @@ public abstract class CustomActionButton
             }
         }));
 
-        if (DefaultKeybind != KeyboardKeyCode.None)
+        if (Keybind != null && Keybind.CurrentKey != KeyboardKeyCode.None)
         {
-            KeybindEntry = KeybindManager.GetEntries().First(x => x.Id == $"{Name}_Keybind");
+            Keybind.OnActivate(() =>
+            {
+                if (Enabled(PlayerControl.LocalPlayer.Data.Role))
+                {
+                    ClickHandler();
+                }
+            });
+
             KeybindIcon =
                 Helpers.CreateKeybindIcon(
                     Button.gameObject,
-                    KeybindEntry.Key,
+                    Keybind.CurrentKey,
                     new Vector3(MaxUses <= 0 ? -0.4f : 0.4f, 0.45f, -9f)
                 );
             KeybindText = KeybindIcon.transform.GetChild(0).GetComponent<TextMeshPro>();
@@ -503,9 +487,10 @@ public abstract class CustomActionButton
     /// <param name="playerControl">The local PlayerControl.</param>
     public virtual void FixedUpdateHandler(PlayerControl playerControl)
     {
-        if (KeybindText != null && KeybindEntry != null)
+        if (Keybind != null && KeybindText != null)
         {
-            KeybindText.text = KeybindEntry.Key.ToString();
+            KeybindText.text = Keybind.CurrentKey.ToString();
+            KeybindIcon?.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard);
         }
 
         if (Timer >= 0)
