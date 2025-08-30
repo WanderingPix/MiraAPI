@@ -27,15 +27,15 @@ public static class MiraGlobalKeybinds
     /// <summary>
     /// Gets the keybind for primary modifier abilities.
     /// </summary>
-    public static MiraKeybind ModifierPrimaryAbility { get; } = new("Modifier Primary Ability", KeyboardKeyCode.M);
+    public static MiraKeybind ModifierPrimaryAbility { get; } = new("Modifier Primary Ability", KeyboardKeyCode.I);
 
     /// <summary>
     /// Gets the keybind for secondary modifier abilities.
     /// </summary>
-    public static MiraKeybind ModifierSecondaryAbility { get; } = new("Modifier Secondary Ability", KeyboardKeyCode.N);
+    public static MiraKeybind ModifierSecondaryAbility { get; } = new("Modifier Secondary Ability", KeyboardKeyCode.O);
 
     /// <summary>
     /// Gets the keybind for Tetiary modifier abilities.
     /// </summary>
-    public static MiraKeybind ModifierTertiaryAbility { get; } = new("Modifier Tertiary Ability", KeyboardKeyCode.T);
+    public static MiraKeybind ModifierTertiaryAbility { get; } = new("Modifier Tertiary Ability", KeyboardKeyCode.P);
 }
