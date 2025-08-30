@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using MiraAPI.Events;
 using MiraAPI.Events.Mira;
+using MiraAPI.Keybinds;
 using MiraAPI.Patches;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Rewired;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -54,23 +57,23 @@ public abstract class CustomActionButton
     public virtual int MaxUses => 0;
 
     /// <summary>
-    /// Gets or sets the current key binding for this button.
+    /// Gets the current key binding for this button. If null, no keybind will be added.
     /// </summary>
-    public abstract KeyboardKeyCode Defaultkeybind { get; }
+    public virtual KeyboardKeyCode? DefaultKeybind { get; }
 
     /// <summary>
-    /// The first optional modifier key (e.g., Control, Shift, Alt) that must be held with the main key to activate the button.
+    /// Gets the first optional modifier key (e.g., Control, Shift, Alt) that must be held with the main key to activate the button.
     /// </summary>
     public virtual ModifierKey Modifier1 => ModifierKey.None;
 
     /// <summary>
-    /// The second optional modifier key.
+    /// Gets the second optional modifier key.
     /// Set to <see cref="ModifierKey.None"/> if unused.
     /// </summary>
     public virtual ModifierKey Modifier2 => ModifierKey.None;
 
     /// <summary>
-    /// The third optional modifier key.
+    /// Gets the third optional modifier key.
     /// Set to <see cref="ModifierKey.None"/> if unused.
     /// </summary>
     public virtual ModifierKey Modifier3 => ModifierKey.None;
@@ -119,6 +122,21 @@ public abstract class CustomActionButton
     /// Gets or sets the button object in game. This is created by Mira API automatically.
     /// </summary>
     public ActionButton? Button { get; set; }
+
+    /// <summary>
+    /// Gets the gameObject used for the keybind icon.
+    /// </summary>
+    public GameObject? KeybindIcon { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the keybind entry for the button.
+    /// </summary>
+    private KeybindManager.KeybindEntry? KeybindEntry { get; set; }
+
+    /// <summary>
+    /// Gets or sets the keybind icon text.
+    /// </summary>
+    private TextMeshPro? KeybindText { get; set; }
 
     /// <summary>
     /// The method used to create the button.
@@ -191,6 +209,19 @@ public abstract class CustomActionButton
                 }
             }
         }));
+
+        if (DefaultKeybind != KeyboardKeyCode.None)
+        {
+            KeybindEntry = KeybindManager.GetEntries().First(x => x.Id == $"{Name}_Keybind");
+            KeybindIcon =
+                Helpers.CreateKeybindIcon(
+                    Button.gameObject,
+                    KeybindEntry.Key,
+                    new Vector3(MaxUses <= 0 ? -0.4f : 0.4f, 0.45f, -9f)
+                );
+            KeybindText = KeybindIcon.transform.GetChild(0).GetComponent<TextMeshPro>();
+            Button.usesRemainingSprite.transform.localPosition = new(-0.341f, 0.45f, -0.1f);
+        }
     }
 
     /// <summary>
@@ -449,6 +480,11 @@ public abstract class CustomActionButton
     /// <param name="playerControl">The local PlayerControl.</param>
     public virtual void FixedUpdateHandler(PlayerControl playerControl)
     {
+        if (KeybindText != null && KeybindEntry != null)
+        {
+            KeybindText.text = KeybindEntry.Key.ToString();
+        }
+
         if (Timer >= 0)
         {
             if (!TimerPaused)
