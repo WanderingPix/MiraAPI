@@ -163,7 +163,8 @@ public static class HudManagerPatches
         foreach (var btnIcon in vanillaKeybindIcons)
         {
             btnIcon.Key.text = KeybindUtils.GetKeycodeByActionId(btnIcon.Value).ToString();
-            btnIcon.Key.transform.parent.gameObject.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard);
+            btnIcon.Key.transform.parent.gameObject.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
+                                                              PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value);
         }
 
         foreach (var entry in KeybindManager.Keybinds)

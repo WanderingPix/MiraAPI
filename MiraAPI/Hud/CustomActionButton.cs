@@ -6,7 +6,7 @@ using MiraAPI.Keybinds;
 using MiraAPI.Patches;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
-using Rewired;
+using Reactor.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -203,7 +203,7 @@ public abstract class CustomActionButton
             }
         }));
 
-        if (Keybind != null && Keybind.CurrentKey != KeyboardKeyCode.None)
+        if (Keybind != null)
         {
             Keybind.OnActivate(() =>
             {
@@ -490,7 +490,8 @@ public abstract class CustomActionButton
         if (Keybind != null && KeybindText != null)
         {
             KeybindText.text = Keybind.CurrentKey.ToString();
-            KeybindIcon?.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard);
+            KeybindIcon?.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
+                                   PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value);
         }
 
         if (Timer >= 0)
