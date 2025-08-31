@@ -405,7 +405,7 @@ public abstract class CustomActionButton
 
     /// <summary>
     /// Returns a value indicating whether the effect can be ended early by the player.
-    /// Always false by default
+    /// Always false by default.
     /// </summary>
     /// <returns>Can the effect be canceled.</returns>
     public virtual bool IsEffectCancellable() => false;
