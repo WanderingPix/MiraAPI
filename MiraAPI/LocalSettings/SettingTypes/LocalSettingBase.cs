@@ -15,14 +15,15 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalSettingBase{T}"/> class.
     /// </summary>
+    /// <param name="tab">The tab to create the setting in.</param>
     /// <param name="configEntry">The config entry.</param>
     /// <param name="name">The name of the setting.</param>
     /// <param name="description">The description of the setting.</param>
-    protected LocalSettingBase(LocalSettingsTab tab, ConfigEntryBase configEntry, string name = null, string description = null)
+    protected LocalSettingBase(LocalSettingsTab tab, ConfigEntryBase configEntry, string? name = null, string? description = null)
     {
         ConfigEntry = configEntry;
         Name = name ?? ConfigEntry.Definition.Key;
-        Description = description;
+        Description = description ?? ConfigEntry.Description.Description;
 
         tab.Settings.Add(this);
     }
@@ -30,12 +31,11 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// <summary>
     /// Creates an instance of the setting.
     /// </summary>
-    /// <param name="parent">The transform parent of the setting.</param>
     /// <returns>The created setting.</returns>
     public abstract GameObject? CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last);
 
     /// <summary>
-    /// Gets the value of the config entry, casted to T.
+    /// Gets the value of the config entry, casted to the setting type.
     /// </summary>
     /// <returns>The value.</returns>
     public T GetValue()

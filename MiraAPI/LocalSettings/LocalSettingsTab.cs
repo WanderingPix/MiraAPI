@@ -25,16 +25,6 @@ public class LocalSettingsTab
 
     public List<ILocalSetting> Settings { get; }
 
-    /// <inheritdoc />
-    public LocalSettingsTab(string tabName) : this(
-        tabName,
-        Color.white,
-        Palette.AcceptedGreen,
-        Palette.AcceptedGreen,
-        createButton: true)
-    {
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalSettingsTab"/> class.
     /// </summary>
@@ -44,18 +34,18 @@ public class LocalSettingsTab
     /// <param name="tabActiveColor">The active color of the tab.</param>
     /// <param name="tabIcon">The tab icon. Defaults to no icon.</param>
     /// <param name="createButton">Should the tab button be created. Without it the tab needs to be opened manually.</param>
-    public LocalSettingsTab(string tabName, Color tabColor, Color tabHoverColor, Color tabActiveColor, LoadableAsset<Sprite>? tabIcon = null, bool createButton = false)
+    public LocalSettingsTab(string tabName, Color? tabColor = null, Color? tabHoverColor = null, Color? tabActiveColor = null, LoadableAsset<Sprite>? tabIcon = null, bool createButton = true)
     {
         TabName = tabName;
-        TabColor = tabColor;
-        TabHoverColor = tabHoverColor;
-        TabActiveColor = tabActiveColor;
+        TabColor = tabColor ?? Color.white;
+        TabHoverColor = tabHoverColor ?? Palette.AcceptedGreen;
+        TabActiveColor = tabActiveColor ?? Palette.AcceptedGreen;
         TabIcon = tabIcon;
         ShouldCreateButton = createButton;
         Settings = new();
     }
 
-    public GameObject? CreateTab(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
+    internal GameObject? CreateTab(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
     {
         var tab = Object.Instantiate(instance.transform.FindChild("GeneralTab").gameObject, instance.transform);
         tab.name = $"{TabName}Tab";

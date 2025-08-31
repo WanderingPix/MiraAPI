@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Linq;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -21,8 +22,9 @@ public partial class ExamplePlugin : BasePlugin, IMiraPlugin
     public ConfigFile GetConfigFile() => Config;
     public override void Load()
     {
-        ExampleLocalSetings.BindSettings(Config);
         ExampleEventHandlers.Initialize();
         Harmony.PatchAll();
+        
+        Config.Keys.
     }
 }

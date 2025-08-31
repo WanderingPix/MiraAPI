@@ -6,7 +6,10 @@ using UnityEngine.Events;
 
 namespace MiraAPI.LocalSettings.SettingTypes;
 
-public class LocalSetingToggle : LocalSettingBase<bool>
+/// <summary>
+/// Local setting class for toggles.
+/// </summary>
+public class LocalSettingToggle : LocalSettingBase<bool>
 {
     /// <summary>
     /// Gets the color of the toggle.
@@ -23,40 +26,29 @@ public class LocalSetingToggle : LocalSettingBase<bool>
     /// </summary>
     public Color ToggleActiveColor { get; }
 
-    /// <inheritdoc />
-    public LocalSetingToggle(LocalSettingsTab tab, ConfigEntryBase configEntry, string name = null, string description = null) : this(
-        tab,
-        configEntry,
-        name,
-        description,
-        Color.white,
-        Palette.AcceptedGreen,
-        Palette.AcceptedGreen)
-    {
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalSettingToggle"/> class.
     /// </summary>
+    /// /// <param name="tab">Tab that the toggle belongs to.</param>
     /// <param name="configEntry">The binded config entry.</param>
     /// <param name="name">The name of the setting. Defaults to ConfigEntry key.</param>
     /// <param name="description">The desription of the setting. No description by default.</param>
     /// <param name="toggleColor">The color of the toggle.</param>
     /// <param name="toggleHoverColor">The hover color of the toggle.</param>
     /// <param name="toggleActiveColor">The active color of the toggle.</param>
-    public LocalSetingToggle(
+    public LocalSettingToggle(
         LocalSettingsTab tab,
         ConfigEntryBase configEntry,
-        string name,
-        string description,
-        Color toggleColor,
-        Color toggleHoverColor,
-        Color toggleActiveColor)
+        string? name = null,
+        string? description = null,
+        Color? toggleColor = null,
+        Color? toggleHoverColor = null,
+        Color? toggleActiveColor = null)
         : base(tab, configEntry, name, description)
     {
-        ToggleColor = toggleColor;
-        ToggleHoverColor = toggleHoverColor;
-        ToggleActiveColor = toggleActiveColor;
+        ToggleColor = toggleColor ?? Color.white;
+        ToggleHoverColor = toggleHoverColor ?? Palette.AcceptedGreen;
+        ToggleActiveColor = toggleActiveColor ?? Palette.AcceptedGreen;
     }
 
     public override GameObject? CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)

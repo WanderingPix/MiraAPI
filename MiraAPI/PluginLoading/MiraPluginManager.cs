@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using MiraAPI.Colors;
 using MiraAPI.Events;
@@ -12,6 +13,7 @@ using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Hud;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Modifiers;
 using MiraAPI.Presets;
 using MiraAPI.Roles;
@@ -109,6 +111,7 @@ public sealed class MiraPluginManager
                     continue;
                 }
 
+                RegisterLocalSettings(type);
                 RegisterColorClasses(type);
             }
 
@@ -316,5 +319,47 @@ public sealed class MiraPluginManager
         }
 
         return false;
+    }
+
+    private static void RegisterLocalSettings(Type type)
+    {
+        try
+        {
+            if (!type.IsStatic())
+            {
+                Logger<MiraApiPlugin>.Error($"The type {type.Name} has to be static for local settings.");
+                return;
+            }
+
+            foreach (var property in type.GetProperties())
+            {
+                if (property.PropertyType.IsAssignableTo(typeof(ConfigEntryBase)))
+                {
+                    continue;
+                }
+
+                if (property.GetValue(null) is not ConfigEntryBase configEntry)
+                {
+                    continue;
+                }
+
+                var attribute = property.GetCustomAttribute<BaseLocalSettingAttribute>();
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                attribute.Create(configEntry);
+            }
+
+            foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(ConfigEntryBase)) && f.GetCustomAttribute<BaseLocalSettingAttribute>() != null))
+            {
+                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for local settings.");
+            }
+        }
+        catch (Exception e)
+        {
+            Logger<MiraApiPlugin>.Error($"Failed to register local settings from {type.Name}: {e}");
+        }
     }
 }
