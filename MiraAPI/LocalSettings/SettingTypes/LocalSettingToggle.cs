@@ -1,8 +1,11 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
+using MiraAPI.Utilities;
 using Reactor.Localization.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 namespace MiraAPI.LocalSettings.SettingTypes;
 
@@ -37,7 +40,7 @@ public class LocalSettingToggle : LocalSettingBase<bool>
     /// <param name="toggleHoverColor">The hover color of the toggle.</param>
     /// <param name="toggleActiveColor">The active color of the toggle.</param>
     public LocalSettingToggle(
-        LocalSettingsTab tab,
+        Type tab,
         ConfigEntryBase configEntry,
         string? name = null,
         string? description = null,
@@ -66,7 +69,7 @@ public class LocalSettingToggle : LocalSettingBase<bool>
         }
         else
         {
-            toggleObject.transform.localPosition = new Vector3(order == 1 ? -1.35f : 1.28f, 1.85f - offset);
+            toggleObject.transform.localPosition = new Vector3(order == 1 ? -1.185f : 1.185f, 1.85f - offset);
         }
 
         toggleObject.BaseText = CustomStringName.CreateAndRegister(Name);
@@ -94,6 +97,8 @@ public class LocalSettingToggle : LocalSettingBase<bool>
             toggleObject.UpdateText(GetValue());
             toggleObject.Background.color = GetValue() ? ToggleActiveColor : ToggleColor;
         }));
+
+        Helpers.DivideSize(toggleObject.gameObject, 1.1f);
 
         order++;
         if (order > 2 && !last)

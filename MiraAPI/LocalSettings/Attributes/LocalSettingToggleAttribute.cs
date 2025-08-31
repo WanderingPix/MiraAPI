@@ -10,17 +10,13 @@ namespace MiraAPI.LocalSettings.Attributes;
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class LocalSettingToggleAttribute(
-    LocalSettingsTab tab,
     string? name = null,
-    string? description = null,
-    Color? toggleColor = null,
-    Color? toggleHoverColor = null,
-    Color? toggleActiveColor = null
-    ) : LocalSettingAttribute<LocalSettingToggle>(tab, name, description)
+    string? description = null
+    ) : LocalSettingAttribute(name, description)
 {
     /// <inheritdoc/>
-    protected override LocalSettingToggle CreateSetting(ConfigEntryBase configEntry)
+    internal override LocalSettingToggle CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalSettingToggle(tab, configEntry, name, description, toggleColor, toggleHoverColor, toggleActiveColor);
+        return new LocalSettingToggle(tab, configEntryBase, name, description);
     }
 }

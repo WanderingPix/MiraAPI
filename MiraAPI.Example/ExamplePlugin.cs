@@ -24,7 +24,5 @@ public partial class ExamplePlugin : BasePlugin, IMiraPlugin
     {
         ExampleEventHandlers.Initialize();
         Harmony.PatchAll();
-        
-        Config.Keys.
     }
 }

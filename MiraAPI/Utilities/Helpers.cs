@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.IO;
 using MiraAPI.Keybinds;
+using MiraAPI.Patches.LocalSettings;
 using MiraAPI.Utilities.Assets;
 using Rewired;
 using TMPro;
@@ -26,6 +28,7 @@ public static class Helpers
     {
         return [.. GameData.Instance.AllPlayers.ToArray().Where(x => !x.IsDead && !x.Disconnected && x.Object).Select(x => x.Object)];
     }
+
     internal static GameObject CreateKeybindIcon(GameObject button, KeyboardKeyCode keyCode, Vector3 localPos)
     {
         var keybindIcon = Object.Instantiate(HudManager.Instance.AbilityButton.usesRemainingSprite.gameObject, button.transform);
@@ -34,6 +37,54 @@ public static class Helpers
         keybindIcon.name = "KeybindIcon";
         keybindIcon.transform.localPosition = localPos;
         return keybindIcon;
+    }
+
+    /// <summary>
+    /// Creates a draggable scroller. Add items into the scroller.Inner transform. This does not automatically position children.
+    /// </summary>
+    /// <param name="parent">Where the scroller should be parented to.</param>
+    /// <param name="hitBoxCollider">The collider of the scroller. Used to drag.</param>
+    /// <returns>The created scroller object.</returns>
+    public static Scroller CreateScroller(Transform parent, BoxCollider2D hitBoxCollider)
+    {
+        var scrollObj = new GameObject("Scroller");
+        scrollObj.transform.SetParent(parent);
+        scrollObj.transform.localScale = new Vector3(1, 1, 1);
+
+        var inner = new GameObject("Inner");
+        inner.transform.SetParent(scrollObj.transform);
+        inner.transform.localScale = new Vector3(1, 1, 1);
+        inner.transform.localPosition = new Vector3(0, 0, 2);
+
+        var scroller = scrollObj.AddComponent<Scroller>();
+        scroller.allowX = false;
+        scroller.allowY = true;
+        scroller.DragScrollSpeed = 1f;
+        scroller.Colliders = new Il2CppReferenceArray<Collider2D>([hitBoxCollider]);
+        scroller.Inner = inner.transform;
+
+        return scroller;
+    }
+
+    /// <summary>
+    /// Divides a button/etc by a certain amount by resizing colliders and renderer sizes.
+    /// </summary>
+    /// <param name="obj">The object you want to divide.</param>
+    /// <param name="amount">How much you want to divide by.</param>
+    public static void DivideSize(GameObject obj, float amount)
+    {
+        foreach (var collider in obj.GetComponentsInChildren<Collider2D>(true))
+        {
+            if (collider.TryCast<BoxCollider2D>() is { } col)
+            {
+                col.size = new Vector2(col.size.x / amount, col.size.y);
+            }
+        }
+
+        foreach (var rend in obj.GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            rend.size = new Vector2(rend.size.x / amount, rend.size.y);
+        }
     }
 
     /// <summary>

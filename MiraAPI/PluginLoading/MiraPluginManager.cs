@@ -13,6 +13,7 @@ using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Hud;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
 using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Modifiers;
 using MiraAPI.Presets;
@@ -95,6 +96,11 @@ public sealed class MiraPluginManager
                     continue;
                 }
 
+                if (RegisterLocalTabs(type, plugin))
+                {
+                    continue;
+                }
+
                 if (RegisterRole(type, info, out var role))
                 {
                     roles.Add(role);
@@ -111,7 +117,6 @@ public sealed class MiraPluginManager
                     continue;
                 }
 
-                RegisterLocalSettings(type);
                 RegisterColorClasses(type);
             }
 
@@ -150,6 +155,8 @@ public sealed class MiraPluginManager
                 Logger<MiraApiPlugin>.Info($"Registered keybind for button '{button.GetType().Name}' with default key {(KeyboardKeyCode)button.DefaultKeybind}.");
             }
         };
+        
+        RegisterLocalTabs(typeof(MiraApiSettings), PluginSingleton<MiraApiPlugin>.Instance);
     }
 
     /// <summary>
@@ -321,45 +328,63 @@ public sealed class MiraPluginManager
         return false;
     }
 
-    private static void RegisterLocalSettings(Type type)
+    private static bool RegisterLocalTabs(Type type, BasePlugin pluginInfo)
     {
         try
         {
-            if (!type.IsStatic())
+            if (!type.IsAssignableTo(typeof(LocalSettingsTab)))
             {
-                Logger<MiraApiPlugin>.Error($"The type {type.Name} has to be static for local settings.");
-                return;
+                return false;
+            }
+
+            if (!LocalSettingsManager.RegisterTab(type, pluginInfo))
+            {
+                return false;
             }
 
             foreach (var property in type.GetProperties())
             {
-                if (property.PropertyType.IsAssignableTo(typeof(ConfigEntryBase)))
+                if (!typeof(ConfigEntryBase).IsAssignableFrom(property.PropertyType))
                 {
                     continue;
                 }
 
-                if (property.GetValue(null) is not ConfigEntryBase configEntry)
+                if (property.GetMethod?.IsStatic == true)
+                {
+                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} must not be static.");
+                    continue;
+                }
+
+                if (LocalSettingsManager.TypeToTab[type] is not { } tabInstance)
                 {
                     continue;
                 }
 
-                var attribute = property.GetCustomAttribute<BaseLocalSettingAttribute>();
+                if (property.GetValue(tabInstance) is not ConfigEntryBase configEntry)
+                {
+                    continue;
+                }
+
+                var attribute = property.GetCustomAttribute<LocalSettingAttribute>();
                 if (attribute == null)
                 {
                     continue;
                 }
 
-                attribute.Create(configEntry);
+                attribute.CreateSetting(type, configEntry);
             }
 
-            foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(ConfigEntryBase)) && f.GetCustomAttribute<BaseLocalSettingAttribute>() != null))
+            foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(ConfigEntryBase)) && f.GetCustomAttribute<LocalSettingAttribute>() != null))
             {
                 Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for local settings.");
             }
+
+            return true;
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register local settings from {type.Name}: {e}");
+            Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e.ToString()}");
         }
+        return false;
     }
 }

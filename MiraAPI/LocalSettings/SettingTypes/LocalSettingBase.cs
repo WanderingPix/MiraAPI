@@ -1,15 +1,23 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using TMPro;
 using UnityEngine;
 
 namespace MiraAPI.LocalSettings.SettingTypes;
 
+/// <inheritdoc />
 public abstract class LocalSettingBase<T> : ILocalSetting
 {
+    /// <inheritdoc />
     public string Name { get; }
+
+    /// <inheritdoc />
     public string Description { get; }
 
-    public GameObject? Setting { get; }
+    /// <inheritdoc />
+    public GameObject? Setting { get; } = null!;
+
+    /// <inheritdoc />
     public ConfigEntryBase ConfigEntry { get; }
 
     /// <summary>
@@ -19,13 +27,13 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// <param name="configEntry">The config entry.</param>
     /// <param name="name">The name of the setting.</param>
     /// <param name="description">The description of the setting.</param>
-    protected LocalSettingBase(LocalSettingsTab tab, ConfigEntryBase configEntry, string? name = null, string? description = null)
+    protected LocalSettingBase(Type tab, ConfigEntryBase configEntry, string? name = null, string? description = null)
     {
         ConfigEntry = configEntry;
         Name = name ?? ConfigEntry.Definition.Key;
         Description = description ?? ConfigEntry.Description.Description;
 
-        tab.Settings.Add(this);
+        LocalSettingsManager.TypeToTab[tab].Settings.Add(this);
     }
 
     /// <summary>
