@@ -54,6 +54,7 @@ public class LocalSettingToggle : LocalSettingBase<bool>
         ToggleActiveColor = toggleActiveColor ?? Palette.AcceptedGreen;
     }
 
+    /// <inheritdoc />
     public override GameObject? CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)
     {
         var toggleObject = Object.Instantiate(toggle, parent).GetComponent<ToggleButtonBehaviour>();
@@ -65,11 +66,11 @@ public class LocalSettingToggle : LocalSettingBase<bool>
         if (last && order == 1)
         {
             // Toggle in the middle
-            toggleObject.transform.localPosition = new Vector3(0, 1.85f - offset);
+            toggleObject.transform.localPosition = new Vector3(0, 1.85f - offset, -7);
         }
         else
         {
-            toggleObject.transform.localPosition = new Vector3(order == 1 ? -1.185f : 1.185f, 1.85f - offset);
+            toggleObject.transform.localPosition = new Vector3(order == 1 ? -1.185f : 1.185f, 1.85f - offset, -7);
         }
 
         toggleObject.BaseText = CustomStringName.CreateAndRegister(Name);

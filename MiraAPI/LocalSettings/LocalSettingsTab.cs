@@ -112,12 +112,19 @@ public abstract class LocalSettingsTab(ConfigFile config)
                      ref contentOrder,
                      contentIndex == pair.Value.Count);
 
-                 obj!.GetComponentsInChildren<SpriteRenderer>().Do(x =>
+                 obj!.GetComponentsInChildren<SpriteRenderer>(true).Do(x =>
                  {
                      x.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
                      x.sortingOrder = 150;
                      x.sortingLayerName = "Default";
                  });
+
+                 obj!.GetComponentsInChildren<MeshRenderer>(true).Do(x =>
+                 {
+                     x.sortingOrder = 151;
+                     x.sortingLayerName = "Default";
+                 });
+
                  obj.GetComponentsInChildren<PassiveButton>().Do(x => { x.ClickMask = OptionsMenuPatches.MaskCollider; });
 
                  contentIndex++;
