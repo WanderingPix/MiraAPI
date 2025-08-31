@@ -563,13 +563,15 @@ public static class Extensions
     /// <param name="type">The <see cref="InputActionType"/> for this action (default is Button).</param>
     /// <param name="modifiers">Optional modifier keys (e.g., <c>Control</c>, <c>Shift</c>, <c>Alt</c>) that must be held together with the main key.</param>
     /// <returns>The action ID of the newly registered action.</returns>
-    public static InputAction RegisterModBind(this UserData userData, string id, string name, string group, KeyboardKeyCode key, int category = 0, int elementIdentifierId = -1, InputActionType type = InputActionType.Button, ModifierKey[]? modifiers = null)
+    public static InputAction RegisterModBind(this UserData userData, string id, string name, string? group, KeyboardKeyCode key, int category = 0, int elementIdentifierId = -1, InputActionType type = InputActionType.Button, ModifierKey[]? modifiers = null)
     {
         userData.AddAction(category);
         var action = userData.GetAction(userData.actions.Count - 1)!;
 
         action.name = id;
-        action.descriptiveName = $"<b><size=70%>{Palette.CrewmateRoleHeaderDarkBlue.ToTextColor()}{group.ReplaceLineEndings(" ")}</color></size></b>\n{name}";
+        action.descriptiveName = group != null
+            ? $"<b><size=70%>{Palette.CrewmateRoleHeaderDarkBlue.ToTextColor()}{group.ReplaceLineEndings(" ")}</color></size></b>\n{name}"
+            : name;
         action.categoryId = category;
         action.type = type;
         action.userAssignable = true;

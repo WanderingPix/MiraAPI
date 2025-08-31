@@ -108,7 +108,7 @@ public sealed class MiraPluginManager
                 }
 
                 RegisterColorClasses(type);
-                RegisterKeybindClasses(type, plugin);
+                RegisterKeybinds(type, plugin);
             }
 
             info.PluginConfig.Save();
@@ -136,7 +136,7 @@ public sealed class MiraPluginManager
             ModifierManager.Modifiers = new ReadOnlyCollection<BaseModifier>(ModifierManager.InternalModifiers);
         };
 
-        RegisterKeybindClasses(typeof(MiraGlobalKeybinds), PluginSingleton<MiraApiPlugin>.Instance);
+        RegisterKeybinds(typeof(MiraGlobalKeybinds), PluginSingleton<MiraApiPlugin>.Instance);
     }
 
     /// <summary>
@@ -308,7 +308,7 @@ public sealed class MiraPluginManager
         return false;
     }
 
-    private static void RegisterKeybindClasses(Type type, BasePlugin source)
+    private static void RegisterKeybinds(Type type, BasePlugin source)
     {
         try
         {
@@ -337,7 +337,14 @@ public sealed class MiraPluginManager
                 }
 
                 KeybindManager.Keybinds.Add(keybind);
-                keybind.SourcePlugin = source;
+                if (source is IMiraPlugin miraPlugin)
+                {
+                    keybind.SourcePluginName = miraPlugin.OptionsTitleText;
+                }
+                else if (source is MiraApiPlugin)
+                {
+                    keybind.SourcePluginName = "MiraAPI";
+                }
             }
 
             foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(MiraKeybind))))

@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using MiraAPI.Utilities;
+using Reactor.Utilities;
 using Rewired;
 
 namespace MiraAPI.Keybinds;
@@ -12,6 +16,33 @@ public static class KeybindManager
     /// Gets a list of all registered keybinds.
     /// </summary>
     public static List<MiraKeybind> Keybinds { get; } = new();
+
+    internal static void RewiredInit()
+    {
+        try
+        {
+            var instance = KeybindUtils.RewiredInputManager!;
+            foreach (var keybind in KeybindManager.Keybinds)
+            {
+                if (instance.userData.actions.ToArray().Any(x => x.name == keybind.Id))
+                {
+                    Logger<MiraApiPlugin>.Warning($"Keybind of id {keybind.Id} already exists. Skipping it");
+                    continue;
+                }
+
+                keybind.RewiredInputAction = instance.userData.RegisterModBind(
+                    keybind.Id,
+                    keybind.Name,
+                    keybind.SourcePluginName,
+                    keybind.DefaultKey,
+                    modifiers: keybind.ModifierKeys);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger<MiraApiPlugin>.Error($"Error while registering keybinds in Rewired: {e}");
+        }
+    }
 
     /// <summary>
     /// Returns all conflicts where keybinds use the same key.

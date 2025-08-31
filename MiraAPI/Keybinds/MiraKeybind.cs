@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using BepInEx.Unity.IL2CPP;
 using Reactor.Utilities;
 using Rewired;
 
@@ -52,7 +51,7 @@ public class MiraKeybind
     /// </summary>
     private Action Handler { get; set; }
 
-    internal BasePlugin? SourcePlugin { get; set; }
+    internal string? SourcePluginName { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiraKeybind"/> class.
