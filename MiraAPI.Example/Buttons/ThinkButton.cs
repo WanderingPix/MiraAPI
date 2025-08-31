@@ -9,7 +9,6 @@ public class ThinkButton : CustomActionButton
     public override string Name => "Think";
     public override float Cooldown => 15f;
     public override float EffectDuration => 10f;
-    public override bool EffectCancelable => true;
     public override int MaxUses => 1;
     public override ButtonUsesMode UsesMode => ButtonUsesMode.PerRound;
     public override LoadableAsset<Sprite> Sprite => ExampleAssets.ExampleButton;
@@ -22,6 +21,11 @@ public class ThinkButton : CustomActionButton
     public override void OnEffectEnd()
     {
         Button!.OverrideText("Think");
+    }
+
+    public override bool IsEffectCancellable()
+    {
+        return true;
     }
 
     public override bool Enabled(RoleBehaviour? role)
