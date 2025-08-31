@@ -62,11 +62,6 @@ public abstract class CustomActionButton
     public virtual float EffectDuration => 0;
 
     /// <summary>
-    /// Gets a value indicating whether the effect can be ended early by the player.
-    /// </summary>
-    public virtual bool EffectCancelable => false;
-
-    /// <summary>
     /// Gets the maximum amount of uses the button has. If the button has infinite uses, set to 0.
     /// </summary>
     public virtual int MaxUses => 0;
@@ -409,6 +404,13 @@ public abstract class CustomActionButton
     }
 
     /// <summary>
+    /// Returns a value indicating whether the effect can be ended early by the player.
+    /// Always false by default
+    /// </summary>
+    /// <returns>Can the effect be canceled.</returns>
+    public virtual bool IsEffectCancellable() => false;
+
+    /// <summary>
     /// When the button is usable, this method is called to determine if the button can be clicked.
     /// By default, it takes into account the timer, effect, and uses.
     /// You can override it to change the behavior.
@@ -416,7 +418,7 @@ public abstract class CustomActionButton
     /// <returns>A value that represents whether the button can be clicked or not.</returns>
     public virtual bool CanClick()
     {
-        return (EffectActive ? EffectCancelable : Timer <= 0) && CanUse();
+        return (EffectActive ? IsEffectCancellable() : Timer <= 0) && CanUse();
     }
 
     /// <summary>
@@ -427,7 +429,7 @@ public abstract class CustomActionButton
     public virtual bool CanUse()
     {
         return PlayerControl.LocalPlayer.moveable &&
-               ((EffectActive && EffectCancelable) || (!EffectActive && (!LimitedUses || UsesLeft > 0)));
+               ((EffectActive && IsEffectCancellable()) || (!EffectActive && (!LimitedUses || UsesLeft > 0)));
     }
 
     /// <summary>
@@ -449,7 +451,7 @@ public abstract class CustomActionButton
     /// </summary>
     public virtual void ClickHandler()
     {
-        if (EffectActive && EffectCancelable)
+        if (EffectActive && IsEffectCancellable())
         {
             ResetCooldownAndOrEffect();
             return;
