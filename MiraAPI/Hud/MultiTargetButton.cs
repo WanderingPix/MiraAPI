@@ -19,6 +19,11 @@ public abstract class MultiTargetButton<T> : CustomActionButton where T : MonoBe
     /// <inheritdoc cref="CustomActionButton{T}.Distance"/>
     public virtual float Distance => PlayerControl.LocalPlayer.Data.Role.GetAbilityDistance();
 
+    /// <summary>
+    /// Gets the maximum amount of targets the button can have.
+    /// </summary>
+    public virtual int MaxTargets { get; } = int.MaxValue;
+
     /// <inheritdoc cref="CustomActionButton{T}.IsTargetValid"/>
     public virtual bool IsTargetValid(T target)
     {
@@ -47,7 +52,10 @@ public abstract class MultiTargetButton<T> : CustomActionButton where T : MonoBe
             }
         }
 
-        Targets = newTargets.Where(IsTargetValid).ToArray();
+        Targets = newTargets
+            .Where(IsTargetValid)
+            .Take(MaxTargets)
+            .ToArray();
         Targets.Do(t => SetOutline(t, true));
 
         return base.CanUse() && Targets.Length > 0;
