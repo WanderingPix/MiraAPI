@@ -362,6 +362,7 @@ public sealed class MiraPluginManager
 
                 if (property.GetValue(tabInstance) is not ConfigEntryBase configEntry)
                 {
+                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} has to be a config entry.");
                     continue;
                 }
 
