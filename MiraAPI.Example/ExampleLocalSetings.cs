@@ -2,6 +2,7 @@
 using MiraAPI.LocalSettings;
 using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Utilities;
+using Reactor.Utilities;
 using UnityEngine;
 
 namespace MiraAPI.Example;
@@ -13,10 +14,12 @@ public class ExampleLocalSettings(ConfigFile config) : LocalSettingsTab(config)
 
     public override LocalSettingTabAppearance TabAppearance => new()
     {
-        TabColor = Color.cyan,
         ToggleActiveColor = Color.blue,
         ToggleInactiveColor = Color.red,
     };
+
+    [LocalSettingsButton]
+    public LocalSettingsButton ExampleButton { get; private set; } = new("Example Button", OnExampleButtonClick);
 
     [LocalToggleSetting]
     public ConfigEntry<bool> ExampleToggle { get; private set; } = config.Bind("General", "Example Bool", true);
@@ -32,6 +35,11 @@ public class ExampleLocalSettings(ConfigFile config) : LocalSettingsTab(config)
 
     [LocalEnumSetting]
     public ConfigEntry<ExampleEnumSetting> ExampleEnum { get; private set; } = config.Bind("General", "Example Enum", ExampleEnumSetting.Fries);
+
+    private static void OnExampleButtonClick(LocalSettingsTab instance)
+    {
+        Logger<ExamplePlugin>.Warning("Button clicked");
+    }
 }
 
 public enum ExampleEnumSetting

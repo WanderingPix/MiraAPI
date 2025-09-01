@@ -344,6 +344,20 @@ public sealed class MiraPluginManager
 
             foreach (var property in type.GetProperties())
             {
+                if (LocalSettingsManager.TypeToTab[type] is not { } tabInstance)
+                {
+                    continue;
+                }
+
+                if (property.GetCustomAttribute<LocalSettingsButtonAttribute>() != null &&
+                    property.PropertyType.IsAssignableTo(typeof(LocalSettingsButton)))
+                {
+                    var button = property.GetValue(tabInstance) as LocalSettingsButton;
+                    button!.Tab = tabInstance;
+                    tabInstance.Buttons.Add(button);
+                    continue;
+                }
+
                 if (!typeof(ConfigEntryBase).IsAssignableFrom(property.PropertyType))
                 {
                     continue;
@@ -352,11 +366,6 @@ public sealed class MiraPluginManager
                 if (property.GetMethod?.IsStatic == true)
                 {
                     Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} must not be static.");
-                    continue;
-                }
-
-                if (LocalSettingsManager.TypeToTab[type] is not { } tabInstance)
-                {
                     continue;
                 }
 

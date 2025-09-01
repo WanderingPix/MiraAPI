@@ -68,5 +68,6 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     public void SetValue(T value)
     {
         ConfigEntry.BoxedValue = value;
+        Tab?.OnOptionChanged(ConfigEntry);
     }
 }

@@ -42,11 +42,32 @@ public abstract class LocalSettingsTab(ConfigFile config)
     /// </summary>
     public ConfigFile Config { get; } = config ?? throw new ArgumentNullException(nameof(config));
 
-    internal TabGroup? TabButton { get; set; }
-    internal List<ILocalSetting> Settings { get; } = [];
+    /// <summary>
+    /// Gets the tab button instance.
+    /// </summary>
+    public TabGroup? TabButton { get; internal set; }
+
+    /// <summary>
+    /// Gets the list of settings.
+    /// </summary>
+    public List<ILocalSetting> Settings { get; } = [];
+
+    /// <summary>
+    /// Gets the list of buttons.
+    /// </summary>
+    public List<LocalSettingsButton> Buttons { get; } = [];
+
     private Scroller? Scroller { get; set; }
 
-    internal GameObject CreateTab(OptionsMenuBehaviour instance)
+    /// <summary>
+    /// Invoked when an option value is changed.
+    /// </summary>
+    /// <param name="configEntry">The config entry which was changed.</param>
+    public virtual void OnOptionChanged(ConfigEntryBase configEntry)
+    {
+    }
+
+    public virtual GameObject CreateTab(OptionsMenuBehaviour instance)
     {
          var tab = Object.Instantiate(instance.transform.FindChild("GeneralTab").gameObject, instance.transform);
          tab.name = $"{TabName}Tab";
@@ -120,11 +141,40 @@ public abstract class LocalSettingsTab(ConfigFile config)
              contentOrder = 1;
          }
 
-         Scroller.SetBounds(new FloatRange(0, Settings.Count * 0.5f - 5f), new FloatRange(0, 0));
+         contentIndex = 0;
+         contentOrder = 1;
+         foreach (var button in Buttons)
+         {
+             var obj = button.CreateButton(
+                 toggle,
+                 Scroller.Inner,
+                 ref contentOffset,
+                 ref contentOrder,
+                 contentIndex == Buttons.Count);
+
+             obj!.GetComponentsInChildren<SpriteRenderer>(true).Do(x =>
+             {
+                 x.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                 x.sortingOrder = 150;
+                 x.sortingLayerName = "Default";
+             });
+
+             obj.GetComponentsInChildren<MeshRenderer>(true).Do(x =>
+             {
+                 x.sortingOrder = 151;
+                 x.sortingLayerName = "Default";
+             });
+
+             obj.GetComponentsInChildren<PassiveButton>().Do(x => { x.ClickMask = OptionsMenuPatches.MaskCollider; });
+
+             contentIndex++;
+         }
+
+         Scroller.SetBounds(new FloatRange(0, (Settings.Count + Buttons.Count) * 0.5f - 5f), new FloatRange(0, 0));
          return tab;
     }
 
-    internal GameObject CreateTabButton(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
+    public virtual GameObject CreateTabButton(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
     {
         var tabButtonObject = Object.Instantiate(instance.Tabs[0], instance.transform);
         tabButtonObject.name = $"{TabName} Button";
