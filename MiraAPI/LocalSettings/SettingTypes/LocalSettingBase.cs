@@ -49,7 +49,7 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// <returns>The value text.</returns>
     protected virtual string GetValueText()
     {
-        return GetValue()?.ToString() ?? string.Empty;
+        return string.Empty;
     }
 
     /// <summary>

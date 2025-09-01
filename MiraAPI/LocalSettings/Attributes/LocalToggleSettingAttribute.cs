@@ -9,7 +9,7 @@ namespace MiraAPI.LocalSettings.Attributes;
 /// </summary>
 /// <inheritdoc/>
 [AttributeUsage(AttributeTargets.Property)]
-public class LocalSettingToggleAttribute(
+public class LocalToggleSettingAttribute(
     string? name = null,
     string? description = null
     ) : LocalSettingAttribute(name, description)

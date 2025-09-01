@@ -20,6 +20,11 @@ public class LocalSliderSetting : LocalSettingBase<float>
     public FloatRange SliderRange { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the value should be displayed next to name.
+    /// </summary>
+    public bool DisplayValue { get; }
+
+    /// <summary>
     /// Gets a format for the text to use to format the number.
     /// </summary>
     public string FormatString { get; }
@@ -48,15 +53,17 @@ public class LocalSliderSetting : LocalSettingBase<float>
         string? name = null,
         string? description = null,
         FloatRange? sliderRange = null,
+        bool displayValue = false,
         MiraNumberSuffixes? suffixType = null,
         string? formatString = null,
         bool roundValue = false)
         : base(tab, configEntry, name, description)
     {
-        SuffixType = suffixType ?? MiraNumberSuffixes.None;
         SliderRange = sliderRange ?? new FloatRange(0, 100);
-        RoundValue = roundValue;
+        DisplayValue = displayValue;
+        SuffixType = suffixType ?? MiraNumberSuffixes.None;
         FormatString = formatString ?? "0.0";
+        RoundValue = roundValue;
     }
 
     /// <inheritdoc />
@@ -80,7 +87,7 @@ public class LocalSliderSetting : LocalSettingBase<float>
         rollover.OutColor = Tab!.TabAppearance.SliderColor;
         rollover.OverColor = Tab!.TabAppearance.SliderHoverColor;
         newSlider.Title.transform.localPosition = new Vector3(0.5f, 0, -1f);
-        newSlider.Title.horizontalAlignment = HorizontalAlignmentOptions.Right;
+        newSlider.Title.horizontalAlignment = DisplayValue ? HorizontalAlignmentOptions.Left : HorizontalAlignmentOptions.Center;
         newSlider.Title.text = GetValueText();
 
         newSlider.OnValueChange.AddListener((UnityAction)(() =>
@@ -100,9 +107,14 @@ public class LocalSliderSetting : LocalSettingBase<float>
     /// <inheritdoc/>
     protected override string GetValueText()
     {
-        var value = GetValue();
-        var formated = Helpers.FormatValue(value, SuffixType, FormatString);
-        var maxFormated = Helpers.FormatValue(SliderRange.max, SuffixType, FormatString);
-        return $"<font=\"LiberationSans SDF\" material=\"LiberationSans SDF - Chat Message Masked\">{Name}: <b>{formated} / {maxFormated}</font></b>";
+        if (DisplayValue)
+        {
+            var value = GetValue();
+            var formated = Helpers.FormatValue(value, SuffixType, FormatString);
+            var maxFormated = Helpers.FormatValue(SliderRange.max, SuffixType, FormatString);
+            return $"<font=\"LiberationSans SDF\" material=\"LiberationSans SDF - Chat Message Masked\">{Name}: <b>{formated} / {maxFormated}</font></b>";
+        }
+
+        return $"<font=\"LiberationSans SDF\" material=\"LiberationSans SDF - Chat Message Masked\">{Name}</font></b>";
     }
 }

@@ -32,6 +32,6 @@ public class MiraApiSettings(ConfigFile config) : LocalSettingsTab(config)
     /// <summary>
     /// Gets whether the modifiers hud should be on the left side of the screen (under roles/task tab). Recommended for streamers.
     /// </summary>
-    [LocalSettingToggle]
+    [LocalToggleSetting]
     public ConfigEntry<bool> ModifiersHudLeftSide { get; private set; } = config.Bind("Displays", "Show Modifiers HUD on Left Side", false);
 }

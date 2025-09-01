@@ -74,6 +74,7 @@ public class LocalNumberSetting : LocalSettingBase<int>
         if (highlight != null)
         {
             highlight.color = Tab!.TabAppearance.NumberHoverColor;
+            highlight.gameObject.SetActive(false);
         }
         toggleComp.Destroy();
 

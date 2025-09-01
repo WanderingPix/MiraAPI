@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BepInEx.Configuration;
 using MiraAPI.Utilities;
 using Reactor.Utilities.Extensions;
@@ -40,7 +41,11 @@ public class LocalEnumSetting : LocalSettingBase<int>
         : base(tab, configEntry, name, description)
     {
         EnumType = enumType;
-        Values = values ?? Enum.GetNames(EnumType);
+        Values = values ?? Enum
+            .GetValues(configEntry.SettingType)
+            .Cast<Enum>()
+            .Select(x => x.ToDisplayString())
+            .ToArray();
     }
 
     /// <inheritdoc />
@@ -58,6 +63,7 @@ public class LocalEnumSetting : LocalSettingBase<int>
         if (highlight != null)
         {
             highlight.color = Tab!.TabAppearance.EnumHoverColor;
+            highlight.gameObject.SetActive(false);
         }
         toggleComp.Destroy();
 

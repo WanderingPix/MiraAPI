@@ -19,6 +19,7 @@ public class LocalSliderSettingAttribute(
     float min = 0,
     float max = 100,
     string? description = null,
+    bool displayValue = false,
     string? formatString = null,
     bool roundValue = false,
     MiraNumberSuffixes suffixType = MiraNumberSuffixes.None
@@ -27,6 +28,6 @@ public class LocalSliderSettingAttribute(
     /// <inheritdoc/>
     internal override LocalSliderSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalSliderSetting(tab, configEntryBase, name, description, new FloatRange(min, max), suffixType, formatString, roundValue);
+        return new LocalSliderSetting(tab, configEntryBase, name, description, new FloatRange(min, max), displayValue, suffixType, formatString, roundValue);
     }
 }
