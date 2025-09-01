@@ -4,7 +4,7 @@ using UnityEngine;
 namespace MiraAPI.LocalSettings;
 
 /// <summary>
-/// Interface for all local settings
+/// Interface for all local settings.
 /// </summary>
 public interface ILocalSetting
 {
@@ -29,7 +29,7 @@ public interface ILocalSetting
     ConfigEntryBase ConfigEntry { get; }
 
     /// <summary>
-    /// Used to create the setting
+    /// Used to create the setting.
     /// </summary>
     /// <param name="toggle">Toggle template.</param>
     /// <param name="slider">Slider template.</param>

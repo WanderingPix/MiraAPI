@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using BepInEx.Configuration;
 using MiraAPI.Utilities;
-using Reactor.Localization.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
@@ -12,15 +10,10 @@ using Object = UnityEngine.Object;
 namespace MiraAPI.LocalSettings.SettingTypes;
 
 /// <summary>
-/// Local setting class for toggles.
+/// Local setting class for sliders.
 /// </summary>
-public class LocalSettingFloat : LocalSettingBase<float>
+public class LocalSliderSetting : LocalSettingBase<float>
 {
-    /// <summary>
-    /// Gets the color of the slider.
-    /// </summary>
-    public Color SliderColor { get; }
-
     /// <summary>
     /// Gets the range of the slider.
     /// </summary>
@@ -42,18 +35,14 @@ public class LocalSettingFloat : LocalSettingBase<float>
     public MiraNumberSuffixes SuffixType { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LocalSettingFloat"/> class.
+    /// Initializes a new instance of the <see cref="LocalSliderSetting"/> class.
     /// </summary>
-    /// /// <param name="tab">Tab that the toggle belongs to.</param>
-    /// <param name="configEntry">The binded config entry.</param>
-    /// <param name="name">The name of the setting. Defaults to ConfigEntry key.</param>
-    /// <param name="description">The desription of the setting. No description by default.</param>
-    /// <param name="suffixType">Gets the suffix for the number value.</param>
-    /// <param name="formatString">Gets a format for the text to use to format the number.</param>
-    /// <param name="sliderColor">Gets the color of the slider.</param>
-    /// <param name="sliderRange">Gets the range of the slider.</param>
-    /// <param name="roundValue">Gets whether the value should be rounded.</param>
-    public LocalSettingFloat(
+    /// <inheritdoc/>
+    /// <param name="sliderRange">The value range.</param>
+    /// <param name="suffixType">The suffix used for formating.</param>
+    /// <param name="formatString">The format string used for formating.</param>
+    /// <param name="roundValue">Should the value be rounded.</param>
+    public LocalSliderSetting(
         Type tab,
         ConfigEntryBase configEntry,
         string? name = null,
@@ -61,10 +50,9 @@ public class LocalSettingFloat : LocalSettingBase<float>
         FloatRange? sliderRange = null,
         MiraNumberSuffixes? suffixType = null,
         string? formatString = null,
-        bool roundValue = true)
+        bool roundValue = false)
         : base(tab, configEntry, name, description)
     {
-        SliderColor = Palette.AcceptedGreen;
         SuffixType = suffixType ?? MiraNumberSuffixes.None;
         SliderRange = sliderRange ?? new FloatRange(0, 100);
         RoundValue = roundValue;
@@ -72,13 +60,14 @@ public class LocalSettingFloat : LocalSettingBase<float>
     }
 
     /// <inheritdoc />
-    public override GameObject? CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)
+    public override GameObject CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)
     {
         var newSlider = Object.Instantiate(slider, parent).GetComponent<SlideBar>();
         var rollover = newSlider.GetComponent<ButtonRolloverHandler>();
         newSlider.Title = newSlider.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>(); // Why the hell slider has a title property that is not even assigned???
         newSlider.Title.GetComponent<TextTranslatorTMP>().Destroy();
         newSlider.gameObject.SetActive(true);
+        newSlider.Bar.color = Tab!.TabAppearance.SliderColor;
 
         if (order == 2)
             offset += 0.5f;
@@ -88,7 +77,8 @@ public class LocalSettingFloat : LocalSettingBase<float>
         newSlider.name = Name;
         newSlider.Range = new FloatRange(-1.5f, 1.5f);
         newSlider.SetValue(Mathf.InverseLerp(SliderRange.min, SliderRange.max, GetValue()));
-        rollover.OverColor = SliderColor;
+        rollover.OutColor = Tab!.TabAppearance.SliderColor;
+        rollover.OverColor = Tab!.TabAppearance.SliderHoverColor;
         newSlider.Title.transform.localPosition = new Vector3(0.5f, 0, -1f);
         newSlider.Title.horizontalAlignment = HorizontalAlignmentOptions.Right;
         newSlider.Title.text = GetValueText();
@@ -107,21 +97,12 @@ public class LocalSettingFloat : LocalSettingBase<float>
         return newSlider.gameObject;
     }
 
-    private string FormatValue(float value)
-    {
-        return SuffixType switch
-        {
-            MiraNumberSuffixes.None => value.ToString(FormatString, NumberFormatInfo.InvariantInfo),
-            MiraNumberSuffixes.Multiplier => value.ToString(FormatString, NumberFormatInfo.InvariantInfo) + "x",
-            MiraNumberSuffixes.Percent => value.ToString(FormatString, NumberFormatInfo.InvariantInfo) + "%",
-            _ => TranslationController.Instance.GetString(
-                StringNames.GameSecondsAbbrev,
-                (Il2CppSystem.Object[])[value.ToString(FormatString, CultureInfo.InvariantCulture)]),
-        };
-    }
-    private string GetValueText()
+    /// <inheritdoc/>
+    protected override string GetValueText()
     {
         var value = GetValue();
-        return $"<font=\"LiberationSans SDF\" material=\"LiberationSans SDF - Chat Message Masked\">{Name}: <b>{FormatValue(value)} / {FormatValue(SliderRange.max)}</font></b>";
+        var formated = Helpers.FormatValue(value, SuffixType, FormatString);
+        var maxFormated = Helpers.FormatValue(SliderRange.max, SuffixType, FormatString);
+        return $"<font=\"LiberationSans SDF\" material=\"LiberationSans SDF - Chat Message Masked\">{Name}: <b>{formated} / {maxFormated}</font></b>";
     }
 }

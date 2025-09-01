@@ -12,50 +12,23 @@ namespace MiraAPI.LocalSettings.SettingTypes;
 /// <summary>
 /// Local setting class for toggles.
 /// </summary>
-public class LocalSettingToggle : LocalSettingBase<bool>
+public class LocalToggleSetting : LocalSettingBase<bool>
 {
     /// <summary>
-    /// Gets the color of the toggle.
+    /// Initializes a new instance of the <see cref="LocalToggleSetting"/> class.
     /// </summary>
-    public Color ToggleColor { get; }
-
-    /// <summary>
-    /// Gets the color of the toggle when hovered.
-    /// </summary>
-    public Color ToggleHoverColor { get; }
-
-    /// <summary>
-    /// Gets the color of the toggle when enabled.
-    /// </summary>
-    public Color ToggleActiveColor { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LocalSettingToggle"/> class.
-    /// </summary>
-    /// /// <param name="tab">Tab that the toggle belongs to.</param>
-    /// <param name="configEntry">The binded config entry.</param>
-    /// <param name="name">The name of the setting. Defaults to ConfigEntry key.</param>
-    /// <param name="description">The desription of the setting. No description by default.</param>
-    /// <param name="toggleColor">The color of the toggle.</param>
-    /// <param name="toggleHoverColor">The hover color of the toggle.</param>
-    /// <param name="toggleActiveColor">The active color of the toggle.</param>
-    public LocalSettingToggle(
+    /// <inheritdoc/>
+    public LocalToggleSetting(
         Type tab,
         ConfigEntryBase configEntry,
         string? name = null,
-        string? description = null,
-        Color? toggleColor = null,
-        Color? toggleHoverColor = null,
-        Color? toggleActiveColor = null)
-        : base(tab, configEntry, name, description)
+        string? description = null
+        ) : base(tab, configEntry, name, description)
     {
-        ToggleColor = toggleColor ?? Color.white;
-        ToggleHoverColor = toggleHoverColor ?? Palette.AcceptedGreen;
-        ToggleActiveColor = toggleActiveColor ?? Palette.AcceptedGreen;
     }
 
     /// <inheritdoc />
-    public override GameObject? CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)
+    public override GameObject CreateOption(ToggleButtonBehaviour toggle, SlideBar slider, Transform parent, ref float offset, ref int order, bool last)
     {
         var toggleObject = Object.Instantiate(toggle, parent).GetComponent<ToggleButtonBehaviour>();
         var tmp = toggleObject.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>();
@@ -76,15 +49,15 @@ public class LocalSettingToggle : LocalSettingBase<bool>
         toggleObject.BaseText = CustomStringName.CreateAndRegister(Name);
         toggleObject.UpdateText(GetValue());
         toggleObject.name = Name;
-        toggleObject.Background.color = GetValue() ? ToggleActiveColor : ToggleColor;
+        toggleObject.Background.color = GetValue() ? Tab!.TabAppearance.ToggleActiveColor : Tab!.TabAppearance.ToggleInactiveColor;
         passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        rollover.OverColor = ToggleHoverColor;
+        rollover.OverColor = Tab!.TabAppearance.ToggleHoverColor;
 
         passiveButton.OnClick.AddListener((UnityAction)(() =>
         {
             SetValue(!GetValue());
             toggleObject.UpdateText(GetValue());
-            toggleObject.Background.color = GetValue() ? ToggleActiveColor : ToggleColor;
+            toggleObject.Background.color = GetValue() ? Tab!.TabAppearance.ToggleActiveColor : Tab!.TabAppearance.ToggleInactiveColor;
         }));
         passiveButton.OnMouseOver.AddListener((UnityAction)(() =>
         {
@@ -96,7 +69,7 @@ public class LocalSettingToggle : LocalSettingBase<bool>
         passiveButton.OnMouseOut.AddListener((UnityAction)(() =>
         {
             toggleObject.UpdateText(GetValue());
-            toggleObject.Background.color = GetValue() ? ToggleActiveColor : ToggleColor;
+            toggleObject.Background.color = GetValue() ? Tab!.TabAppearance.ToggleActiveColor : Tab!.TabAppearance.ToggleInactiveColor;
         }));
 
         Helpers.DivideSize(toggleObject.gameObject, 1.1f);

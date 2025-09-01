@@ -23,7 +23,11 @@ public class MiraApiSettings(ConfigFile config) : LocalSettingsTab(config)
     public override string TabName => "Mira API";
 
     /// <inheritdoc />
-    public override LoadableAsset<Sprite>? TabIcon => MiraAssets.SettingsIcon;
+    public override LocalSettingTabAppearance TabAppearance => new()
+    {
+        TabButtonHoverColor = MiraApiPlugin.MiraColor,
+        TabIcon = MiraAssets.SettingsIcon,
+    };
 
     /// <summary>
     /// Gets whether the modifiers hud should be on the left side of the screen (under roles/task tab). Recommended for streamers.

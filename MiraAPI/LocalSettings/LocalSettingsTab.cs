@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using MiraAPI.Patches.LocalSettings;
 using MiraAPI.Utilities;
-using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
@@ -14,39 +13,29 @@ using Object = UnityEngine.Object;
 namespace MiraAPI.LocalSettings;
 
 /// <summary>
-/// Represents a local settings tab. Gets a button by default
+/// Represents a local settings tab. Gets a button by default.
 /// </summary>
 public abstract class LocalSettingsTab(ConfigFile config)
 {
     /// <summary>
-    /// Gets the name of the tab
+    /// Gets the name of the tab.
     /// </summary>
     public abstract string TabName { get; }
 
     /// <summary>
-    /// Gets the tab button icon.
+    /// Gets the tab appearance.
     /// </summary>
-    public virtual LoadableAsset<Sprite>? TabIcon => null;
-
-    /// <summary>
-    /// Gets the color of the tab button.
-    /// </summary>
-    public virtual Color TabColor => Color.white;
-
-    /// <summary>
-    /// Gets the color of the tab button when hovered.
-    /// </summary>
-    public Color TabHoverColor => Palette.AcceptedGreen;
-
-    /// <summary>
-    /// Gets the color of the tab button when active.
-    /// </summary>
-    public virtual Color TabActiveColor => Palette.AcceptedGreen;
+    public virtual LocalSettingTabAppearance TabAppearance { get; } = new();
 
     /// <summary>
     /// Gets a value indicating whether a button should be created for the tab.
     /// </summary>
-    protected virtual bool ShouldCreateButton => true;
+    public virtual bool ShouldCreateButton => true;
+
+    /// <summary>
+    /// Gets a value indicating whether the tab should have category labels.
+    /// </summary>
+    protected virtual bool ShouldCreateLabels => true;
 
     /// <summary>
     /// Gets the mod's config file. Automatically found in the plugin loader.
@@ -57,13 +46,8 @@ public abstract class LocalSettingsTab(ConfigFile config)
     internal List<ILocalSetting> Settings { get; } = [];
     private Scroller? Scroller { get; set; }
 
-    internal GameObject? CreateTab(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
+    internal GameObject CreateTab(OptionsMenuBehaviour instance)
     {
-         if (ShouldCreateButton)
-         {
-             CreateTabButton(instance, ref tabIdx, ref offset);
-         }
-
          var tab = Object.Instantiate(instance.transform.FindChild("GeneralTab").gameObject, instance.transform);
          tab.name = $"{TabName}Tab";
          tab.transform.DestroyChildren();
@@ -100,7 +84,10 @@ public abstract class LocalSettingsTab(ConfigFile config)
 
          foreach (var pair in entriesByGroup)
          {
-             CreateLabel(generalLabel, Scroller.Inner, pair.Key, ref contentOffset);
+             if (ShouldCreateLabels)
+             {
+                 CreateLabel(generalLabel, Scroller.Inner, pair.Key, ref contentOffset);
+             }
 
              foreach (var setting in pair.Value)
              {
@@ -119,7 +106,7 @@ public abstract class LocalSettingsTab(ConfigFile config)
                      x.sortingLayerName = "Default";
                  });
 
-                 obj!.GetComponentsInChildren<MeshRenderer>(true).Do(x =>
+                 obj.GetComponentsInChildren<MeshRenderer>(true).Do(x =>
                  {
                      x.sortingOrder = 151;
                      x.sortingLayerName = "Default";
@@ -137,13 +124,13 @@ public abstract class LocalSettingsTab(ConfigFile config)
          return tab;
     }
 
-    private void CreateTabButton(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
+    internal GameObject CreateTabButton(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
     {
         var tabButtonObject = Object.Instantiate(instance.Tabs[0], instance.transform);
         tabButtonObject.name = $"{TabName} Button";
         tabButtonObject.transform.localPosition = new Vector3(2.4f, 2.1f - offset, 5.5f);
         tabButtonObject.transform.localScale = new Vector3(1.25f, 1.25f, 1);
-        tabButtonObject.Button.color = TabColor;
+        tabButtonObject.Button.color = TabAppearance.TabButtonColor;
         TabButton = tabButtonObject;
 
         var tabButtonText = tabButtonObject.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>();
@@ -155,18 +142,18 @@ public abstract class LocalSettingsTab(ConfigFile config)
 
         var tabButton = tabButtonObject.GetComponent<PassiveButton>();
         var rollover = tabButtonObject.Rollover;
-        rollover.OverColor = TabColor;
-        rollover.OutColor = TabColor;
+        rollover.OverColor = TabAppearance.TabButtonHoverColor;
+        rollover.OutColor = TabAppearance.TabButtonColor;
 
         SpriteRenderer? tabButtonRend = null;
-        if (TabIcon != null)
+        if (TabAppearance.TabIcon != null)
         {
             tabButtonRend = new GameObject("sprite").AddComponent<SpriteRenderer>();
             tabButtonRend.gameObject.layer = 5; // ui layer
             tabButtonRend.transform.SetParent(tabButtonObject.transform);
             tabButtonRend.transform.localPosition = new Vector3(0.5f, 0, -2);
             tabButtonRend.transform.localScale = new Vector3(0.2f, 0.2f, 1);
-            tabButtonRend.sprite = TabIcon.LoadAsset();
+            tabButtonRend.sprite = TabAppearance.TabIcon.LoadAsset();
             tabButtonText.gameObject.SetActive(false);
         }
 
@@ -176,8 +163,6 @@ public abstract class LocalSettingsTab(ConfigFile config)
         tabButton.OnMouseOver.AddListener((UnityAction)(() =>
         {
             tabButton.transform.localPosition = new Vector3(3.55f, 2.1f - tabOffset, 5.5f);
-            tabButtonObject.Button.color = TabHoverColor;
-            tabButtonObject.Rollover.OutColor = TabHoverColor;
             tabButtonText.gameObject.SetActive(true);
             tabButtonText.transform.localPosition = new Vector3(-0.024f, 0, 0);
             tabButtonText.maxVisibleCharacters = int.MaxValue;
@@ -188,8 +173,8 @@ public abstract class LocalSettingsTab(ConfigFile config)
         {
             if (!tabButtonObject.Content.gameObject.activeSelf)
             {
-                tabButtonObject.Button.color = TabColor;
-                tabButtonObject.Rollover.OutColor = TabColor;
+                //tabButtonObject.Button.color = TabColor;
+                //tabButtonObject.Rollover.OutColor = TabColor;
             }
 
             tabButton.transform.localPosition = new Vector3(2.4f, 2.1f - tabOffset, 5.5f);
@@ -205,8 +190,7 @@ public abstract class LocalSettingsTab(ConfigFile config)
             tabButtonText.text = $"<b>{GetShortName(TabName)}</b>";
         }));
 
-        offset += 0.6f;
-        tabIdx++;
+        return tabButtonObject.gameObject;
     }
 
     private static void CreateLabel(GameObject template, Transform parent, string text, ref float offset)
@@ -227,7 +211,6 @@ public abstract class LocalSettingsTab(ConfigFile config)
         offset += 0.5f;
     }
 
-
     private static string GetShortName(string name)
     {
         var shortName = string.Empty;
@@ -235,4 +218,3 @@ public abstract class LocalSettingsTab(ConfigFile config)
         return shortName;
     }
 }
-

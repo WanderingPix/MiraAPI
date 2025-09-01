@@ -1,13 +1,13 @@
 ﻿using System;
 using BepInEx.Configuration;
 using MiraAPI.LocalSettings.SettingTypes;
-using UnityEngine;
 
 namespace MiraAPI.LocalSettings.Attributes;
 
 /// <summary>
-/// Creates a toggle and binds it with the config entry.
+/// Creates a toggle setting for the <see cref="ConfigEntry{T}"/>.
 /// </summary>
+/// <inheritdoc/>
 [AttributeUsage(AttributeTargets.Property)]
 public class LocalSettingToggleAttribute(
     string? name = null,
@@ -15,8 +15,8 @@ public class LocalSettingToggleAttribute(
     ) : LocalSettingAttribute(name, description)
 {
     /// <inheritdoc/>
-    internal override LocalSettingToggle CreateSetting(Type tab, ConfigEntryBase configEntryBase)
+    internal override LocalToggleSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalSettingToggle(tab, configEntryBase, name, description);
+        return new LocalToggleSetting(tab, configEntryBase, name, description);
     }
 }

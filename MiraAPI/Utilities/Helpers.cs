@@ -496,4 +496,24 @@ public static class Helpers
         }
         return KeyboardKeyCode.None;
     }
+
+    /// <summary>
+    /// Returns the formated value using the specified suffix and format string.
+    /// </summary>
+    /// <param name="value">The value to format.</param>
+    /// <param name="suffix">The suffix to add.</param>
+    /// <param name="formatString">The format string to use to format.</param>
+    /// <returns>The formated value.</returns>
+    public static string FormatValue(float value, MiraNumberSuffixes suffix = MiraNumberSuffixes.None, string formatString = "0.0")
+    {
+        return suffix switch
+        {
+            MiraNumberSuffixes.None => value.ToString(formatString, NumberFormatInfo.InvariantInfo),
+            MiraNumberSuffixes.Multiplier => value.ToString(formatString, NumberFormatInfo.InvariantInfo) + "x",
+            MiraNumberSuffixes.Percent => value.ToString(formatString, NumberFormatInfo.InvariantInfo) + "%",
+            _ => TranslationController.Instance.GetString(
+                StringNames.GameSecondsAbbrev,
+                (Il2CppSystem.Object[])[value.ToString(formatString, CultureInfo.InvariantCulture)]),
+        };
+    }
 }

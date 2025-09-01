@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using MiraAPI.LocalSettings;
 
-namespace MiraAPI.GameOptions;
+namespace MiraAPI.LocalSettings;
 
 /// <summary>
 /// Singleton for local settings tabs.
