@@ -2,7 +2,6 @@
 using MiraAPI.LocalSettings;
 using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Utilities;
-using Reactor.Utilities;
 using UnityEngine;
 
 namespace MiraAPI.Example;
@@ -42,15 +41,3 @@ public enum ExampleEnumSetting
     Fries,
     ChickenNuggets,
 }
-
-public class Tab1(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab2(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab4(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab3(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab5(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab6(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab7(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab8(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab9(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab10(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
-public class Tab11(ConfigFile config) : LocalSettingsTab(config) { public override string TabName => "Tab"; public override LocalSettingTabAppearance TabAppearance => new(); }
