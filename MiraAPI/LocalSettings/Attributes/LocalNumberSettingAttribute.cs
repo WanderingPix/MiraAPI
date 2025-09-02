@@ -18,9 +18,9 @@ namespace MiraAPI.LocalSettings.Attributes;
 public class LocalNumberSettingAttribute(
     string? name = null,
     string? description = null,
-    int min = 1,
-    int max = 5,
-    int increment = 1,
+    float min = 1,
+    float max = 5,
+    float increment = 1,
     MiraNumberSuffixes suffixType = MiraNumberSuffixes.None,
     string? formatString = null
     ) : LocalSettingAttribute(name, description)
@@ -28,6 +28,6 @@ public class LocalNumberSettingAttribute(
     /// <inheritdoc/>
     internal override LocalNumberSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalNumberSetting(tab, configEntryBase, name, description, new IntRange(min, max), increment, suffixType, formatString);
+        return new LocalNumberSetting(tab, configEntryBase, name, description, new FloatRange(min, max), increment, suffixType, formatString);
     }
 }

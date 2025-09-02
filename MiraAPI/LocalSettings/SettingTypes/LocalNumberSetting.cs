@@ -12,17 +12,17 @@ namespace MiraAPI.LocalSettings.SettingTypes;
 /// <summary>
 /// Local setting class for numbers.
 /// </summary>
-public class LocalNumberSetting : LocalSettingBase<int>
+public class LocalNumberSetting : LocalSettingBase<float>
 {
     /// <summary>
     /// Gets the range of the button.
     /// </summary>
-    public IntRange NumberRange { get; }
+    public FloatRange NumberRange { get; }
 
     /// <summary>
     /// Gets the increment of the value when button is pressed.
     /// </summary>
-    public int Increment { get; }
+    public float Increment { get; }
 
     /// <summary>
     /// Gets a format for the text to use to format the number.
@@ -47,14 +47,14 @@ public class LocalNumberSetting : LocalSettingBase<int>
         ConfigEntryBase configEntry,
         string? name = null,
         string? description = null,
-        IntRange? numberRange = null,
-        int? increment = null,
+        FloatRange? numberRange = null,
+        float? increment = null,
         MiraNumberSuffixes? suffixType = null,
         string? formatString = null)
         : base(tab, configEntry, name, description)
     {
         SuffixType = suffixType ?? MiraNumberSuffixes.None;
-        NumberRange = numberRange ?? new IntRange(1, 5);
+        NumberRange = numberRange ?? new FloatRange(1, 5);
         Increment = increment ?? 1;
         FormatString = formatString ?? "0";
     }
@@ -97,7 +97,7 @@ public class LocalNumberSetting : LocalSettingBase<int>
 
         button.OnClick.AddListener((UnityAction)(() =>
         {
-            int value = GetValue();
+            float value = GetValue();
             value += Increment;
             if (value > NumberRange.max)
             {

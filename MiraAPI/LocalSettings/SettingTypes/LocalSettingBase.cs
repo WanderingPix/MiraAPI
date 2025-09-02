@@ -56,7 +56,7 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// Gets the value of the config entry, casted to the setting type.
     /// </summary>
     /// <returns>The value.</returns>
-    public T GetValue()
+    public virtual T GetValue()
     {
         return (T)ConfigEntry.BoxedValue;
     }
@@ -65,7 +65,7 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// Sets the value of the config entry.
     /// </summary>
     /// <param name="value">The value to set to.</param>
-    public void SetValue(T value)
+    public virtual void SetValue(T value)
     {
         ConfigEntry.BoxedValue = value;
         Tab?.OnOptionChanged(ConfigEntry);
