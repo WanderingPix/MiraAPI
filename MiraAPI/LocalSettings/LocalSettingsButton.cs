@@ -12,7 +12,7 @@ namespace MiraAPI.LocalSettings;
 /// <summary>
 /// Represents a local settings button.
 /// </summary>
-public class LocalSettingsButton(string text, Action<LocalSettingsTab> onClick)
+public class LocalSettingsButton(string text, Action onClick)
 {
     /// <summary>
     /// Gets or sets the button text.
@@ -22,12 +22,12 @@ public class LocalSettingsButton(string text, Action<LocalSettingsTab> onClick)
     /// <summary>
     /// Gets or sets the button on-click action.
     /// </summary>
-    public Action<LocalSettingsTab> OnClick { get; set; } = onClick;
+    public Action OnClick { get; set; } = onClick;
 
     /// <summary>
     /// Gets the tab instance this button belongs to.
     /// </summary>
-    public LocalSettingsTab Tab { get; internal set; }
+    public LocalSettingsTab? Tab { get; internal set; }
 
     internal GameObject CreateButton(ToggleButtonBehaviour toggle, Transform parent, ref float offset, ref int order, bool last)
     {
@@ -59,11 +59,9 @@ public class LocalSettingsButton(string text, Action<LocalSettingsTab> onClick)
         rollover.OverColor = Tab!.TabAppearance.ButtonHoverColor;
         rollover.Target = background;
         background.color = Tab!.TabAppearance.ButtonColor;
+        button.OnClick.AddListener((UnityAction)OnClick);
 
-        var tab = Tab;
-        var click = OnClick;
-        button.OnClick.AddListener((UnityAction)(() => click(tab)));
-
+        background.transform.localScale = new Vector3(1, 1.25f, 1);
         Helpers.DivideSize(button.gameObject, 1.1f);
 
         order++;

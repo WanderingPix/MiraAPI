@@ -57,6 +57,11 @@ public abstract class LocalSettingsTab(ConfigFile config)
     /// </summary>
     public List<LocalSettingsButton> Buttons { get; } = [];
 
+    /// <summary>
+    /// Gets the index of this tab.
+    /// </summary>
+    protected int TabIndex => LocalSettingsManager.Tabs.IndexOf(this) + 10;
+
     private Scroller? Scroller { get; set; }
 
     /// <summary>
@@ -67,6 +72,20 @@ public abstract class LocalSettingsTab(ConfigFile config)
     {
     }
 
+    /// <summary>
+    /// Attempts to open the tab.
+    /// Override for custom behavior.
+    /// </summary>
+    public virtual void Open()
+    {
+        OptionsMenuPatches.Instance?.OpenTabGroup(TabIndex);
+    }
+
+    /// <summary>
+    /// Creates the tab <see cref="GameObject"/> and it's content.
+    /// </summary>
+    /// <param name="instance">The <see cref="OptionsMenuBehaviour"/> instace.</param>
+    /// <returns>The created tab <see cref="GameObject"/>.</returns>
     public virtual GameObject CreateTab(OptionsMenuBehaviour instance)
     {
          var tab = Object.Instantiate(instance.transform.FindChild("GeneralTab").gameObject, instance.transform);
@@ -141,7 +160,7 @@ public abstract class LocalSettingsTab(ConfigFile config)
              contentOrder = 1;
          }
 
-         contentIndex = 0;
+         contentIndex = 1;
          contentOrder = 1;
          foreach (var button in Buttons)
          {
@@ -174,6 +193,13 @@ public abstract class LocalSettingsTab(ConfigFile config)
          return tab;
     }
 
+    /// <summary>
+    /// Creates the tab button.
+    /// </summary>
+    /// <param name="instance">The <see cref="OptionsMenuBehaviour"/> instance.</param>
+    /// <param name="tabIdx">The tab index.</param>
+    /// <param name="offset">The current button offset.</param>
+    /// <returns>The created button <see cref="GameObject"/>.</returns>
     public virtual GameObject CreateTabButton(OptionsMenuBehaviour instance, ref int tabIdx, ref float offset)
     {
         var tabButtonObject = Object.Instantiate(instance.Tabs[0], instance.transform);

@@ -36,9 +36,9 @@ public class ExampleLocalSettings(ConfigFile config) : LocalSettingsTab(config)
     [LocalEnumSetting]
     public ConfigEntry<ExampleEnumSetting> ExampleEnum { get; private set; } = config.Bind("General", "Example Enum", ExampleEnumSetting.Fries);
 
-    private static void OnExampleButtonClick(LocalSettingsTab instance)
+    private static void OnExampleButtonClick()
     {
-        Logger<ExamplePlugin>.Warning("Button clicked");
+        LocalSettingsTabSingleton<MiraApiSettings>.Instance.Open();
     }
 }
 

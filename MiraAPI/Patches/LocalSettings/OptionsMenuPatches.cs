@@ -14,6 +14,7 @@ namespace MiraAPI.Patches.LocalSettings;
 [HarmonyPatch(typeof(OptionsMenuBehaviour))]
 public static class OptionsMenuPatches
 {
+    internal static OptionsMenuBehaviour? Instance { get; private set; }
     internal static BoxCollider2D MaskCollider;
     private static SpriteRenderer? background;
 
@@ -27,6 +28,7 @@ public static class OptionsMenuPatches
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Start))]
     public static void StartPostfix(OptionsMenuBehaviour __instance)
     {
+        Instance = __instance;
         // Fix for tabs not being clickable in the main menu
         if (!AmongUsClient.Instance.IsInGame)
         {
@@ -176,7 +178,7 @@ public static class OptionsMenuPatches
     }
 
     /// <summary>
-    /// Makes the custom tabs close when opening the options menu and reset pages.
+    /// Makes the custom tabs close when opening the options menu and resets pages.
     /// </summary>
     [HarmonyPostfix]
     [HarmonyPatch(nameof(OptionsMenuBehaviour.Open))]
@@ -191,7 +193,11 @@ public static class OptionsMenuPatches
     {
         foreach (var pages in tabButtons)
         {
-            pages.Value.Do(x => x.SetActive(pages.Key == currentPage));
+            pages.Value?
+                .Where(x => x != null)
+                .Do(
+                   x => x?.SetActive(
+                       pages.Key == currentPage));
         }
     }
 
