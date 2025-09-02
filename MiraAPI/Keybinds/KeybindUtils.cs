@@ -33,11 +33,11 @@ public static class KeybindUtils
     /// </summary>
     /// <param name="actionId">The action ID.</param>
     /// <returns>The keyboard keycode.</returns>
-    public static KeyboardKeyCode? GetKeycodeByActionId(int actionId)
+    public static KeyboardKeyCode GetKeycodeByActionId(int actionId)
     {
         var player = ReInput.players.GetPlayer(0);
         return player.controllers.maps.GetFirstElementMapWithAction(ControllerType.Keyboard, actionId, false)?
-            .keyboardKeyCode;
+            .keyboardKeyCode ?? KeyboardKeyCode.None;
     }
 
     /// <summary>
