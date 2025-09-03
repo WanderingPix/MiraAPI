@@ -559,7 +559,9 @@ public static class RoleSettingMenuPatches
                 roleIcon.transform.localScale = new(.25f, .25f, 1);
                 roleIcon.layer = LayerMask.NameToLayer("UI");
                 roleIcon.transform.localPosition = new Vector3(-1.3f, -0.3f, -2f);
-                roleIcon.AddComponent<SpriteRenderer>().sprite = customRole.Configuration.Icon.LoadAsset();
+                var rend = roleIcon.AddComponent<SpriteRenderer>();
+                rend.sprite = customRole.Configuration.Icon.LoadAsset();
+                rend.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             }
         }
 
