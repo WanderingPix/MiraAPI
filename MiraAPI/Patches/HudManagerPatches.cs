@@ -116,7 +116,7 @@ public static class HudManagerPatches
             var buttonObj = kvp.Key;
             var actionId = kvp.Value;
 
-            var key = KeybindUtils.GetKeycodeByActionId(actionId) ?? KeyboardKeyCode.None;
+            var key = KeybindUtils.GetKeycodeByActionId(actionId);
             if (key == KeyboardKeyCode.None)
             {
                 continue;
