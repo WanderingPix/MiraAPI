@@ -86,7 +86,6 @@ public class MiraKeybind
     public void Invoke()
     {
         Handler.Invoke();
-        Logger<MiraApiPlugin>.Warning($"Keybind invoked: {Name} ({Id}) - {DefaultKey.ToString()}");
     }
 
     /// <summary>
