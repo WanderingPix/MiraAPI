@@ -4,6 +4,7 @@ using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using MiraAPI.Modifiers;
+using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
@@ -355,7 +356,7 @@ internal static class TaskAdderPatches
                 }
             }));
 
-            if (Modifier is TimedModifer timed)
+            if (modifier is TimedModifer timed)
             {
                 taskAddButton.FileImage.sprite = MiraAssets.TimedModifierFile.LoadAsset();
                 taskAddButton.Text.text += $"\n {timed.Duration}s";
