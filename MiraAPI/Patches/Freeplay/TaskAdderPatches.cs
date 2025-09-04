@@ -355,6 +355,12 @@ internal static class TaskAdderPatches
                 }
             }));
 
+            if (Modifier is TimedModifer timed)
+            {
+                taskAddButton.FileImage.sprite = MiraAssets.TimedModifierFile.LoadAsset();
+                taskAddButton.Text.text += $"\n {timed.Duration}s";
+            }
+
             instance.AddFileAsChildCustom(taskAddButton, ref num, ref num2, ref num3);
 
             ControllerManager.Instance.AddSelectableUiElement(taskAddButton.Button);
