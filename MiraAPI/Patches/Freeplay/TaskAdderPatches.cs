@@ -359,7 +359,7 @@ internal static class TaskAdderPatches
             if (modifier is TimedModifier timed)
             {
                 taskAddButton.FileImage.sprite = MiraAssets.TimedModifierFile.LoadAsset();
-                taskAddButton.Text.text += $"\n {timed.Duration}s";
+                taskAddButton.Text.text += $" ({timed.Duration}s)";
             }
 
             instance.AddFileAsChildCustom(taskAddButton, ref num, ref num2, ref num3);
