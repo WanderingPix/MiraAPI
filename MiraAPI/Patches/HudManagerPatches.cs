@@ -101,6 +101,7 @@ public static class HudManagerPatches
 
         aspectPosition.AdjustPosition();
 
+        vanillaKeybindIcons = [];
         var keybindIconPos = new Vector3(-0.4f, 0.4f, -9f);
         var vanillaButtons = new Dictionary<GameObject, int>
         {
