@@ -31,7 +31,7 @@ public class MiraKeybind
     public bool Exclusive { get; }
 
     /// <summary>
-    /// Gets the modifier keys assinged to this keybind.
+    /// Gets the modifier keys assigned to this keybind.
     /// Due to Rewired limitations, there can only be 3 modifier keys.
     /// </summary>
     public ModifierKey[] ModifierKeys { get; }
