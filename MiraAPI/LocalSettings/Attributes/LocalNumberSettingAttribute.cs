@@ -25,9 +25,12 @@ public class LocalNumberSettingAttribute(
     string? formatString = null
     ) : LocalSettingAttribute(name, description)
 {
+    private readonly string? _name = name;
+    private readonly string? _description = description;
+
     /// <inheritdoc/>
     internal override LocalNumberSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalNumberSetting(tab, configEntryBase, name, description, new FloatRange(min, max), increment, suffixType, formatString);
+        return new LocalNumberSetting(tab, configEntryBase, _name, _description, new FloatRange(min, max), increment, suffixType, formatString);
     }
 }

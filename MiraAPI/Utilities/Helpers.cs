@@ -477,25 +477,6 @@ public static class Helpers
     }
 
     /// <summary>
-    /// Finds and returns an unused KeyCode that is not equal to the excluded key.
-    /// </summary>
-    /// <param name="exclude">The KeyCode to skip during the search.</param>
-    /// <returns>
-    /// The first available KeyCode not currently used by any registered keybind,
-    /// or KeyCode.None if none are available.
-    /// </returns>
-    public static KeyboardKeyCode FindAvailableKey(KeyboardKeyCode exclude)
-    {
-        foreach (KeyboardKeyCode key in Enum.GetValues(typeof(KeyboardKeyCode)))
-        {
-            if (key == exclude) continue;
-            bool used = KeybindManager.GetEntries().Exists(e => e.Key == key);
-            if (!used) return key;
-        }
-        return KeyboardKeyCode.None;
-    }
-
-    /// <summary>
     /// Returns the formated value using the specified suffix and format string.
     /// </summary>
     /// <param name="value">The value to format.</param>

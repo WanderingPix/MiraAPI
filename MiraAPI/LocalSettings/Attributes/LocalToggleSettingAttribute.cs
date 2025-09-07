@@ -14,9 +14,12 @@ public class LocalToggleSettingAttribute(
     string? description = null
     ) : LocalSettingAttribute(name, description)
 {
+    private readonly string? _name = name;
+    private readonly string? _description = description;
+
     /// <inheritdoc/>
     internal override LocalToggleSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalToggleSetting(tab, configEntryBase, name, description);
+        return new LocalToggleSetting(tab, configEntryBase, _name, _description);
     }
 }

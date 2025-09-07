@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using MiraAPI.Hud;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
@@ -165,7 +166,7 @@ public static class HudManagerPatches
         {
             btnIcon.Key.text = KeybindUtils.GetKeycodeByActionId(btnIcon.Value).ToString();
             btnIcon.Key.transform.parent.gameObject.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
-                                                              PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value);
+                                                              LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value);
         }
 
         foreach (var entry in KeybindManager.Keybinds)

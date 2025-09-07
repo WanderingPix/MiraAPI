@@ -16,9 +16,12 @@ public class LocalEnumSettingAttribute(
     string[]? names = null
     ) : LocalSettingAttribute(name, description)
 {
+    private readonly string? _name = name;
+    private readonly string? _description = description;
+
     /// <inheritdoc/>
     internal override LocalEnumSetting CreateSetting(Type tab, ConfigEntryBase configEntryBase)
     {
-        return new LocalEnumSetting(tab, configEntryBase, configEntryBase.SettingType, name, description, names);
+        return new LocalEnumSetting(tab, configEntryBase, configEntryBase.SettingType, _name, _description, names);
     }
 }

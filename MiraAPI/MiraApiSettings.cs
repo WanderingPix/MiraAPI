@@ -25,4 +25,10 @@ public class MiraApiSettings(ConfigFile config) : LocalSettingsTab(config)
     /// </summary>
     [LocalToggleSetting]
     public ConfigEntry<bool> ModifiersHudLeftSide { get; private set; } = config.Bind("Displays", "Show Modifiers HUD on Left Side", false);
+
+    /// <summary>
+    /// Gets whether to show keybinds in the control mapper.
+    /// </summary>
+    [LocalToggleSetting]
+    public ConfigEntry<bool> ShowKeybinds { get; private set; } = config.Bind("Keybinds", "Show Keybinds in Control Mapper", true);
 }

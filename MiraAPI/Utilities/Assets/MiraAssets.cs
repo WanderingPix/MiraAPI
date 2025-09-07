@@ -69,7 +69,7 @@ public static class MiraAssets
     /// Gets the Next Button sprite.
     /// </summary>
     public static LoadableResourceAsset NextButton { get; } = new("MiraAPI.Resources.NextButton.png");
-    
+
     /// <summary>
     /// Gets the Mira settings icon..
     /// </summary>
