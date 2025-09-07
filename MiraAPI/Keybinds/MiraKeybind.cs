@@ -8,7 +8,7 @@ namespace MiraAPI.Keybinds;
 /// <summary>
 /// Represents a registered keybind.
 /// </summary>
-public class MiraKeybind
+public class MiraKeybind()
 {
     /// <summary>
     /// Gets name of the keybind
@@ -64,7 +64,7 @@ public class MiraKeybind
         string name,
         KeyboardKeyCode? defaultKeycode,
         ModifierKey[]? modifierKeys = null,
-        bool exclusive = true)
+        bool exclusive = true) : this()
     {
         Name = name;
         Id = name.ToLower(CultureInfo.InvariantCulture).Replace(' ', '_');

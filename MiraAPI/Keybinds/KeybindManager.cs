@@ -17,6 +17,8 @@ public static class KeybindManager
     /// </summary>
     public static List<MiraKeybind> Keybinds { get; } = new();
 
+    internal static List<VanillaKeybind> VanillaKeybinds { get; } = new();
+
     internal static void RewiredInit()
     {
         try
@@ -90,5 +92,15 @@ public static class KeybindManager
         }
 
         return all.ToArray();
+    }
+
+    internal static void RegisterVanillaKeybind(AbilityButton button, InputAction inputAction)
+    {
+        var keybind = new VanillaKeybind(button, inputAction);
+        VanillaKeybinds.Add(keybind);
+        typeof(VanillaKeybindSingleton<>)
+            .MakeGenericType(button.GetType())
+            .GetField("_instance")!
+            .SetValue(null, keybind);
     }
 }

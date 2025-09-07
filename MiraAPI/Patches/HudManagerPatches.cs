@@ -124,6 +124,7 @@ public static class HudManagerPatches
             }
             var icon = Helpers.CreateKeybindIcon(buttonObj, key, keybindIconPos);
             vanillaKeybindIcons.Add(icon.transform.GetChild(0).GetComponent<TextMeshPro>(), actionId);
+            KeybindManager.RegisterVanillaKeybind();
         }
     }
 
