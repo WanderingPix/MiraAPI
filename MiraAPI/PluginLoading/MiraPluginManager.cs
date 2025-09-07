@@ -22,7 +22,6 @@ using MiraAPI.Utilities;
 using Reactor.Networking;
 using Reactor.Utilities;
 using Rewired;
-using UnityEngine;
 
 namespace MiraAPI.PluginLoading;
 
@@ -155,7 +154,7 @@ public sealed class MiraPluginManager
                 Logger<MiraApiPlugin>.Info($"Registered keybind for button '{button.GetType().Name}' with default key {(KeyboardKeyCode)button.DefaultKeybind}.");
             }
         };
-        
+
         RegisterLocalTabs(typeof(MiraApiSettings), PluginSingleton<MiraApiPlugin>.Instance);
     }
 
@@ -395,6 +394,7 @@ public sealed class MiraPluginManager
         {
             Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e.ToString()}");
         }
+
         return false;
     }
 }
