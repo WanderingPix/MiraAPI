@@ -1,18 +1,25 @@
 ﻿using Rewired;
-using TMPro;
-using UnityEngine;
 
 namespace MiraAPI.Keybinds;
 
-public class VanillaKeybind
+/// <summary>
+/// Represents a vanilla keybind.
+/// </summary>
+public class VanillaKeybind : BaseKeybind
 {
-    public AbilityButton Ability { get; }
-    public InputAction RewiredInputAction { get; }
-    public KeyboardKeyCode CurrentKey => KeybindUtils.GetKeycodeByActionId(RewiredInputAction.id);
+    /// <summary>
+    /// Gets the <see cref="ActionButton"/> this keybind is binded to.
+    /// </summary>
+    public ActionButton? Button { get; }
 
-    public VanillaKeybind(AbilityButton ability, InputAction inputAction)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VanillaKeybind"/> class.
+    /// </summary>
+    /// <param name="button">The keybind action button.</param>
+    /// <param name="action">The rewired input action.</param>
+    public VanillaKeybind(ActionButton button, InputAction action) : base(action.name)
     {
-        Ability = ability;
-        RewiredInputAction = inputAction;
+        Button = button;
+        RewiredInputAction = action;
     }
 }

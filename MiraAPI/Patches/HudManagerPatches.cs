@@ -45,6 +45,33 @@ public static class HudManagerPatches
     [HarmonyPatch(nameof(HudManager.Start))]
     public static void StartPostfix(HudManager __instance)
     {
+        vanillaKeybindIcons = [];
+        var keybindIconPos = new Vector3(-0.4f, 0.4f, -9f);
+        var vanillaButtons = new Dictionary<GameObject, int>
+        {
+            { __instance.KillButton.gameObject, 8 },
+            { __instance.UseButton.gameObject, 6 },
+            { __instance.ReportButton.gameObject, 7 },
+            { __instance.ImpostorVentButton.gameObject, 50 },
+            { __instance.SabotageButton.gameObject, 4 },
+        };
+
+        KeybindManager.VanillaKeybinds.Clear();
+        foreach (var kvp in vanillaButtons)
+        {
+            var buttonObj = kvp.Key;
+            var actionId = kvp.Value;
+
+            var key = KeybindUtils.GetKeycodeByActionId(actionId);
+            if (key == KeyboardKeyCode.None)
+            {
+                continue;
+            }
+            var icon = Helpers.CreateKeybindIcon(buttonObj, key, keybindIconPos);
+            vanillaKeybindIcons.Add(icon.transform.GetChild(0).GetComponent<TextMeshPro>(), actionId);
+            KeybindManager.RegisterVanillaKeybind(buttonObj.GetComponent<ActionButton>(), actionId);
+        }
+
         if (Buttons == null)
         {
             Buttons = __instance.transform.Find("Buttons");
@@ -100,32 +127,6 @@ public static class HudManagerPatches
         gridArrange.ArrangeChilds();
 
         aspectPosition.AdjustPosition();
-
-        vanillaKeybindIcons = [];
-        var keybindIconPos = new Vector3(-0.4f, 0.4f, -9f);
-        var vanillaButtons = new Dictionary<GameObject, int>
-        {
-            { __instance.KillButton.gameObject, 8 },
-            { __instance.UseButton.gameObject, 6 },
-            { __instance.ReportButton.gameObject, 7 },
-            { __instance.ImpostorVentButton.gameObject, 50 },
-            { __instance.SabotageButton.gameObject, 4 },
-        };
-
-        foreach (var kvp in vanillaButtons)
-        {
-            var buttonObj = kvp.Key;
-            var actionId = kvp.Value;
-
-            var key = KeybindUtils.GetKeycodeByActionId(actionId);
-            if (key == KeyboardKeyCode.None)
-            {
-                continue;
-            }
-            var icon = Helpers.CreateKeybindIcon(buttonObj, key, keybindIconPos);
-            vanillaKeybindIcons.Add(icon.transform.GetChild(0).GetComponent<TextMeshPro>(), actionId);
-            KeybindManager.RegisterVanillaKeybind();
-        }
     }
 
     /// <summary>
@@ -169,14 +170,20 @@ public static class HudManagerPatches
                                                               PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value);
         }
 
+        var player = ReInput.players.GetPlayer(0);
         foreach (var entry in KeybindManager.Keybinds)
         {
-            var player = ReInput.players.GetPlayer(0);
             var keyboard = player.controllers.Keyboard;
-
             bool modifierKeysPressed = entry.ModifierKeys.All(k => keyboard.GetModifierKey(k)) ||
                                        entry.ModifierKeys.Length <= 0;
             if (player.GetButtonDown(entry.Id) && modifierKeysPressed)
+            {
+                entry.Invoke();
+            }
+        }
+        foreach (var entry in KeybindManager.VanillaKeybinds.Values)
+        {
+            if (player.GetButtonDown(entry.Id))
             {
                 entry.Invoke();
             }

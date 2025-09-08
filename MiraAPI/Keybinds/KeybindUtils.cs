@@ -18,11 +18,11 @@ public static class KeybindUtils
     /// </summary>
     /// <param name="keybind">The keybind to get the keycode from.</param>
     /// <returns>The currently assigned keycode.</returns>
-    public static KeyboardKeyCode? GetKeycodeByKeybind(MiraKeybind keybind)
+    public static KeyboardKeyCode GetKeycodeByKeybind(BaseKeybind keybind)
     {
         if (keybind.RewiredInputAction == null)
         {
-            return null;
+            return KeyboardKeyCode.None;
         }
 
         return GetKeycodeByActionId(keybind.RewiredInputAction.id);
@@ -35,9 +35,28 @@ public static class KeybindUtils
     /// <returns>The keyboard keycode.</returns>
     public static KeyboardKeyCode GetKeycodeByActionId(int actionId)
     {
+        return GetActionElementMap(actionId)?.keyboardKeyCode ?? KeyboardKeyCode.None;
+    }
+
+    /// <summary>
+    /// Gets a <see cref="ActionElementMap"/> by id with ReInput.
+    /// </summary>
+    /// <param name="actionId">The action ID.</param>
+    /// <returns>The keyboard keycode.</returns>
+    public static ActionElementMap? GetActionElementMap(int actionId)
+    {
         var player = ReInput.players.GetPlayer(0);
-        return player.controllers.maps.GetFirstElementMapWithAction(ControllerType.Keyboard, actionId, false)?
-            .keyboardKeyCode ?? KeyboardKeyCode.None;
+        return player.controllers.maps.GetFirstElementMapWithAction(ControllerType.Keyboard, actionId, false);
+    }
+
+    /// <summary>
+    /// Gets an <see cref="InputAction"/> by id.
+    /// </summary>
+    /// <param name="id">The action identifier name.</param>
+    /// <returns>The keyboard keycode.</returns>
+    public static InputAction? GetInputActionById(int id)
+    {
+        return RewiredInputManager?.userData?.GetActionById(id);
     }
 
     /// <summary>
