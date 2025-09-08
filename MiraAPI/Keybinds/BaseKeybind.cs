@@ -16,7 +16,7 @@ public class BaseKeybind
     /// <summary>
     /// Gets the unique identifier for this keybind. Used in Rewired.
     /// </summary>
-    public string Id { get; }
+    public string Id { get; protected set; }
 
     /// <summary>
     /// Gets the currently assigned keycode.
@@ -35,6 +35,11 @@ public class BaseKeybind
     public BaseKeybind(string id)
     {
         Id = id;
+        Handler = () => { };
+    }
+
+    public BaseKeybind()
+    {
         Handler = () => { };
     }
 

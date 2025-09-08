@@ -1,5 +1,6 @@
 using HarmonyLib;
 using MiraAPI.Keybinds;
+using MonoMod.Utils;
 using Rewired;
 
 namespace MiraAPI.Patches.Keybinds;
@@ -20,5 +21,15 @@ public static class KeybindMenuPatch
         KeybindUtils.RewiredInputManager = __instance;
         KeybindManager.RewiredInit();
         _registered = true;
+
+        // Set these here right after input manager initializes
+        KeybindManager.VanillaKeybinds = new()
+        {
+            { typeof(KillButton), new VanillaKeybind(8) },
+            { typeof(UseButton), new VanillaKeybind(6) },
+            { typeof(ReportButton), new VanillaKeybind(7) },
+            { typeof(VentButton), new VanillaKeybind(50) },
+            { typeof(SabotageButton), new VanillaKeybind(4) },
+        };
     }
 }

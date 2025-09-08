@@ -10,16 +10,15 @@ public class VanillaKeybind : BaseKeybind
     /// <summary>
     /// Gets the <see cref="ActionButton"/> this keybind is binded to.
     /// </summary>
-    public ActionButton? Button { get; }
+    public ActionButton? Button { get; internal set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VanillaKeybind"/> class.
     /// </summary>
-    /// <param name="button">The keybind action button.</param>
-    /// <param name="action">The rewired input action.</param>
-    public VanillaKeybind(ActionButton button, InputAction action) : base(action.name)
+    /// <param name="id">The keybind id.</param>
+    public VanillaKeybind(int id)
     {
-        Button = button;
-        RewiredInputAction = action;
+        RewiredInputAction = KeybindUtils.GetInputActionById(id);
+        Id = RewiredInputAction?.name;
     }
 }

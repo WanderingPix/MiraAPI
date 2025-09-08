@@ -16,7 +16,8 @@ public static class KeybindManager
     /// Gets a list of all registered keybinds.
     /// </summary>
     public static List<MiraKeybind> Keybinds { get; } = new();
-    internal static Dictionary<Type, VanillaKeybind> VanillaKeybinds { get; } = new();
+
+    internal static Dictionary<Type, VanillaKeybind> VanillaKeybinds { get; set; }
 
     internal static void RewiredInit()
     {
@@ -91,11 +92,5 @@ public static class KeybindManager
         }
 
         return all.ToArray();
-    }
-
-    internal static void RegisterVanillaKeybind(ActionButton button, int id)
-    {
-        var keybind = new VanillaKeybind(button, KeybindUtils.GetInputActionById(id)!);
-        VanillaKeybinds.Add(button.GetType(), keybind);
     }
 }
