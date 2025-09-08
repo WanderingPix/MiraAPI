@@ -71,6 +71,11 @@ public static class MiraAssets
     public static LoadableResourceAsset NextButton { get; } = new("MiraAPI.Resources.NextButton.png");
 
     /// <summary>
+    /// Gets the Mira settings icon..
+    /// </summary>
+    public static LoadableResourceAsset SettingsIcon { get; } = new("MiraAPI.Resources.Settings.png");
+
+    /// <summary>
     /// Gets the highlighted Next Button sprite.
     /// </summary>
     public static LoadableResourceAsset NextButtonActive { get; } = new("MiraAPI.Resources.NextButtonActive.png");
@@ -99,4 +104,9 @@ public static class MiraAssets
     /// Gets the sprite used for the Keybind icons.
     /// </summary>
     public static LoadableResourceAsset KeybindButton { get; } = new("MiraAPI.Resources.KeybindButton.png");
+
+    /// <summary>
+    /// Gets the sprite used for timed modifier file in TaskAdderGame.
+    /// </summary>
+    public static LoadableResourceAsset TimedModifierFile { get; } = new("MiraAPI.Resources.TimedModifierFile.png");
 }

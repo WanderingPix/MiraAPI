@@ -3,6 +3,7 @@ using System.Globalization;
 using MiraAPI.Events;
 using MiraAPI.Events.Mira;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
 using MiraAPI.Patches;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
@@ -494,7 +495,7 @@ public abstract class CustomActionButton
         {
             KeybindText.text = Keybind.CurrentKey.ToString();
             KeybindIcon?.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
-                                   PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value &&
+                                   LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value &&
                                    Keybind.CurrentKey != KeyboardKeyCode.None);
         }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using MiraAPI.Hud;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
@@ -101,7 +102,7 @@ public static class HudManagerPatches
         aspectPosition.AdjustPosition();
 
         vanillaKeybindIcons = [];
-        var keybindIconPos = new Vector3(-0.4f, 0.4f, -9f);
+        var keybindIconPos = new Vector3(-0.4f, 0.4f, -9.5f);
         var vanillaButtons = new Dictionary<GameObject, int>
         {
             { __instance.KillButton.gameObject, 8 },
@@ -167,7 +168,7 @@ public static class HudManagerPatches
         {
             btnIcon.Key.text = KeybindUtils.GetKeycodeByActionId(btnIcon.Value).ToString();
             btnIcon.Key.transform.parent.gameObject.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
-                                                              PluginSingleton<MiraApiPlugin>.Instance.MiraConfig!.ShowKeybinds.Value);
+                                                              LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value);
         }
 
         var player = ReInput.players.GetPlayer(0);

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using MiraAPI.Colors;
 using MiraAPI.Events;
@@ -12,12 +13,15 @@ using MiraAPI.GameOptions;
 using MiraAPI.GameOptions.Attributes;
 using MiraAPI.Hud;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
+using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Modifiers;
 using MiraAPI.Presets;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
 using Reactor.Networking;
 using Reactor.Utilities;
+using Rewired;
 
 namespace MiraAPI.PluginLoading;
 
@@ -91,6 +95,11 @@ public sealed class MiraPluginManager
                     continue;
                 }
 
+                if (RegisterLocalTabs(type, plugin))
+                {
+                    continue;
+                }
+
                 if (RegisterRole(type, info, out var role))
                 {
                     roles.Add(role);
@@ -137,6 +146,7 @@ public sealed class MiraPluginManager
         };
 
         RegisterKeybinds(typeof(MiraGlobalKeybinds), PluginSingleton<MiraApiPlugin>.Instance);
+        RegisterLocalTabs(typeof(MiraApiSettings), PluginSingleton<MiraApiPlugin>.Instance);
     }
 
     /// <summary>
@@ -303,6 +313,77 @@ public sealed class MiraPluginManager
         catch (Exception e)
         {
             Logger<MiraApiPlugin>.Error($"Failed to register button {type.Name}: {e}");
+        }
+
+        return false;
+    }
+
+    private static bool RegisterLocalTabs(Type type, BasePlugin pluginInfo)
+    {
+        try
+        {
+            if (!type.IsAssignableTo(typeof(LocalSettingsTab)))
+            {
+                return false;
+            }
+
+            if (!LocalSettingsManager.RegisterTab(type, pluginInfo))
+            {
+                return false;
+            }
+
+            foreach (var property in type.GetProperties())
+            {
+                if (LocalSettingsManager.TypeToTab[type] is not { } tabInstance)
+                {
+                    continue;
+                }
+
+                if (property.GetCustomAttribute<LocalSettingsButtonAttribute>() != null &&
+                    property.PropertyType.IsAssignableTo(typeof(LocalSettingsButton)))
+                {
+                    var button = property.GetValue(tabInstance) as LocalSettingsButton;
+                    button!.Tab = tabInstance;
+                    tabInstance.Buttons.Add(button);
+                    continue;
+                }
+
+                if (!typeof(ConfigEntryBase).IsAssignableFrom(property.PropertyType))
+                {
+                    continue;
+                }
+
+                if (property.GetMethod?.IsStatic == true)
+                {
+                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} must not be static.");
+                    continue;
+                }
+
+                if (property.GetValue(tabInstance) is not ConfigEntryBase configEntry)
+                {
+                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} has to be a config entry.");
+                    continue;
+                }
+
+                var attribute = property.GetCustomAttribute<LocalSettingAttribute>();
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                attribute.CreateSetting(type, configEntry);
+            }
+
+            foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(ConfigEntryBase)) && f.GetCustomAttribute<LocalSettingAttribute>() != null))
+            {
+                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for local settings.");
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e.ToString()}");
         }
 
         return false;

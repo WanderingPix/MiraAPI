@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using MiraAPI.Keybinds;
+using MiraAPI.LocalSettings;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using Rewired.UI.ControlMapper;
@@ -26,7 +27,7 @@ public static class ControlMapperPatches
 
         var toggle = Object.Instantiate(doneButton, doneButton.transform.parent);
         var text = toggle.GetComponentInChildren<TextMeshProUGUI>();
-        var entry = PluginSingleton<MiraApiPlugin>.Instance!.MiraConfig!.ShowKeybinds;
+        var entry = LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds;
         toggle.gameObject.name = "KeybindsVisibleToggle";
         text.text = $"Show Keybinds: {(entry.Value ? "On" : "Off")}";
         toggle.onClick.RemoveAllListeners();
