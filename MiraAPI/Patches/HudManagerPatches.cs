@@ -99,7 +99,6 @@ public static class HudManagerPatches
 
         gridArrange.Start();
         gridArrange.ArrangeChilds();
-
         aspectPosition.AdjustPosition();
 
         vanillaKeybindIcons = [];
@@ -111,6 +110,7 @@ public static class HudManagerPatches
             { __instance.ReportButton.gameObject, 7 },
             { __instance.ImpostorVentButton.gameObject, 50 },
             { __instance.SabotageButton.gameObject, 4 },
+            { __instance.AbilityButton.gameObject, 49 },
         };
 
         foreach (var kvp in vanillaButtons)
@@ -125,6 +125,8 @@ public static class HudManagerPatches
             }
             var icon = Helpers.CreateKeybindIcon(buttonObj, key, keybindIconPos);
             vanillaKeybindIcons.Add(icon.transform.GetChild(0).GetComponent<TextMeshPro>(), actionId);
+            var comp = buttonObj.GetComponent<ActionButton>();
+            KeybindManager.VanillaKeybinds[comp.GetType()].Button = comp;
         }
     }
 
@@ -169,14 +171,20 @@ public static class HudManagerPatches
                                                               LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value);
         }
 
+        var player = ReInput.players.GetPlayer(0);
         foreach (var entry in KeybindManager.Keybinds)
         {
-            var player = ReInput.players.GetPlayer(0);
             var keyboard = player.controllers.Keyboard;
-
             bool modifierKeysPressed = entry.ModifierKeys.All(k => keyboard.GetModifierKey(k)) ||
                                        entry.ModifierKeys.Length <= 0;
             if (player.GetButtonDown(entry.Id) && modifierKeysPressed)
+            {
+                entry.Invoke();
+            }
+        }
+        foreach (var entry in KeybindManager.VanillaKeybinds.Values)
+        {
+            if (player.GetButtonDown(entry.Id))
             {
                 entry.Invoke();
             }

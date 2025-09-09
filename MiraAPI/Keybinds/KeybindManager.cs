@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using MiraAPI.Utilities;
 using Reactor.Utilities;
 using Rewired;
@@ -16,6 +17,9 @@ public static class KeybindManager
     /// Gets a list of all registered keybinds.
     /// </summary>
     public static List<MiraKeybind> Keybinds { get; } = new();
+
+    [HideFromIl2Cpp]
+    internal static Dictionary<Type, VanillaKeybind> VanillaKeybinds { get; set; } = [];
 
     internal static void RewiredInit()
     {

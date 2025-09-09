@@ -8,6 +8,7 @@ using MiraAPI.Patches;
 using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities;
+using Rewired;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -75,7 +76,7 @@ public abstract class CustomActionButton
     /// <summary>
     /// Gets the keybind for this button. If null, no keybind will be added.
     /// </summary>
-    public virtual MiraKeybind? Keybind => null;
+    public virtual BaseKeybind? Keybind => null;
 
     /// <summary>
     /// Gets the button's text outline color.
@@ -494,7 +495,8 @@ public abstract class CustomActionButton
         {
             KeybindText.text = Keybind.CurrentKey.ToString();
             KeybindIcon?.SetActive(ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard &&
-                                   LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value);
+                                   LocalSettingsTabSingleton<MiraApiSettings>.Instance.ShowKeybinds.Value &&
+                                   Keybind.CurrentKey != KeyboardKeyCode.None);
         }
 
         if (Timer >= 0)

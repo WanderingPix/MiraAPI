@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Reactor.Utilities;
+﻿using System.Globalization;
 using Rewired;
 
 namespace MiraAPI.Keybinds;
@@ -8,7 +6,7 @@ namespace MiraAPI.Keybinds;
 /// <summary>
 /// Represents a registered keybind.
 /// </summary>
-public class MiraKeybind
+public class MiraKeybind : BaseKeybind
 {
     /// <summary>
     /// Gets name of the keybind
@@ -16,40 +14,20 @@ public class MiraKeybind
     public string Name { get; }
 
     /// <summary>
-    /// Gets the unique identifier for this keybind. Used in Rewired.
-    /// </summary>
-    public string Id { get; }
-
-    /// <summary>
     /// Gets the default keycode of this keybind.
     /// </summary>
     public KeyboardKeyCode DefaultKey { get; }
 
     /// <summary>
-    /// Gets a value indicating whether this keybind should be checked for conflicts with other exclusive keybinds using the same key.
-    /// </summary>
-    public bool Exclusive { get; }
-
-    /// <summary>
-    /// Gets the modifier keys assinged to this keybind.
+    /// Gets the modifier keys assigned to this keybind.
     /// Due to Rewired limitations, there can only be 3 modifier keys.
     /// </summary>
     public ModifierKey[] ModifierKeys { get; }
 
     /// <summary>
-    /// Gets the Rewired <see cref="InputAction"/> assinged for this keybind.
+    /// Gets a value indicating whether this keybind should be checked for conflicts with other exclusive keybinds using the same key.
     /// </summary>
-    public InputAction? RewiredInputAction { get; internal set; }
-
-    /// <summary>
-    /// Gets the currently assigned keycode.
-    /// </summary>
-    public KeyboardKeyCode CurrentKey => KeybindUtils.GetKeycodeByKeybind(this) ?? KeyboardKeyCode.None;
-
-    /// <summary>
-    /// Gets or sets the handler of the keybind. Invoked when the keybind is activated.
-    /// </summary>
-    private Action Handler { get; set; }
+    public bool Exclusive { get; }
 
     internal string? SourcePluginName { get; set; }
 
@@ -64,46 +42,17 @@ public class MiraKeybind
         string name,
         KeyboardKeyCode? defaultKeycode,
         ModifierKey[]? modifierKeys = null,
-        bool exclusive = true)
+        bool exclusive = true) : base(name.ToLower(CultureInfo.InvariantCulture).Replace(' ', '_'))
     {
         Name = name;
-        Id = name.ToLower(CultureInfo.InvariantCulture).Replace(' ', '_');
         DefaultKey = defaultKeycode ?? KeyboardKeyCode.None;
-        ModifierKeys = modifierKeys ?? Array.Empty<ModifierKey>();
+        ModifierKeys = modifierKeys ?? [];
         Exclusive = exclusive;
-        Handler = () => { };
     }
 
     /// <inheritdoc/>
     public override string ToString()
     {
         return $"{Name} ({Id})";
-    }
-
-    /// <summary>
-    /// Triggers the keybind, invoking its handler.
-    /// </summary>
-    public void Invoke()
-    {
-        Handler.Invoke();
-    }
-
-    /// <summary>
-    /// Adds an <see cref="Action"/> that will be invoked when the keybind is used.
-    /// </summary>
-    /// <param name="action">The <see cref="Action"/> to add.</param>
-    public void OnActivate(Action action)
-    {
-        Handler += action;
-    }
-
-    /// <summary>
-    /// Removes an <see cref="Action"/> that would be invoked when the keybind is used.
-    /// Not recommended to use - add checks in the method added in <see cref="OnActivate"/> itself rather than removing it from the keybind.
-    /// </summary>
-    /// <param name="action">The <see cref="Action"/> to remove.</param>
-    public void RemoveOnActivate(Action action)
-    {
-        Handler -= action;
     }
 }
