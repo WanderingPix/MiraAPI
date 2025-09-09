@@ -110,9 +110,9 @@ public static class HudManagerPatches
             { __instance.ReportButton.gameObject, 7 },
             { __instance.ImpostorVentButton.gameObject, 50 },
             { __instance.SabotageButton.gameObject, 4 },
+            { __instance.AbilityButton.gameObject, 49 },
         };
 
-        KeybindManager.VanillaKeybinds.Clear();
         foreach (var kvp in vanillaButtons)
         {
             var buttonObj = kvp.Key;
