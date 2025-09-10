@@ -181,7 +181,7 @@ internal static class TaskAdderPatches
         {
             __instance.PathText.fontSizeMin = 3;
             __instance.PathText.fontSizeMax = 3;
-            __instance.transform.FindChild("TitleText_TMP").gameObject.SetActive(false);
+            __instance.transform.FindChild("TitleText_TMP")?.gameObject.DestroyImmediate();
         }
 
         __instance.ActiveItems.ToArray().Do(x => x.gameObject.Destroy());
