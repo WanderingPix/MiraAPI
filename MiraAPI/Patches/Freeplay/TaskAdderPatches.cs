@@ -88,7 +88,7 @@ internal static class TaskAdderPatches
                 var folderName = customRole!.Configuration.FreeplayFolder;
                 if (!folders.TryGetValue(folderName, out var teamFolder))
                 {
-                    teamFolder = __instance.CreateFolder(folderName, __instance.Root, folderIdx++, customRole.RoleColor);
+                    teamFolder = __instance.CreateFolder(folderName, __instance.Root, folderIdx++, customRole.IntroConfiguration?.IntroTeamColor ?? Color.gray);
                     folders.Add(folderName, teamFolder);
                 }
 
@@ -263,11 +263,17 @@ internal static class TaskAdderPatches
             TaskAddButton roleAddButton = Object.Instantiate(__instance.RoleButton);
             roleAddButton.SafePositionWorld = __instance.SafePositionWorld;
             roleAddButton.Text.text = prettyEnabled ? role.NiceName : "Be_" + role.NiceName + ".exe";
-            roleAddButton.Text.fontSizeMin = 1;
             roleAddButton.Role = role;
-            if (prettyEnabled) roleAddButton.FileImage.sprite = MiraAssets.RoleFile.LoadAsset();
+            if (prettyEnabled)
+            {
+                roleAddButton.Text.fontSizeMin = 1;
+                roleAddButton.FileImage.sprite = role.IsImpostor
+                    ? MiraAssets.ImpostorFile.LoadAsset()
+                    : MiraAssets.CrewmateFile.LoadAsset();
+            }
             if (role is ICustomRole custom)
             {
+                if (prettyEnabled && custom.Team == ModdedRoleTeams.Custom) roleAddButton.FileImage.sprite = MiraAssets.CustomTeamFile.LoadAsset();
                 var customColor = custom.IntroConfiguration?.IntroTeamColor ?? Color.gray;
                 if (custom.Team is ModdedRoleTeams.Crewmate)
                 {

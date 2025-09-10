@@ -106,9 +106,19 @@ public static class MiraAssets
     public static LoadableResourceAsset KeybindButton { get; } = new("MiraAPI.Resources.KeybindButton.png");
 
     /// <summary>
-    /// Gets the sprite used for role file in TaskAdderGame.
+    /// Gets the sprite used for crewmate role files in TaskAdderGame.
     /// </summary>
-    public static LoadableResourceAsset RoleFile { get; } = new("MiraAPI.Resources.RoleFile.png");
+    public static LoadableResourceAsset CrewmateFile { get; } = new("MiraAPI.Resources.CrewmateFile.png");
+    
+    /// <summary>
+    /// Gets the sprite used for impostor role files in TaskAdderGame.
+    /// </summary>
+    public static LoadableResourceAsset ImpostorFile { get; } = new("MiraAPI.Resources.ImpostorFile.png");
+    
+    /// <summary>
+    /// Gets the sprite used for custom team role files in TaskAdderGame.
+    /// </summary>
+    public static LoadableResourceAsset CustomTeamFile { get; } = new("MiraAPI.Resources.CustomFile.png");
 
     /// <summary>
     /// Gets the sprite used for modifier file in TaskAdderGame.
