@@ -106,6 +106,16 @@ public static class MiraAssets
     public static LoadableResourceAsset KeybindButton { get; } = new("MiraAPI.Resources.KeybindButton.png");
 
     /// <summary>
+    /// Gets the sprite used for role file in TaskAdderGame.
+    /// </summary>
+    public static LoadableResourceAsset RoleFile { get; } = new("MiraAPI.Resources.RoleFile.png");
+
+    /// <summary>
+    /// Gets the sprite used for modifier file in TaskAdderGame.
+    /// </summary>
+    public static LoadableResourceAsset ModifierFile { get; } = new("MiraAPI.Resources.ModifierFile.png");
+
+    /// <summary>
     /// Gets the sprite used for timed modifier file in TaskAdderGame.
     /// </summary>
     public static LoadableResourceAsset TimedModifierFile { get; } = new("MiraAPI.Resources.TimedModifierFile.png");
