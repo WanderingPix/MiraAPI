@@ -128,6 +128,7 @@ public abstract class LocalSettingsTab(ConfigFile config)
              {
                  CreateLabel(generalLabel, Scroller.Inner, pair.Key, ref contentOffset);
                  contentOrder = 1;
+                 contentIndex = 1;
              }
 
              foreach (var setting in pair.Value)
