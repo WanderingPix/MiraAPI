@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Il2CppSystem;
 using MiraAPI.LocalSettings;
 using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
@@ -113,6 +117,94 @@ internal static class TaskAdderPatches
 
         __instance.GoToRoot();
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(TaskAdderGame.PopulateRoot))]
+    private static bool PopulateRootPrefix(TaskAdderGame __instance, TaskAdderGame.FolderType folderType, TaskFolder rootFolder, Il2CppSystem.Collections.Generic.Dictionary<string, TaskFolder> folders, Il2CppReferenceArray<NormalPlayerTask> taskList)
+    {
+        if (folderType != TaskAdderGame.FolderType.Tasks)
+        {
+            if (folderType != TaskAdderGame.FolderType.Roles)
+            {
+                return false;
+            }
+
+            TaskFolder crewFolder = folders["Crewmates"] =
+                Object.Instantiate(__instance.RootFolderPrefab, __instance.transform);
+            crewFolder.gameObject.SetActive(false);
+            crewFolder.SetFolderColor(TaskFolder.FolderColor.Blue);
+            TaskFolder impFolder = folders["Impostors"] =
+                Object.Instantiate(__instance.RootFolderPrefab, __instance.transform);
+            impFolder.gameObject.SetActive(false);
+            impFolder.SetFolderColor(TaskFolder.FolderColor.Red);
+            crewFolder.FolderName = TranslationController.Instance.GetString(StringNames.Crewmate);
+            impFolder.FolderName = TranslationController.Instance.GetString(StringNames.Impostor);
+            rootFolder.SubFolders.Insert(0, crewFolder);
+            rootFolder.SubFolders.Insert(0, impFolder);
+            Il2CppSystem.Collections.Generic.List<RoleBehaviour> impRoles = new();
+            Il2CppSystem.Collections.Generic.List<RoleBehaviour> crewRoles = new();
+            foreach (var role in RoleManager.Instance.AllRoles)
+            {
+                if (role.Role != RoleTypes.ImpostorGhost && role.Role != RoleTypes.CrewmateGhost &&
+                    !role.IsCustomRole())
+                {
+                    if (role.TeamType == RoleTeamTypes.Crewmate)
+                    {
+                        crewRoles.Add(role);
+                    }
+                    else
+                    {
+                        impRoles.Add(role);
+                    }
+                }
+            }
+
+            crewFolder.RoleChildren = crewRoles;
+            impFolder.RoleChildren = impRoles;
+            return false;
+        }
+
+        if (taskList == null)
+        {
+            return false;
+        }
+
+        foreach (NormalPlayerTask normalPlayerTask in taskList)
+        {
+            SystemTypes systemTypes = normalPlayerTask.StartAt;
+            if (normalPlayerTask is DivertPowerTask task)
+            {
+                systemTypes = task.TargetSystem;
+            }
+
+            if (systemTypes == SystemTypes.LowerEngine)
+            {
+                systemTypes = SystemTypes.UpperEngine;
+            }
+
+            if (!folders.TryGetValue(systemTypes.ToString(), out var taskFolder3))
+            {
+                taskFolder3 = folders[systemTypes.ToString()] = Object.Instantiate(__instance.RootFolderPrefab, __instance.transform);
+                taskFolder3.SetFolderColor(TaskFolder.FolderColor.Tan);
+                taskFolder3.gameObject.SetActive(false);
+                if (systemTypes == SystemTypes.UpperEngine)
+                {
+                    taskFolder3.FolderName = TranslationController.Instance.GetString(StringNames.Engines);
+                }
+                else
+                {
+                    taskFolder3.FolderName = TranslationController.Instance.GetString(systemTypes);
+                }
+
+                rootFolder.SubFolders.Add(taskFolder3);
+            }
+
+            taskFolder3.TaskChildren.Add(normalPlayerTask);
+        }
+
+        return false;
+    }
+
 
     private static TaskFolder CreateFolder(this TaskAdderGame instance, string name, TaskFolder parent, int idx = -1, Color? color = null)
     {
