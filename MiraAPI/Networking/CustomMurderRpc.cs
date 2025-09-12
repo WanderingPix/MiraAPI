@@ -222,7 +222,7 @@ public static class CustomMurderRpc
 
         if (createDeadBody)
         {
-            deadBody = Object.Instantiate(GameManager.Instance.DeadBodyPrefab);
+            deadBody = Object.Instantiate(GameManager.Instance.deadBodyPrefab[0]);
             deadBody.enabled = false;
             deadBody.ParentId = target.PlayerId;
             deadBody.bodyRenderers.ToList().ForEach(target.SetPlayerMaterialColors);

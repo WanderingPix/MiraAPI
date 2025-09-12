@@ -30,4 +30,10 @@ public class MiraApiSettings(ConfigFile config) : LocalSettingsTab(config)
     /// Gets whether to show keybinds in the control mapper.
     /// </summary>
     public ConfigEntry<bool> ShowKeybinds { get; private set; } = config.Bind("Keybinds", "Show Keybinds in Control Mapper", true);
+
+    /// <summary>
+    /// Gets whether to apply cosmetic changes to the TaskAdder.
+    /// </summary>
+    [LocalToggleSetting]
+    public ConfigEntry<bool> PrettyTaskAdder { get; private set; } = config.Bind("Freeplay", "Pretty Task Laptop", true);
 }
