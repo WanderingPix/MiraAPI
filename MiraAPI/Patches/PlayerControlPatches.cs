@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using HarmonyLib;
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
@@ -64,6 +65,48 @@ internal static class PlayerControlPatches
             var completeTaskEvent = new CompleteTaskEvent(__instance, playerTask);
             MiraEventManager.InvokeEvent(completeTaskEvent);
         }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PlayerControl.CheckMurder))]
+    public static void PlayerControlCheckMurderPrefix(PlayerControl __instance, PlayerControl target, ref bool __runOriginal)
+    {
+        __runOriginal = false;
+
+        __instance.logger.Debug($"Checking if {__instance.PlayerId} murdered {(target == null ? "null player" : target.PlayerId.ToString(NumberFormatInfo.InvariantInfo))}");
+
+        __instance.isKilling = false;
+        if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+        {
+            return;
+        }
+
+        if (!target || __instance.Data.IsDead || !__instance.Data.Role.IsImpostor || __instance.Data.Disconnected)
+        {
+            int num = target ? target!.PlayerId : -1;
+            __instance.logger.Warning($"Bad kill from {__instance.PlayerId} to {num}");
+            __instance.RpcMurderPlayer(target, false);
+            return;
+        }
+
+        NetworkedPlayerInfo data = target!.Data;
+        if (data == null || data.IsDead || target.inVent || target.MyPhysics.Animations.IsPlayingEnterVentAnimation() ||
+            target.MyPhysics.Animations.IsPlayingAnyLadderAnimation() || target.inMovingPlat)
+        {
+            __instance.logger.Warning("Invalid target data for kill");
+            __instance.RpcMurderPlayer(target, false);
+            return;
+        }
+
+        if (MeetingHud.Instance)
+        {
+            __instance.logger.Warning("Tried to kill while a meeting was starting");
+            __instance.RpcMurderPlayer(target, false);
+            return;
+        }
+
+        __instance.isKilling = true;
+        __instance.RpcMurderPlayer(target, true);
     }
 
     [HarmonyPrefix]
