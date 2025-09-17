@@ -11,7 +11,6 @@ using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
 using MiraAPI.Utilities.Assets;
-using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -73,9 +72,9 @@ internal static class TaskAdderPatches
         var modifiersFolder = __instance.CreateFolder("Modifiers", __instance.Root, 0, Color.blue);
 
         folders.Clear();
-        folders.Add("Crewmate", crewmateFolder);
-        folders.Add("Impostor", impostorFolder);
-        folders.Add("Neutral", neutralFolder);
+        folders.Add(crewmateFolder.FolderName, crewmateFolder);
+        folders.Add(impostorFolder.FolderName, impostorFolder);
+        folders.Add("Neutrals", neutralFolder);
         folders.Add("Modifiers", modifiersFolder);
 
         int folderIdx = 3;
@@ -143,8 +142,7 @@ internal static class TaskAdderPatches
             Il2CppSystem.Collections.Generic.List<RoleBehaviour> crewRoles = new();
             foreach (var role in RoleManager.Instance.AllRoles)
             {
-                if (role.Role != RoleTypes.ImpostorGhost && role.Role != RoleTypes.CrewmateGhost &&
-                    !role.IsCustomRole())
+                if (role.Role != RoleTypes.ImpostorGhost && role.Role != RoleTypes.CrewmateGhost && !role.IsCustomRole())
                 {
                     if (role.TeamType == RoleTeamTypes.Crewmate)
                     {
@@ -369,10 +367,15 @@ internal static class TaskAdderPatches
             }
         }
 
-        var split = taskFolder
-            .name
-            .Replace("(Clone)", string.Empty)
-            .Split(':');
+        string[] split = [];
+        try
+        {
+            split = taskFolder.name.Replace("(Clone)", string.Empty).Split(':');
+        }
+        catch
+        {
+            // I hate you
+        }
         if (split is ["Roles", _, _] && folders.Any(x => taskFolder.IsChildOf(x.Value)))
         {
             var plugin = MiraPluginManager.GetPluginByGuid(split[2]);
@@ -401,7 +404,6 @@ internal static class TaskAdderPatches
                     roleAddButton.MyTask = null;
                     roleAddButton.SafePositionWorld = __instance.SafePositionWorld;
                     roleAddButton.Text.text = prettyEnabled ? roleBehaviour.NiceName : "Be_" + roleBehaviour.NiceName + ".exe";
-                    roleAddButton.Text.fontSizeMin = 1;
                     roleAddButton.Text.EnableMasking();
                     roleAddButton.role = roleBehaviour;
                     if (prettyEnabled)
