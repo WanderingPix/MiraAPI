@@ -536,13 +536,14 @@ public static class RoleSettingMenuPatches
         {
             var roleIcon = new GameObject("RoleIcon");
             roleIcon.transform.parent = roleOptionSetting.transform;
-                roleIcon.transform.localScale = new(.25f, .25f, 1);
-                roleIcon.layer = LayerMask.NameToLayer("UI");
-                roleIcon.transform.localPosition = new Vector3(-1.3f, -0.3f, -2f);
-                var rend = roleIcon.AddComponent<SpriteRenderer>();
-                rend.sprite = customRole.Configuration.Icon.LoadAsset();
-                rend.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-            }
+            roleIcon.transform.localScale = new(.25f, .25f, 1);
+            roleIcon.layer = LayerMask.NameToLayer("UI");
+            roleIcon.transform.localPosition = new Vector3(-1.3f, -0.3f, -2f);
+            var rend = roleIcon.AddComponent<SpriteRenderer>();
+            rend.sprite = customRole.Configuration.Icon.LoadAsset();
+
+            rend.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        }
 
         if (GameSettingMenuPatches.SelectedMod is null ||
             GameSettingMenuPatches.SelectedMod.InternalOptionGroups

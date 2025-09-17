@@ -78,7 +78,7 @@ public record struct LocalSettingTabAppearance()
     /// Gets or sets hover color of enum buttons.
     /// </summary>
     public Color EnumHoverColor { get; set; } = Palette.AcceptedGreen;
-    
+
     /// <summary>
     /// Gets or sets color of buttons.
     /// </summary>
