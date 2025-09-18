@@ -10,6 +10,7 @@ using MiraAPI.Modifiers;
 using MiraAPI.Modifiers.Types;
 using MiraAPI.PluginLoading;
 using MiraAPI.Roles;
+using MiraAPI.Utilities;
 using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -65,16 +66,18 @@ internal static class TaskAdderPatches
         __instance.RootFolderPrefab.GetComponent<PassiveButton>().ClickMask = collider;
         __instance.RootFolderPrefab.gameObject.SetActive(false);
         __instance.TaskParent = inner.transform;
+        var crewLocale = TranslationController.Instance.GetString(StringNames.Crewmate);
+        var impLocale = TranslationController.Instance.GetString(StringNames.Impostor);
 
-        var crewmateFolder = __instance.Root.SubFolders.ToArray().FirstOrDefault(x => x.FolderName == "Crewmate")!;
-        var impostorFolder = __instance.Root.SubFolders.ToArray().FirstOrDefault(x => x.FolderName == "Impostor")!;
-        var neutralFolder = __instance.CreateFolder("Neutral", __instance.Root, 2, Color.gray);
+        var crewmateFolder = __instance.Root.SubFolders.ToArray().FirstOrDefault(x => x.FolderName == crewLocale)!;
+        var impostorFolder = __instance.Root.SubFolders.ToArray().FirstOrDefault(x => x.FolderName == impLocale)!;
+        //var neutralFolder = __instance.CreateFolder("Neutral", __instance.Root, 2, Color.gray);
         var modifiersFolder = __instance.CreateFolder("Modifiers", __instance.Root, 0, Color.blue);
 
         folders.Clear();
         folders.Add(crewmateFolder.FolderName, crewmateFolder);
         folders.Add(impostorFolder.FolderName, impostorFolder);
-        folders.Add("Neutrals", neutralFolder);
+        //folders.Add("Neutrals", neutralFolder);
         folders.Add("Modifiers", modifiersFolder);
 
         int folderIdx = 3;
@@ -350,7 +353,7 @@ internal static class TaskAdderPatches
         {
             TaskAddButton roleAddButton = Object.Instantiate(__instance.RoleButton);
             roleAddButton.SafePositionWorld = __instance.SafePositionWorld;
-            roleAddButton.Text.text = prettyEnabled ? role.NiceName : "Be_" + role.NiceName + ".exe";
+            roleAddButton.Text.text = prettyEnabled ? role.GetRoleName() : "Be_" + role.GetRoleName() + ".exe";
             roleAddButton.Role = role;
             if (prettyEnabled)
             {
@@ -389,8 +392,10 @@ internal static class TaskAdderPatches
                     {
                         continue;
                     }
+                    var crewLocale = TranslationController.Instance.GetString(StringNames.Crewmate);
+                    var impLocale = TranslationController.Instance.GetString(StringNames.Impostor);
 
-                    var teamFolder = roleBehaviour.IsImpostor ? "Impostor" : "Crewmate";
+                    var teamFolder = roleBehaviour.IsImpostor ? impLocale : crewLocale;
                     if (roleBehaviour is ICustomRole cs)
                     {
                         teamFolder = cs.Configuration.FreeplayFolder;
@@ -403,7 +408,7 @@ internal static class TaskAdderPatches
                     var roleAddButton = Object.Instantiate(__instance.RoleButton);
                     roleAddButton.MyTask = null;
                     roleAddButton.SafePositionWorld = __instance.SafePositionWorld;
-                    roleAddButton.Text.text = prettyEnabled ? roleBehaviour.NiceName : "Be_" + roleBehaviour.NiceName + ".exe";
+                    roleAddButton.Text.text = prettyEnabled ? roleBehaviour.GetRoleName() : "Be_" + roleBehaviour.GetRoleName() + ".exe";
                     roleAddButton.Text.EnableMasking();
                     roleAddButton.role = roleBehaviour;
                     if (prettyEnabled)
