@@ -53,7 +53,7 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     }
 
     /// <summary>
-    /// Gets the value of the config entry, casted to the setting type.
+    /// Gets the value of the config entry, cast to the setting type.
     /// </summary>
     /// <returns>The value.</returns>
     public virtual T GetValue()
