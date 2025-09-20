@@ -80,7 +80,7 @@ internal static class TaskAdderPatches
         //folders.Add("Neutrals", neutralFolder);
         folders.Add("Modifiers", modifiersFolder);
 
-        int folderIdx = 3;
+        int folderIdx = 2;
         foreach (var plugin in MiraPluginManager.Instance.RegisteredPlugins)
         {
             var pluginFolders = new Dictionary<string, TaskFolder>();
