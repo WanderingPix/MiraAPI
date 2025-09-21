@@ -20,7 +20,10 @@ public abstract class LocalSettingBase<T> : ILocalSetting
     /// <inheritdoc />
     public ConfigEntryBase ConfigEntry { get; }
 
-    internal LocalSettingsTab? Tab => LocalSettingsManager.Tabs.FirstOrDefault(x => x.Settings.Contains(this));
+    /// <summary>
+    /// Gets the tab of the local setting.
+    /// </summary>
+    public LocalSettingsTab? Tab => LocalSettingsManager.Tabs.FirstOrDefault(x => x.Settings.Contains(this));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalSettingBase{T}"/> class.
