@@ -26,6 +26,20 @@ public static class NameplatesTabPatches
         }
     }
 
+    private static void PreviousPage(NameplatesTab tab)
+    {
+        currentPage--;
+        currentPage = currentPage < 0 ? SortedNameplates.Count - 1 : currentPage;
+        GenerateHats(tab, currentPage);
+    }
+
+    private static void NextPage(NameplatesTab tab)
+    {
+        currentPage++;
+        currentPage = currentPage > SortedNameplates.Count - 1 ? 0 : currentPage;
+        GenerateHats(tab, currentPage);
+    }
+
     [HarmonyPatch(nameof(NameplatesTab.OnEnable))]
     [HarmonyPrefix]
     public static bool OnEnablePrefix(NameplatesTab __instance)
@@ -33,6 +47,9 @@ public static class NameplatesTabPatches
         __instance.plateId = HatManager.Instance.GetNamePlateById(DataManager.Player.Customization.namePlate).ProdId;
 
         if (!SortedNameplates.ContainsKey("Vanilla")) AddRange(DestroyableSingleton<HatManager>.Instance.GetUnlockedNamePlates().Select(x => ("Vanilla", x)));
+
+        InventoryUtility.CreateNextBackButtons(__instance, PreviousPage, NextPage);
+
         GenerateHats(__instance, currentPage);
 
         return false;
@@ -45,15 +62,11 @@ public static class NameplatesTabPatches
     {
         if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            currentPage--;
-            currentPage = currentPage < 0 ? SortedNameplates.Count - 1 : currentPage;
-            GenerateHats(__instance, currentPage);
+            PreviousPage(__instance);
         }
         else if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            currentPage++;
-            currentPage = currentPage > SortedNameplates.Count - 1 ? 0 : currentPage;
-            GenerateHats(__instance, currentPage);
+            NextPage(__instance);
         }
     }
 
@@ -73,10 +86,10 @@ public static class NameplatesTabPatches
         text.gameObject.transform.localScale = Vector3.one;
         text.GetComponent<TextTranslatorTMP>().Destroy();
         text.EnableStencilMasking();
-        text.text = $"{groupName} ({currentPage + 1}/{SortedNameplates.Count})\nPress Ctrl or Tab to cycle pages";
+        text.text = $"{groupName} ({currentPage + 1}/{SortedNameplates.Count})";
         text.alignment = TextAlignmentOptions.Center;
-        text.fontSize = 3f;
-        text.fontSizeMax = 3f;
+        text.fontSize = 5f;
+        text.fontSizeMax = 5f;
         text.fontSizeMin = 0f;
         float xLerp = __instance.XRange.Lerp(0.5f);
         float yLerp = __instance.YStart - hatIndex / __instance.NumPerRow * __instance.YOffset;
