@@ -98,9 +98,20 @@ public static class VisorsTabPatches
     {
         var colorChip = Object.Instantiate(__instance.ColorTabPrefab, __instance.scroller.Inner);
         colorChip.gameObject.name = visor.ProductId;
-        colorChip.Button.OnClick.AddListener((Action)(() => __instance.ClickEquip()));
-        colorChip.Button.OnMouseOver.AddListener((Action)(() => __instance.SelectVisor(visor)));
-        colorChip.Button.OnMouseOut.AddListener((Action)(() => __instance.SelectVisor(HatManager.Instance.GetVisorById(DataManager.Player.Customization.Visor))));
+
+        if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
+        {
+            colorChip.Button.OnClick.AddListener((Action)__instance.ClickEquip);
+            colorChip.Button.OnMouseOver.AddListener((Action)(() => __instance.SelectVisor(visor)));
+            colorChip.Button.OnMouseOut.AddListener(
+                (Action)(() =>
+                    __instance.SelectVisor(HatManager.Instance.GetVisorById(DataManager.Player.Customization.Visor))));
+        }
+        else
+        {
+            colorChip.Button.OnClick.AddListener((Action)(() => __instance.SelectVisor(visor)));
+        }
+
         colorChip.Button.ClickMask = __instance.scroller.Hitbox;
         colorChip.ProductId = visor.ProductId;
         colorChip.SelectionHighlight.gameObject.SetActive(false);

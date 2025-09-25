@@ -99,9 +99,20 @@ public static class NameplatesTabPatches
     {
         var colorChip = Object.Instantiate(__instance.ColorTabPrefab, __instance.scroller.Inner);
         colorChip.gameObject.name = namePlate.ProductId;
-        colorChip.Button.OnClick.AddListener((Action)(() => __instance.ClickEquip()));
-        colorChip.Button.OnMouseOver.AddListener((Action)(() => __instance.SelectNameplate(namePlate)));
-        colorChip.Button.OnMouseOut.AddListener((Action)(() => __instance.SelectNameplate(HatManager.Instance.GetNamePlateById(DataManager.Player.Customization.NamePlate))));
+
+        if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
+        {
+            colorChip.Button.OnClick.AddListener((Action)__instance.ClickEquip);
+            colorChip.Button.OnMouseOver.AddListener((Action)(() => __instance.SelectNameplate(namePlate)));
+            colorChip.Button.OnMouseOut.AddListener(
+                (Action)(() => __instance.SelectNameplate(
+                    HatManager.Instance.GetNamePlateById(DataManager.Player.Customization.NamePlate))));
+        }
+        else
+        {
+            colorChip.Button.OnClick.AddListener((Action)(() => __instance.SelectNameplate(namePlate)));
+        }
+
         colorChip.Button.ClickMask = __instance.scroller.Hitbox;
         colorChip.ProductId = namePlate.ProdId;
 
