@@ -233,6 +233,13 @@ public static class CustomMurderRpc
             deadBody.transform.position = vector;
         }
 
+        source.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
+        target.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
+
+        // no idea if this causes bugs, but innersloth is brain-dead
+        // I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF
+        PlayerControl.LocalPlayer.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
+
         if (isParticipant)
         {
             if (cam != null)
