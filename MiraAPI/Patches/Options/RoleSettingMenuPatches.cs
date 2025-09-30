@@ -579,6 +579,7 @@ public static class RoleSettingMenuPatches
         roleOptionSetting.transform.localPosition = new Vector3(-0.1f, ScrollerNum, -2f);
 
         roleOptionSetting.SetRole(GameOptionsManager.Instance.CurrentGameOptions.RoleOptions, role, 20);
+        roleOptionSetting.titleText.text = role.GetRoleName();
         roleOptionSetting.labelSprite.color = customRole.OptionsMenuColor;
         roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>(ValueChanged);
         roleOptionSetting.SetClickMask(__instance.ButtonClickMask);

@@ -344,7 +344,7 @@ public static class LobbyViewPanePatches
                 }
 
                 viewSettingsInfoPanelRoleVariant.SetInfo(
-                    roleBehaviour.NiceName,
+                    roleBehaviour.GetRoleName(),
                     numPerGame,
                     chancePerGame,
                     61,
