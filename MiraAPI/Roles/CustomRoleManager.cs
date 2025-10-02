@@ -55,6 +55,7 @@ public static class CustomRoleManager
     internal static readonly Dictionary<Type, ushort> RoleIds = [];
 
     private static Il2CppSystem.Collections.Generic.List<BaseGameSetting>? _emptySettings;
+    private static Il2CppReferenceArray<OverlayKillAnimation>? _emptyKillAnimations;
 
     private static ushort _roleId = 100;
 
@@ -137,9 +138,10 @@ public static class CustomRoleManager
         roleBehaviour.RoleScreenshot = customRole.Configuration.OptionsScreenshot?.LoadAsset();
 
         _emptySettings ??= new(0);
+        _emptyKillAnimations ??= new(0);
 
         roleBehaviour.AllGameSettings = _emptySettings;
-        roleBehaviour.CustomKillAnimations = RoleManager.Instance.GetRole(RoleTypes.Impostor).CustomKillAnimations;
+        roleBehaviour.CustomKillAnimations = _emptyKillAnimations;
 
         if (customRole.Configuration.Icon != null)
         {
