@@ -4,6 +4,7 @@ using System.Linq;
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using MiraAPI.Networking;
 using MiraAPI.PluginLoading;
 using MiraAPI.Utilities;
@@ -52,6 +53,8 @@ public static class CustomRoleManager
 
     internal static readonly Dictionary<ushort, RoleBehaviour> CustomRoles = [];
     internal static readonly Dictionary<Type, ushort> RoleIds = [];
+
+    private static Il2CppSystem.Collections.Generic.List<BaseGameSetting>? _emptySettings;
 
     private static ushort _roleId = 100;
 
@@ -132,6 +135,11 @@ public static class CustomRoleManager
         roleBehaviour.DefaultGhostRole = customRole.Configuration.GhostRole;
         roleBehaviour.MaxCount = customRole.Configuration.MaxRoleCount;
         roleBehaviour.RoleScreenshot = customRole.Configuration.OptionsScreenshot?.LoadAsset();
+
+        _emptySettings ??= new(0);
+
+        roleBehaviour.AllGameSettings = _emptySettings;
+        roleBehaviour.CustomKillAnimations = RoleManager.Instance.GetRole(RoleTypes.Impostor).CustomKillAnimations;
 
         if (customRole.Configuration.Icon != null)
         {
