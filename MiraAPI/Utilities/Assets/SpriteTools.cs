@@ -19,7 +19,10 @@ public static class SpriteTools
     /// <exception cref="ArgumentException">Thrown when the resource cannot be found in the specified assembly.</exception>
     public static Texture2D LoadTextureFromResourcePath(string resourcePath, Assembly assembly)
     {
-        var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+        var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+        };
         var myStream = assembly.GetManifestResourceStream(resourcePath);
         if (myStream != null)
         {
