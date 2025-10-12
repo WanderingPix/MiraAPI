@@ -169,7 +169,14 @@ public static class CustomMurderRpc
 
             if (showKillAnim)
             {
-                HudManager.Instance.KillOverlay.ShowKillAnimation(source.Data, data);
+                try
+                {
+                    HudManager.Instance.KillOverlay.ShowKillAnimation(source.Data, data);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             target.cosmetics.SetNameMask(false);
@@ -202,7 +209,7 @@ public static class CustomMurderRpc
         bool teleportMurderer = true)
     {
         var cam = Camera.main?.GetComponent<FollowerCamera>();
-        var isParticipant = PlayerControl.LocalPlayer == source || PlayerControl.LocalPlayer == target;
+        var isParticipant = source.AmOwner || target.AmOwner;
         var sourcePhys = source.MyPhysics;
 
         if (teleportMurderer)
