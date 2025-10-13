@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using AmongUs.Data;
 using AmongUs.GameOptions;
@@ -8,8 +9,10 @@ using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
+using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace MiraAPI.Networking;
 
@@ -173,9 +176,9 @@ public static class CustomMurderRpc
                 {
                     HudManager.Instance.KillOverlay.ShowKillAnimation(source.Data, data);
                 }
-                catch
+                catch (Exception e)
                 {
-                    // ignored
+                    Logger<MiraApiPlugin>.Error($"Error with kill animation: {e.ToString()}");
                 }
             }
 
