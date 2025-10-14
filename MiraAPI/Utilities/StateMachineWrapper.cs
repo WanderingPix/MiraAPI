@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
 
@@ -11,8 +13,11 @@ namespace MiraAPI.Utilities;
 public class StateMachineWrapper<T> where T : Il2CppObjectBase
 {
     private readonly Il2CppObjectBase _stateMachine;
+
+    // normally it is fields, but IL2CPP turns them into properties
     private readonly PropertyInfo _thisProperty;
     private readonly PropertyInfo _stateProperty;
+    private readonly Dictionary<string, PropertyInfo> _propertyCache;
 
     private T? _parentInstance;
 
@@ -32,6 +37,13 @@ public class StateMachineWrapper<T> where T : Il2CppObjectBase
         var type = _stateMachine.GetType();
         _thisProperty = AccessTools.Property(type, "__4__this");
         _stateProperty = AccessTools.Property(type, "__1__state");
+
+        if (_thisProperty == null || _stateProperty == null)
+        {
+            throw new MissingMemberException($"Could not find required properties in type '{type}'.");
+        }
+
+        _propertyCache = [];
     }
 
     /// <summary>
@@ -39,4 +51,25 @@ public class StateMachineWrapper<T> where T : Il2CppObjectBase
     /// </summary>
     /// <returns>The current state as an integer.</returns>
     public int GetState() => (int)_stateProperty.GetValue(_stateMachine)!;
+
+    /// <summary>
+    /// Gets a parameter from the state machine by its name.
+    /// </summary>
+    /// <param name="parameterName">The name of the parameter to retrieve.</param>
+    /// <typeparam name="TField">The type of the parameter to retrieve.</typeparam>
+    /// <returns>>The value of the specified parameter.</returns>
+    /// <exception cref="MissingFieldException">Thrown if the specified parameter does not exist.</exception>
+    public TField GetParameter<TField>(string parameterName)
+    {
+        if (_propertyCache.TryGetValue(parameterName, out var property))
+        {
+            return (TField)property.GetValue(_stateMachine)!;
+        }
+
+        property = AccessTools.Property(_stateMachine.GetType(), parameterName)
+                   ?? throw new MissingFieldException($"Could not find parameter '{parameterName}' in state machine of type '{_stateMachine.GetType()}'.");
+
+        _propertyCache[parameterName] = property;
+        return (TField)property.GetValue(_stateMachine)!;
+    }
 }
