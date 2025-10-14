@@ -125,7 +125,7 @@ public abstract class ModdedOption<T> : IModdedOption
     {
         if (ConfigDefinition is null)
         {
-            Logger<MiraApiPlugin>.Error($"Attempted to save {Title} to preset, but ConfigDefinition is null.");
+            Error($"Attempted to save {Title} to preset, but ConfigDefinition is null.");
             return;
         }
         Bind(presetConfig);
@@ -147,7 +147,7 @@ public abstract class ModdedOption<T> : IModdedOption
         }
         else
         {
-            Logger<MiraApiPlugin>.Error($"Attempted to load {Title} from preset, but ConfigDefinition is not found in preset.");
+            Error($"Attempted to load {Title} from preset, but ConfigDefinition is not found in preset.");
         }
     }
 

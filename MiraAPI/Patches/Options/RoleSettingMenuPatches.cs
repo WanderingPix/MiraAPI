@@ -392,7 +392,7 @@ public static class RoleSettingMenuPatches
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Warning(e);
+            Warning(e);
         }
 
         roleSetting.UpdateValuesAndText(GameOptionsManager.Instance.CurrentGameOptions.RoleOptions);
@@ -466,7 +466,7 @@ public static class RoleSettingMenuPatches
     {
         if (role is not ICustomRole customRole)
         {
-            Logger<MiraApiPlugin>.Error($"Role {role.NiceName} is not a custom role.");
+            Error($"Role {role.NiceName} is not a custom role.");
             return;
         }
 
@@ -560,7 +560,7 @@ public static class RoleSettingMenuPatches
     {
         if (role is not ICustomRole customRole)
         {
-            Logger<MiraApiPlugin>.Error($"Role {role.NiceName} is not a custom role.");
+            Error($"Role {role.NiceName} is not a custom role.");
             return null;
         }
 

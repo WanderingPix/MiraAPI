@@ -39,7 +39,7 @@ public static class ModdedOptionsManager
 
         if (TypeToGroup.ContainsKey(type))
         {
-            Logger<MiraApiPlugin>.Error($"Group {type.Name} already exists.");
+            Error($"Group {type.Name} already exists.");
             return false;
         }
 
@@ -60,13 +60,13 @@ public static class ModdedOptionsManager
     {
         if (!TypeToGroup.TryGetValue(type, out var group))
         {
-            Logger<MiraApiPlugin>.Error($"Failed to get group for {type.Name}");
+            Error($"Failed to get group for {type.Name}");
             return;
         }
 
         if (property.GetValue(group) is not IModdedOption option)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to get option for {property.Name}");
+            Error($"Failed to get option for {property.Name}");
             return;
         }
 
@@ -81,13 +81,13 @@ public static class ModdedOptionsManager
     {
         if (OptionAttributes.ContainsKey(property))
         {
-            Logger<MiraApiPlugin>.Error($"Property {property.Name} already has an attribute registered.");
+            Error($"Property {property.Name} already has an attribute registered.");
             return;
         }
 
         if (!TypeToGroup.TryGetValue(type, out var group))
         {
-            Logger<MiraApiPlugin>.Error($"Failed to get group for {type.Name}");
+            Error($"Failed to get group for {type.Name}");
             return;
         }
 
@@ -95,7 +95,7 @@ public static class ModdedOptionsManager
 
         if (option == null)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to get option for {property.Name}");
+            Error($"Failed to get option for {property.Name}");
             return;
         }
 

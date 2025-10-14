@@ -97,7 +97,7 @@ public static class ModifierManager
 
         if (modifierType.GetConstructor(Type.EmptyTypes) == null)
         {
-            Logger<MiraApiPlugin>.Error($"Game Modifier {modifierType.FullName} does not have a parameterless constructor!");
+            Error($"Game Modifier {modifierType.FullName} does not have a parameterless constructor!");
             return false;
         }
 
@@ -137,7 +137,7 @@ public static class ModifierManager
             var validPlayers = plrs.Where(x => IsGameModifierValid(x, modifier, modifier.TypeId)).ToList();
             if (validPlayers.Count == 0)
             {
-                Logger<MiraApiPlugin>.Warning($"No valid players for modifier {modifier.ModifierName}");
+                Warning($"No valid players for modifier {modifier.ModifierName}");
                 continue;
             }
 
@@ -158,7 +158,7 @@ public static class ModifierManager
 
                 if (candidates.Count == 0)
                 {
-                    Logger<MiraApiPlugin>.Warning(
+                    Warning(
                         $"No available players for modifier {modifier.ModifierName} at assignment {i + 1}");
                     break;
                 }
@@ -166,7 +166,7 @@ public static class ModifierManager
                 var plr = candidates.Random();
                 if (plr == null)
                 {
-                    Logger<MiraApiPlugin>.Warning($"Valid player for modifier {modifier.ModifierName} disappeared");
+                    Warning($"Valid player for modifier {modifier.ModifierName} disappeared");
                     continue;
                 }
 

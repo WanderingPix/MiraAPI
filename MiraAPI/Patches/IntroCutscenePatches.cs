@@ -38,7 +38,7 @@ public static class IntroCutscenePatches
     {
         public static MethodBase TargetMethod()
         {
-            return Helpers.GetStateMachineMoveNext<IntroCutscene>("ShowRole")!;
+            return Helpers.GetStateMachineMoveNext<IntroCutscene>(nameof(IntroCutscene.ShowRole))!;
         }
 
         public static void Postfix(Il2CppObjectBase __instance)
@@ -52,7 +52,7 @@ public static class IntroCutscenePatches
 
             var introCutscene = wrapper.Instance;
 
-            Logger<MiraApiPlugin>.Info("IntroCutscene ShowRole reached");
+            Info("IntroCutscene ShowRole reached");
             var @event = new IntroRoleRevealEvent(introCutscene);
             MiraEventManager.InvokeEvent(@event);
         }
@@ -96,12 +96,12 @@ public static class IntroCutscenePatches
             if (onDestroy != null)
             {
                 _usedFallback = false;
-                Logger<MiraApiPlugin>.Info("Using OnDestroy for IntroCutsceneDestroyPatch");
+                Info("Using OnDestroy for IntroCutsceneDestroyPatch");
                 return onDestroy;
             }
 
             _usedFallback = true;
-            return Helpers.GetStateMachineMoveNext<IntroCutscene>("CoBegin")!;
+            return Helpers.GetStateMachineMoveNext<IntroCutscene>(nameof(IntroCutscene.CoBegin))!;
         }
 
         public static void Postfix(Il2CppObjectBase __instance)
@@ -124,7 +124,7 @@ public static class IntroCutscenePatches
             }
 
 
-            Logger<MiraApiPlugin>.Info("IntroCutscene ended");
+            Info("IntroCutscene ended");
 
             MiraEventManager.InvokeEvent(new IntroEndEvent(introCutscene));
 

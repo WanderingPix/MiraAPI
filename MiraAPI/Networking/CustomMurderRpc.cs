@@ -178,7 +178,7 @@ public static class CustomMurderRpc
                 }
                 catch (Exception e)
                 {
-                    Logger<MiraApiPlugin>.Error($"Error with kill animation: {e.ToString()}");
+                    Error($"Error with kill animation: {e.ToString()}");
                 }
             }
 

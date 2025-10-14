@@ -1,13 +1,20 @@
-﻿using HarmonyLib;
+﻿using System.Reflection;
+using HarmonyLib;
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
+using MiraAPI.Utilities;
 
 namespace MiraAPI.Patches.Events;
 
-[HarmonyPatch(typeof(TutorialManager._RunTutorial_d__3), nameof(TutorialManager._RunTutorial_d__3.MoveNext))]
+[HarmonyPatch]
 public static class FreeplayRoundStartPatch
 {
-    public static void Postfix(TutorialManager._RunTutorial_d__3 __instance, ref bool __result)
+    public static MethodBase TargetMethod()
+    {
+        return Helpers.GetStateMachineMoveNext<TutorialManager>(nameof(TutorialManager.RunTutorial))!;
+    }
+
+    public static void Postfix(ref bool __result)
     {
         if (!__result)
         {

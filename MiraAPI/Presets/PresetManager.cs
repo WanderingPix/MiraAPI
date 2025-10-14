@@ -70,7 +70,7 @@ public static class PresetManager
         foreach (var file in Directory.GetFiles(pluginPresetPath, "*.cfg"))
         {
             var fileName = Path.GetFileName(file);
-            Logger<MiraApiPlugin>.Info($"Loading preset file {fileName}");
+            Info($"Loading preset file {fileName}");
             var presetName = Path.GetFileNameWithoutExtension(file);
             var presetConfig = new ConfigFile(file, false)
             {

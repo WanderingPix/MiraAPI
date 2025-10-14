@@ -156,7 +156,7 @@ public interface ICustomRole : IOptionable
     {
         if (!Configuration.CanModifyChance)
         {
-            Logger<MiraApiPlugin>.Error($"Cannot modify chance for role: {RoleName}");
+            Error($"Cannot modify chance for role: {RoleName}");
             return;
         }
 
@@ -166,7 +166,7 @@ public interface ICustomRole : IOptionable
             return;
         }
 
-        Logger<MiraApiPlugin>.Error($"Error getting chance configuration for role: {RoleName}");
+        Error($"Error getting chance configuration for role: {RoleName}");
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public interface ICustomRole : IOptionable
             return;
         }
 
-        Logger<MiraApiPlugin>.Error($"Error getting count configuration for role: {RoleName}");
+        Error($"Error getting count configuration for role: {RoleName}");
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿global using static Reactor.Utilities.Logger<MiraAPI.MiraApiPlugin>;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using MiraAPI.PluginLoading;

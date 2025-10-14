@@ -108,7 +108,7 @@ public static class CustomRoleManager
     {
         if (!(typeof(RoleBehaviour).IsAssignableFrom(roleType) && typeof(ICustomRole).IsAssignableFrom(roleType)))
         {
-            Logger<MiraApiPlugin>.Error($"{roleType.Name} does not inherit from RoleBehaviour or ICustomRole.");
+            Error($"{roleType.Name} does not inherit from RoleBehaviour or ICustomRole.");
             return null;
         }
 
@@ -168,7 +168,7 @@ public static class CustomRoleManager
 
         if (useTaskHint && !overridesTaskText)
         {
-            Logger<MiraApiPlugin>.Error($"Role {customRole.RoleName} is using RoleHintType.TaskHint but does not override SpawnTaskHeader!");
+            Error($"Role {customRole.RoleName} is using RoleHintType.TaskHint but does not override SpawnTaskHeader!");
         }
 
         CustomRoles.Add(roleId, roleBehaviour);
@@ -298,7 +298,7 @@ public static class CustomRoleManager
             }
             catch (Exception e)
             {
-                Logger<MiraApiPlugin>.Error(e);
+                Error(e);
             }
         }
 

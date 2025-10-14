@@ -49,18 +49,18 @@ public static class Helpers
 
         if (showRoleStateMachine == null)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to find {methodName} state machine for {typeName}");
+            Error($"Failed to find {methodName} state machine for {typeName}");
             return null;
         }
 
         var moveNext = AccessTools.Method(showRoleStateMachine, "MoveNext");
         if (moveNext == null)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to find MoveNext method for {typeName}.{methodName}");
+            Error($"Failed to find MoveNext method for {typeName}.{methodName}");
             return null;
         }
 
-        Logger<MiraApiPlugin>.Info($"Found {methodName}.MoveNext");
+        Info($"Found {methodName}.MoveNext");
         return moveNext;
     }
 
@@ -139,7 +139,7 @@ public static class Helpers
                 return true;
             default:
                 {
-                    var num = UnityEngine.Random.RandomRangeInt(1, 101);
+                    var num = Random.RandomRangeInt(1, 101);
                     return num <= probability;
                 }
         }
@@ -500,7 +500,7 @@ public static class Helpers
     public static string RandomString(int length, string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
     {
         return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[UnityEngine.Random.RandomRangeInt(0, s.Length)]).ToArray());
+            .Select(s => s[Random.RandomRangeInt(0, s.Length)]).ToArray());
     }
 
     /// <summary>

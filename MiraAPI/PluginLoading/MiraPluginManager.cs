@@ -70,14 +70,14 @@ public sealed class MiraPluginManager
 
                     if (!method.IsStatic)
                     {
-                        Logger<MiraApiPlugin>.Error($"Event method {method.Name} in {type.Name} must be static.");
+                        Error($"Event method {method.Name} in {type.Name} must be static.");
                         continue;
                     }
 
                     var parameters = method.GetParameters();
                     if (parameters.Length != 1 || !parameters[0].ParameterType.IsSubclassOf(typeof(MiraEvent)))
                     {
-                        Logger<MiraApiPlugin>.Error($"Invalid event registration method {method.Name} in {type.Name}");
+                        Error($"Invalid event registration method {method.Name} in {type.Name}");
                         continue;
                     }
 
@@ -131,7 +131,7 @@ public sealed class MiraPluginManager
             info.SavePublicCollections();
             PresetManager.CreateDefaultPreset(info);
             PresetManager.LoadPresets(info);
-            Logger<MiraApiPlugin>.Info($"Registering mod {pluginInfo.Metadata.GUID} with Mira API.");
+            Info($"Registering mod {pluginInfo.Metadata.GUID} with Mira API.");
         };
         IL2CPPChainloader.Instance.Finished += PaletteManager.RegisterAllColors;
         IL2CPPChainloader.Instance.Finished += () =>
@@ -167,7 +167,7 @@ public sealed class MiraPluginManager
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register game over {type.Name}: {e}");
+            Error($"Failed to register game over {type.Name}: {e}");
             return false;
         }
     }
@@ -190,7 +190,7 @@ public sealed class MiraPluginManager
             {
                 if (property.GetMethod?.IsStatic == true)
                 {
-                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} must not be static.");
+                    Error($"Option property {property.Name} in {type.Name} must not be static.");
                     continue;
                 }
 
@@ -211,14 +211,14 @@ public sealed class MiraPluginManager
 
             foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(IModdedOption))))
             {
-                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for options.");
+                Error($"{field.Name} is a field, not a property. Use properties for options.");
             }
 
             return true;
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e.ToString()}");
+            Error($"Failed to register options for {type.Name}: {e.ToString()}");
         }
         return false;
     }
@@ -235,7 +235,7 @@ public sealed class MiraPluginManager
 
             if (!ModList.GetById(pluginInfo.PluginId).IsRequiredOnAllClients)
             {
-                Logger<MiraApiPlugin>.Error("Custom roles are only supported on all clients.");
+                Error("Custom roles are only supported on all clients.");
                 return false;
             }
 
@@ -244,7 +244,7 @@ public sealed class MiraPluginManager
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register role for {type.Name}: {e}");
+            Error($"Failed to register role for {type.Name}: {e}");
         }
         return false;
     }
@@ -260,7 +260,7 @@ public sealed class MiraPluginManager
 
             if (!type.IsStatic())
             {
-                Logger<MiraApiPlugin>.Error($"Color class {type.Name} must be static.");
+                Error($"Color class {type.Name} must be static.");
                 return;
             }
 
@@ -273,7 +273,7 @@ public sealed class MiraPluginManager
 
                 if (property.GetValue(null) is not CustomColor color)
                 {
-                    Logger<MiraApiPlugin>.Error($"Color property {property.Name} in {type.Name} is not a CustomColor.");
+                    Error($"Color property {property.Name} in {type.Name} is not a CustomColor.");
                     continue;
                 }
 
@@ -282,12 +282,12 @@ public sealed class MiraPluginManager
 
             foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(CustomColor))))
             {
-                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for colors.");
+                Error($"{field.Name} is a field, not a property. Use properties for colors.");
             }
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register color class {type.Name}: {e}");
+            Error($"Failed to register color class {type.Name}: {e}");
         }
     }
 
@@ -299,7 +299,7 @@ public sealed class MiraPluginManager
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register modifier {type.Name}: {e}");
+            Error($"Failed to register modifier {type.Name}: {e}");
             return false;
         }
     }
@@ -312,7 +312,7 @@ public sealed class MiraPluginManager
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register button {type.Name}: {e}");
+            Error($"Failed to register button {type.Name}: {e}");
         }
 
         return false;
@@ -355,13 +355,13 @@ public sealed class MiraPluginManager
 
                 if (property.GetMethod?.IsStatic == true)
                 {
-                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} must not be static.");
+                    Error($"Option property {property.Name} in {type.Name} must not be static.");
                     continue;
                 }
 
                 if (property.GetValue(tabInstance) is not ConfigEntryBase configEntry)
                 {
-                    Logger<MiraApiPlugin>.Error($"Option property {property.Name} in {type.Name} has to be a config entry.");
+                    Error($"Option property {property.Name} in {type.Name} has to be a config entry.");
                     continue;
                 }
 
@@ -376,14 +376,14 @@ public sealed class MiraPluginManager
 
             foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(ConfigEntryBase)) && f.GetCustomAttribute<LocalSettingAttribute>() != null))
             {
-                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for local settings.");
+                Error($"{field.Name} is a field, not a property. Use properties for local settings.");
             }
 
             return true;
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register options for {type.Name}: {e.ToString()}");
+            Error($"Failed to register options for {type.Name}: {e.ToString()}");
         }
 
         return false;
@@ -400,7 +400,7 @@ public sealed class MiraPluginManager
 
             if (!type.IsStatic())
             {
-                Logger<MiraApiPlugin>.Error($"Keybinds class {type.Name} must be static.");
+                Error($"Keybinds class {type.Name} must be static.");
                 return;
             }
 
@@ -413,7 +413,7 @@ public sealed class MiraPluginManager
 
                 if (property.GetValue(null) is not MiraKeybind keybind)
                 {
-                    Logger<MiraApiPlugin>.Error($"Keybind property {property.Name} in {type.Name} is not a MiraKeybind.");
+                    Error($"Keybind property {property.Name} in {type.Name} is not a MiraKeybind.");
                     continue;
                 }
 
@@ -430,12 +430,12 @@ public sealed class MiraPluginManager
 
             foreach (var field in type.GetFields().Where(f => f.FieldType.IsAssignableTo(typeof(MiraKeybind))))
             {
-                Logger<MiraApiPlugin>.Error($"{field.Name} is a field, not a property. Use properties for keybinds.");
+                Error($"{field.Name} is a field, not a property. Use properties for keybinds.");
             }
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Failed to register keybind class {type.Name}: {e}");
+            Error($"Failed to register keybind class {type.Name}: {e}");
         }
     }
 }

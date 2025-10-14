@@ -18,7 +18,7 @@ public static class ButtonResetPatches
             }
             catch (System.Exception ex)
             {
-                Logger<MiraApiPlugin>.Error($"Error resetting cooldown and effect for button {customActionButton.GetType().Name}: {ex}");
+                Error($"Error resetting cooldown and effect for button {customActionButton.GetType().Name}: {ex}");
             }
 
             if (customActionButton.UsesMode == ButtonUsesMode.PerRound)

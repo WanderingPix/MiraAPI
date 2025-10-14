@@ -41,7 +41,7 @@ public static class ReportBodyEventPatch
         var source = AmongUsClient.Instance.FindObjectByNetId<PlayerControl>(reportBodyMessage.rpcObjectNetId);
         if (source == null)
         {
-            Logger<MiraApiPlugin>.Error("Failed to find source player for RpcReportDeadBodyMessage with NetId: " + reportBodyMessage.rpcObjectNetId);
+            Error("Failed to find source player for RpcReportDeadBodyMessage with NetId: " + reportBodyMessage.rpcObjectNetId);
             return true;
         }
 

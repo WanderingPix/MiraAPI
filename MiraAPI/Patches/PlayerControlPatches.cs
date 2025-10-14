@@ -145,7 +145,7 @@ internal static class PlayerControlPatches
             }
             catch (System.Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Failed to update custom button {button.GetType().Name}: {e}");
+                Error($"Failed to update custom button {button.GetType().Name}: {e}");
             }
         }
     }
