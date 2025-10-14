@@ -38,7 +38,7 @@ public static class IntroCutscenePatches
     {
         public static MethodBase TargetMethod()
         {
-            return Helpers.GetStateMachineMoveNext<IntroCutscene>("ShowRole")!;
+            return Helpers.GetStateMachineMoveNext<IntroCutscene>(nameof(IntroCutscene.ShowRole))!;
         }
 
         public static void Postfix(Il2CppObjectBase __instance)
@@ -101,7 +101,7 @@ public static class IntroCutscenePatches
             }
 
             _usedFallback = true;
-            return Helpers.GetStateMachineMoveNext<IntroCutscene>("CoBegin")!;
+            return Helpers.GetStateMachineMoveNext<IntroCutscene>(nameof(IntroCutscene.CoBegin))!;
         }
 
         public static void Postfix(Il2CppObjectBase __instance)
