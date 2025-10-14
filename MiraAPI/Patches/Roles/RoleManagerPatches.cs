@@ -25,7 +25,7 @@ public static class RoleManagerPatches
         var data = targetPlayer.Data;
         if (data == null)
         {
-            Debug.LogError("It shouldn't be possible, but " + targetPlayer.name + " still doesn't have PlayerData during role selection.");
+            Error("It shouldn't be possible, but " + targetPlayer.name + " still doesn't have PlayerData during role selection.");
             return false;
         }
         if (data.Role)
