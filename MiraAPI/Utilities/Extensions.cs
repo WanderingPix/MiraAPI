@@ -29,13 +29,13 @@ public static class Extensions
 
         if (count == null)
         {
-            Logger<MiraApiPlugin>.Error("Couldn't get role count for NetData, defaulting to zero.");
+            Error("Couldn't get role count for NetData, defaulting to zero.");
             count = 0;
         }
 
         if (chance == null)
         {
-            Logger<MiraApiPlugin>.Error("Couldn't get role chance for NetData, defaulting to zero.");
+            Error("Couldn't get role chance for NetData, defaulting to zero.");
             chance = 0;
         }
 
@@ -398,7 +398,7 @@ public static class Extensions
 
             if (length > chunkSize)
             {
-                Logger<MiraApiPlugin>.Info($"NetData length is greater than chunk size: {length} > {chunkSize}");
+                Info($"NetData length is greater than chunk size: {length} > {chunkSize}");
                 continue;
             }
 

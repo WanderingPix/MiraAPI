@@ -117,7 +117,7 @@ internal static class GamePresetsTabPatches
         // ReSharper disable once InconsistentNaming
         public static void Postfix()
         {
-            Logger<MiraApiPlugin>.Error("OnDisable called");
+            Error("OnDisable called");
 
             if (_saveButton)
             {
@@ -155,7 +155,7 @@ internal static class GamePresetsTabPatches
         var prefab = GameSettingMenu.Instance.GameSettingsButton;
         if (prefab == null)
         {
-            Logger<MiraApiPlugin>.Error("GameSettingsButton prefab is null");
+            Error("GameSettingsButton prefab is null");
             return;
         }
 
@@ -318,10 +318,10 @@ internal static class GamePresetsTabPatches
 
     private static void Refresh()
     {
-        Logger<MiraApiPlugin>.Error("Refreshing presets");
+        Error("Refreshing presets");
         if (GameSettingMenuPatches.SelectedMod == null)
         {
-            Logger<MiraApiPlugin>.Error("Selected mod is null, cannot refresh presets");
+            Error("Selected mod is null, cannot refresh presets");
             return;
         }
         lock (Lock)

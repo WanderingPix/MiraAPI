@@ -51,7 +51,7 @@ public static class RoleOptionsCollectionPatch
         var chance = customRole.GetChance();
         if (chance == null)
         {
-            Logger<MiraApiPlugin>.Error($"Chance is null, defaulting to zero.");
+            Error($"Chance is null, defaulting to zero.");
             chance = 0;
         }
 
@@ -81,7 +81,7 @@ public static class RoleOptionsCollectionPatch
         var count = customRole.GetCount();
         if (count == null)
         {
-            Logger<MiraApiPlugin>.Error($"Count is null, defaulting to zero.");
+            Error($"Count is null, defaulting to zero.");
             count = 0;
         }
 

@@ -24,7 +24,7 @@ public static class LocalSettingsManager
 
         if (TypeToTab.ContainsKey(type))
         {
-            Logger<MiraApiPlugin>.Error($"Local settings tab {type.Name} already exists.");
+            Error($"Local settings tab {type.Name} already exists.");
             return false;
         }
 

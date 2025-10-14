@@ -47,7 +47,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
         _player = GetComponent<PlayerControl>();
         if (_player == null)
         {
-            Logger<MiraApiPlugin>.Error("ModifierComponent could not find PlayerControl on the same GameObject.");
+            Error("ModifierComponent could not find PlayerControl on the same GameObject.");
             Destroy(this);
             return;
         }
@@ -77,7 +77,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
             }
             catch (Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Error while deactivating modifier {modifier.ModifierName}: {e.ToString()}");
+                Error($"Error while deactivating modifier {modifier.ModifierName}: {e.ToString()}");
             }
 
             Modifiers.Remove(modifier);
@@ -95,7 +95,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
             }
             catch (Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Error while activating modifier {modifier.ModifierName}: {e.ToString()}");
+                Error($"Error while activating modifier {modifier.ModifierName}: {e.ToString()}");
             }
 
             if (modifier is TimedModifier { AutoStart: true } timer)
@@ -122,7 +122,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
             }
             catch (Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Error while (fixed) updating modifier {modifier.ModifierName}: {e.ToString()}");
+                Error($"Error while (fixed) updating modifier {modifier.ModifierName}: {e.ToString()}");
             }
         }
 
@@ -153,7 +153,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
             }
             catch (Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Error while updating modifier {modifier.ModifierName}: {e.ToString()}");
+                Error($"Error while updating modifier {modifier.ModifierName}: {e.ToString()}");
             }
         }
     }
@@ -336,7 +336,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
         var modifier = modifiers.FirstOrDefault();
         if (modifier is null)
         {
-            Logger<MiraApiPlugin>.Error($"Cannot remove modifier {type.Name} because it is not active.");
+            Error($"Cannot remove modifier {type.Name} because it is not active.");
             return;
         }
 
@@ -352,7 +352,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
     {
         if (!ActiveModifiers.Contains(modifier))
         {
-            Logger<MiraApiPlugin>.Error($"Cannot remove modifier {modifier.ModifierName} because it is not active on this player.");
+            Error($"Cannot remove modifier {modifier.ModifierName} because it is not active on this player.");
             return;
         }
 
@@ -382,7 +382,7 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
         var modifier = GetModifier(uniqueId);
         if (modifier == null)
         {
-            Logger<MiraApiPlugin>.Error($"Cannot remove modifier with unique id {uniqueId} because it is not active.");
+            Error($"Cannot remove modifier with unique id {uniqueId} because it is not active.");
             return;
         }
 
@@ -412,19 +412,19 @@ public class ModifierComponent(IntPtr cppPtr) : MonoBehaviour(cppPtr)
         // TODO: Make a proper synchronization system.
         if (LobbyBehaviour.Instance)
         {
-            Logger<MiraApiPlugin>.Warning($"Modifiers added in the lobby won't sync to new players!");
+            Warning($"Modifiers added in the lobby won't sync to new players!");
         }
 
         var id = modifier.TypeId;
         if (modifier.Unique && ActiveModifiers.Find(x => x.TypeId == id) != null)
         {
-            Logger<MiraApiPlugin>.Error($"Player already has modifier with id {id}!");
+            Error($"Player already has modifier with id {id}!");
             return null;
         }
 
         if (ActiveModifiers.Contains(modifier))
         {
-            Logger<MiraApiPlugin>.Error($"Player already has this modifier!");
+            Error($"Player already has this modifier!");
             return null;
         }
 

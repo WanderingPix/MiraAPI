@@ -26,11 +26,11 @@ public static class KeybindManager
         try
         {
             var instance = KeybindUtils.RewiredInputManager!;
-            foreach (var keybind in KeybindManager.Keybinds)
+            foreach (var keybind in Keybinds)
             {
                 if (instance.userData.actions.ToArray().Any(x => x.name == keybind.Id))
                 {
-                    Logger<MiraApiPlugin>.Warning($"Keybind of id {keybind.Id} already exists. Skipping it");
+                    Warning($"Keybind of id {keybind.Id} already exists. Skipping it");
                     continue;
                 }
 
@@ -44,7 +44,7 @@ public static class KeybindManager
         }
         catch (Exception e)
         {
-            Logger<MiraApiPlugin>.Error($"Error while registering keybinds in Rewired: {e}");
+            Error($"Error while registering keybinds in Rewired: {e}");
         }
     }
 

@@ -224,7 +224,7 @@ public static class VotingUtils
                 var playerById = GameData.Instance.GetPlayerById(vote.Voter);
                 if (playerById == null)
                 {
-                    Logger<MiraApiPlugin>.Error($"Couldn't find player info for voter: {vote.Voter}");
+                    Error($"Couldn't find player info for voter: {vote.Voter}");
                 }
                 else if (i == 0 && vote.Suspect == SkipVoteId)
                 {

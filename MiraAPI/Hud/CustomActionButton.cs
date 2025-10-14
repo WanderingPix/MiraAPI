@@ -233,7 +233,7 @@ public abstract class CustomActionButton
             return;
         }
 
-        this.Location = location;
+        Location = location;
 
         if (!moveButton)
         {

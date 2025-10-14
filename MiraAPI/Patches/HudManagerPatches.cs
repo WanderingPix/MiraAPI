@@ -109,7 +109,7 @@ public static class HudManagerPatches
             }
             catch (System.Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Failed to create custom button {button.GetType().Name}: {e}");
+                Error($"Failed to create custom button {button.GetType().Name}: {e}");
             }
         }
 
@@ -171,7 +171,7 @@ public static class HudManagerPatches
             }
             catch (System.Exception e)
             {
-                Logger<MiraApiPlugin>.Error($"Failed to set custom button {button.GetType().Name} active: {e}");
+                Error($"Failed to set custom button {button.GetType().Name} active: {e}");
             }
         }
     }

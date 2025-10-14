@@ -83,7 +83,7 @@ public static class ModifierExtensions
         var modifier = target.GetModifier(typeId, predicate);
         if (modifier is null)
         {
-            Logger<MiraApiPlugin>.Error($"Player {target.PlayerId} does not have modifier with type ID {typeId}.");
+            Error($"Player {target.PlayerId} does not have modifier with type ID {typeId}.");
             return;
         }
 

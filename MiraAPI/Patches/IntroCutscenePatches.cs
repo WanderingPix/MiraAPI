@@ -52,7 +52,7 @@ public static class IntroCutscenePatches
 
             var introCutscene = wrapper.Instance;
 
-            Logger<MiraApiPlugin>.Info("IntroCutscene ShowRole reached");
+            Info("IntroCutscene ShowRole reached");
             var @event = new IntroRoleRevealEvent(introCutscene);
             MiraEventManager.InvokeEvent(@event);
         }
@@ -96,7 +96,7 @@ public static class IntroCutscenePatches
             if (onDestroy != null)
             {
                 _usedFallback = false;
-                Logger<MiraApiPlugin>.Info("Using OnDestroy for IntroCutsceneDestroyPatch");
+                Info("Using OnDestroy for IntroCutsceneDestroyPatch");
                 return onDestroy;
             }
 
@@ -124,7 +124,7 @@ public static class IntroCutscenePatches
             }
 
 
-            Logger<MiraApiPlugin>.Info("IntroCutscene ended");
+            Info("IntroCutscene ended");
 
             MiraEventManager.InvokeEvent(new IntroEndEvent(introCutscene));
 
