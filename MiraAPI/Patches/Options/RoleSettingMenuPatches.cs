@@ -473,9 +473,7 @@ public static class RoleSettingMenuPatches
         RolePositions[GameSettingMenuPatches.SelectedModIdx] = __instance.scrollBar.Inner.localPosition;
 
         __instance.roleDescriptionText.text = customRole.RoleLongDescription;
-        __instance.roleTitleText.text = TranslationController.Instance.GetString(
-            role.StringName,
-            new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        __instance.roleTitleText.text = role.GetRoleName();
 
         var imgBg = __instance.AdvancedRolesSettings.transform.FindChild("Imagebackground");
         var labelBg = __instance.AdvancedRolesSettings.transform.FindChild("InfoLabelBackground");
@@ -579,6 +577,7 @@ public static class RoleSettingMenuPatches
         roleOptionSetting.transform.localPosition = new Vector3(-0.1f, ScrollerNum, -2f);
 
         roleOptionSetting.SetRole(GameOptionsManager.Instance.CurrentGameOptions.RoleOptions, role, 20);
+        roleOptionSetting.titleText.text = role.GetRoleName();
         roleOptionSetting.labelSprite.color = customRole.OptionsMenuColor;
         roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>(ValueChanged);
         roleOptionSetting.SetClickMask(__instance.ButtonClickMask);

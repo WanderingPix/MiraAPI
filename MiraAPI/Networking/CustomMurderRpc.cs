@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using AmongUs.Data;
 using AmongUs.GameOptions;
@@ -8,8 +9,10 @@ using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
+using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace MiraAPI.Networking;
 
@@ -169,7 +172,14 @@ public static class CustomMurderRpc
 
             if (showKillAnim)
             {
-                HudManager.Instance.KillOverlay.ShowKillAnimation(source.Data, data);
+                try
+                {
+                    HudManager.Instance.KillOverlay.ShowKillAnimation(source.Data, data);
+                }
+                catch (Exception e)
+                {
+                    Logger<MiraApiPlugin>.Error($"Error with kill animation: {e.ToString()}");
+                }
             }
 
             target.cosmetics.SetNameMask(false);
@@ -202,7 +212,7 @@ public static class CustomMurderRpc
         bool teleportMurderer = true)
     {
         var cam = Camera.main?.GetComponent<FollowerCamera>();
-        var isParticipant = PlayerControl.LocalPlayer == source || PlayerControl.LocalPlayer == target;
+        var isParticipant = source.AmOwner || target.AmOwner;
         var sourcePhys = source.MyPhysics;
 
         if (teleportMurderer)
@@ -222,7 +232,7 @@ public static class CustomMurderRpc
 
         if (createDeadBody)
         {
-            deadBody = Object.Instantiate(GameManager.Instance.deadBodyPrefab[0]);
+            deadBody = Object.Instantiate(GameManager.Instance.GetDeadBody(source.Data.Role));
             deadBody.enabled = false;
             deadBody.ParentId = target.PlayerId;
             deadBody.bodyRenderers.ToList().ForEach(target.SetPlayerMaterialColors);
@@ -232,6 +242,13 @@ public static class CustomMurderRpc
             vector.z = vector.y / 1000f;
             deadBody.transform.position = vector;
         }
+
+        source.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
+        target.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
+
+        // no idea if this causes bugs, but innersloth is brain-dead
+        // I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF I HATE INNERSCUFF
+        PlayerControl.LocalPlayer.Data.Role.KillAnimSpecialSetup(deadBody, source, target);
 
         if (isParticipant)
         {
