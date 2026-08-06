@@ -12,11 +12,13 @@ using MiraAPI.PluginLoading;
 using MiraAPI.Utilities;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
+using TMPro;
+using UnityEngine;
 
 namespace MiraAPI.GameOptions;
 
 /// <summary>
-/// Handles modded options.
+/// Handles <see cref="IModdedOption"/>s.
 /// </summary>
 public static class ModdedOptionsManager
 {
@@ -29,6 +31,36 @@ public static class ModdedOptionsManager
 
     internal static uint NextId => _nextId++;
     private static uint _nextId = 1;
+
+    public static void AddSettingsChangeMessage(NotificationPopper notif, StringNames key, string value, Color textColor, TMP_SpriteAsset? sprite, bool playSound = true)
+    {
+        var item = string.Empty;
+        var text = textColor.ToTextColor();
+        if (sprite != null)
+        {
+            item = TranslationController.Instance.GetString(
+                StringNames.LobbyChangeSettingNotification,
+                string.Concat(
+                    "<sprite name=\"",
+                    sprite.name,
+                    "\"><font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">",
+                    text,
+                    TranslationController.Instance.GetString(key),
+                    "</color></font>"),
+                "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + value + "</font>"
+            );
+        }
+        else
+        {
+            item = TranslationController.Instance.GetString(
+                StringNames.LobbyChangeSettingNotification,
+                "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" +
+                text +
+                TranslationController.Instance.GetString(key) + "</color></font>",
+                "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + value + "</font>");
+        }
+        notif.SettingsChangeMessageLogic(key, item, playSound);
+    }
 
     internal static bool RegisterGroup(Type type, MiraPluginInfo pluginInfo)
     {
@@ -123,6 +155,7 @@ public static class ModdedOptionsManager
 
         option.ConfigDefinition = new ConfigDefinition(groupName, propertyName);
 
+        option.ParentGroup = group;
         option.ParentMod = pluginInfo.MiraPlugin;
         pluginInfo.InternalOptions.Add(option);
         ModdedOptions.Add(option.Id, option);
@@ -192,7 +225,7 @@ public static class ModdedOptionsManager
     /// </summary>
     /// <param name="__originalMethod">The original getter method.</param>
     /// <param name="__result">The result of the property getter.</param>
-    /// <returns>False so the original getter gets skipped.</returns>
+    /// <returns><see langword="false"/> so the original getter gets skipped.</returns>
 #pragma warning disable CA1707
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Harmony naming convention")]
     public static bool PropertyGetterPatch(MethodBase __originalMethod, ref object __result)

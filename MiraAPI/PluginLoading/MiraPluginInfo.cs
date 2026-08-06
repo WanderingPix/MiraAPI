@@ -6,7 +6,6 @@ using MiraAPI.CustomChats;
 using MiraAPI.GameModes;
 using MiraAPI.GameOptions;
 using MiraAPI.Hud;
-using MiraAPI.LocalSettings;
 using MiraAPI.Modifiers;
 using MiraAPI.Presets;
 
@@ -14,7 +13,7 @@ using MiraAPI.Presets;
 namespace MiraAPI.PluginLoading;
 
 /// <summary>
-/// Represents a Mira plugin.
+/// Represents an <see cref="IMiraPlugin"/>.
 /// </summary>
 public class MiraPluginInfo
 {
@@ -27,17 +26,17 @@ public class MiraPluginInfo
     }
 
     /// <summary>
-    /// Gets a read only collection of this plugin's modifiers. This is not safe for modifiers with constructors.
+    /// Gets a <see cref="IReadOnlyCollection{T}"/> of this <see cref="IMiraPlugin"/>'s <see cref="BaseModifier"/>s. This is not safe for <see cref="BaseModifier"/>s with constructors.
     /// </summary>
     public IReadOnlyCollection<BaseModifier> Modifiers { get; private set; } = null!;
 
     /// <summary>
-    /// Gets a read only collection of this plugin's Option Groups.
+    /// Gets a <see cref="IReadOnlyCollection{T}"/> of this <see cref="IMiraPlugin"/>'s <see cref="AbstractOptionGroup"/>s.
     /// </summary>
     public IReadOnlyCollection<AbstractOptionGroup> OptionGroups { get; private set; } = null!;
 
     /// <summary>
-    /// Gets a read only collection of this plugin's options.
+    /// Gets a <see cref="IReadOnlyCollection{T}"/> of this <see cref="IMiraPlugin"/>'s <see cref="IModdedOption"/>s.
     /// </summary>
     public IReadOnlyCollection<IModdedOption> Options { get; private set; } = null!;
 
@@ -48,16 +47,17 @@ public class MiraPluginInfo
 
     /// <summary>
     /// Gets a read only dictionary of Role IDs and the RoleBehaviour object they are associated with.
+    /// Gets a <see cref="ReadOnlyDictionary{TKey, TValue}"/> of Role IDs and the <see cref="RoleBehaviour"/> object they are associated with.
     /// </summary>
     public ReadOnlyDictionary<ushort, RoleBehaviour> Roles { get; private set; } = null!;
 
     /// <summary>
-    /// Gets a read only collection of this plugin's custom buttons.
+    /// Gets a <see cref="IReadOnlyCollection{T}"/> of this <see cref="IMiraPlugin"/>'s <see cref="CustomActionButton"/>.
     /// </summary>
     public IReadOnlyCollection<CustomActionButton> Buttons { get; private set; } = null!;
 
     /// <summary>
-    /// Gets a read only dictionary of this plugin's custom presets.
+    /// Gets a <see cref="ReadOnlyDictionary{TKey, TValue}"/> of this <see cref="IMiraPlugin"/>'s <see cref="OptionPreset"/>s.
     /// </summary>
     public IReadOnlyCollection<OptionPreset> Presets { get; internal set; } = null!;
 
@@ -104,7 +104,7 @@ public class MiraPluginInfo
     public PluginInfo PluginInfo { get; }
 
     /// <summary>
-    /// Gets the plugin's configuration file.
+    /// Gets the plugin's <see cref="ConfigFile"/>.
     /// </summary>
     public ConfigFile PluginConfig { get; }
 }

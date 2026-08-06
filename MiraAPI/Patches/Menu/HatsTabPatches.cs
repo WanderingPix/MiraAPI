@@ -11,8 +11,6 @@ using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace MiraAPI.Patches.Menu;
@@ -21,6 +19,7 @@ namespace MiraAPI.Patches.Menu;
 public static class HatsTabPatches
 {
     private static SortedList<string, List<HatData>> sortedHats = [];
+    private static Dictionary<int, string> storeNames = [];
     private static int currentPage;
 
     private static void PreviousPage(HatsTab hatsTab)
@@ -50,12 +49,19 @@ public static class HatsTabPatches
 
         if (sortedHats.Count == 0)
         {
+            var num = 0;
             var comparer = new ControllableComparer<string>(["vanilla"], [], StringComparer.InvariantCulture);
             sortedHats = new SortedList<string, List<HatData>>(comparer);
             foreach (var hat in allHats)
             {
                 if (!sortedHats.ContainsKey(hat.StoreName)) sortedHats[hat.StoreName] = [];
                 sortedHats[hat.StoreName].Add(hat);
+
+                if (!storeNames.ContainsValue(hat.StoreName))
+                {
+                    storeNames.Add(num, hat.StoreName);
+                    num++;
+                }
             }
         }
 
@@ -96,27 +102,32 @@ public static class HatsTabPatches
         hatIndex = 0;
         foreach (var instanceColorChip in __instance.ColorChips) instanceColorChip.gameObject.Destroy();
         __instance.ColorChips.Clear();
-        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.Destroy());
+        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.DeepDestroy(false));
 
         var groupNameText = __instance.GetComponentInChildren<TextMeshPro>(false);
+        var group = sortedHats.Where(x => x.Key == storeNames[page]);
 
-        var (groupName, hats) = sortedHats.ToArray()[page];
-        var text = Object.Instantiate(groupNameText, __instance.scroller.Inner);
-        text.enabled = true;
-        text.gameObject.transform.localScale = Vector3.one;
-        text.GetComponent<TextTranslatorTMP>().Destroy();
-        text.EnableStencilMasking();
-        text.text = $"{groupName} ({currentPage + 1}/{sortedHats.Count})";
-        text.alignment = TextAlignmentOptions.Center;
-        text.fontSize = 5f;
-        text.fontSizeMax = 5f;
-        text.fontSizeMin = 0f;
-        var xLerp = __instance.XRange.Lerp(0.5f);
-        var yLerp = __instance.YStart - hatIndex / __instance.NumPerRow * __instance.YOffset;
-        text.transform.localPosition = new Vector3(xLerp, yLerp, -1f);
+        foreach ((string groupName, List<HatData> hats) in group)
+        {
+            var text = Object.Instantiate(groupNameText, __instance.scroller.Inner);
+            text.enabled = true;
+            text.gameObject.transform.localScale = Vector3.one;
+            text.GetComponent<TextTranslatorTMP>().Destroy();
+            text.EnableStencilMasking();
+            text.text = $"{groupName} ({currentPage + 1}/{sortedHats.Count})";
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontSize = 5f;
+            text.fontSizeMax = 5f;
+            text.fontSizeMin = 0f;
+            var xLerp = __instance.XRange.Lerp(0.5f);
+            var yLerp = __instance.YStart - hatIndex / __instance.NumPerRow * __instance.YOffset;
+            text.transform.localPosition = new Vector3(xLerp, yLerp, -1f);
 
-        hatIndex += 5;
-        loadRoutine = Coroutines.Start(CoGenerateChips(__instance, hats));
+            hatIndex += 5;
+            loadRoutine = Coroutines.Start(CoGenerateChips(__instance, hats));
+        }
+        __instance.scroller.ContentYBounds.max = -(__instance.YStart - (hatIndex + 1) / __instance.NumPerRow * __instance.YOffset) - 3f;
+        __instance.currentHatIsEquipped = true;
     }
 
     private static IEnumerator CoGenerateChips(HatsTab __instance, List<HatData> hats)

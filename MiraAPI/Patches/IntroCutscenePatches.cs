@@ -1,12 +1,10 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
 using MiraAPI.Events;
 using MiraAPI.Events.Vanilla.Gameplay;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
-using Reactor.Utilities;
 
 namespace MiraAPI.Patches;
 
@@ -122,7 +120,6 @@ public static class IntroCutscenePatches
             {
                 introCutscene = __instance.Cast<IntroCutscene>();
             }
-
 
             Info("IntroCutscene ended");
 

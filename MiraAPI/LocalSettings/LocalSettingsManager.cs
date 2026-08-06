@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
-using MiraAPI.GameOptions;
-using Reactor.Utilities;
 
 namespace MiraAPI.LocalSettings;
 
 /// <summary>
-/// Manages local settings.
+/// Manages <see cref="LocalSettingsTab"/>s.
 /// </summary>
 public static class LocalSettingsManager
 {
     internal static readonly Dictionary<Type, LocalSettingsTab> TypeToTab = [];
     internal static readonly List<LocalSettingsTab> Tabs = [];
+    internal static readonly List<LocalSettingsTab> AvailableTabs = [];
 
     internal static bool RegisterTab(Type type, BasePlugin pluginInfo)
     {
@@ -29,6 +28,10 @@ public static class LocalSettingsManager
         }
 
         Tabs.Add(tab);
+        if (tab.ShouldCreateButton)
+        {
+            AvailableTabs.Add(tab);
+        }
         TypeToTab.Add(type, tab);
 
         typeof(LocalSettingsTabSingleton<>).MakeGenericType(type)

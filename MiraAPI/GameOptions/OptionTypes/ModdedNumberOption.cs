@@ -225,9 +225,12 @@ public class ModdedNumberOption : ModdedOption<float>
     protected override void OnValueChanged(float newValue)
     {
         Value = Mathf.Clamp(newValue, Min, Max);
-        HudManager.Instance.Notifier.AddSettingsChangeMessage(
+        ModdedOptionsManager.AddSettingsChangeMessage(
+            HudManager.Instance.Notifier,
             StringName,
-            Data.GetValueString(Value),
+            Data.GetValueString(newValue),
+            Configuration.PopUpTextColor,
+            Configuration.PopUpIconTmp,
             false);
 
         if (OptionBehaviour is NumberOption opt)
@@ -237,7 +240,7 @@ public class ModdedNumberOption : ModdedOption<float>
     }
 
     /// <summary>
-    /// Implicitly converts the option to an int.
+    /// Implicitly converts the option to an <see langword="int"/>.
     /// </summary>
     /// <param name="option">The option.</param>
     /// <returns>Integer value.</returns>

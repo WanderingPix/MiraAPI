@@ -4,17 +4,16 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using MiraAPI.Events.Mira;
 using MiraAPI.PluginLoading;
-using UnityEngine;
 
 namespace MiraAPI.Hud;
 
 /// <summary>
-/// Custom button manager for handling custom buttons.
+/// Custom button manager for handling <see cref="CustomActionButton"/>s.
 /// </summary>
 public static class CustomButtonManager
 {
     /// <summary>
-    /// Gets a list of all registered custom buttons.
+    /// Gets a list of all registered custom <see cref="CustomActionButton"/>s.
     /// </summary>
     public static ReadOnlyCollection<CustomActionButton> Buttons { get; internal set; } = new([]);
 

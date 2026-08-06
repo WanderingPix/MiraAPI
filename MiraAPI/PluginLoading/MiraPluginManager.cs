@@ -18,6 +18,7 @@ using MiraAPI.Keybinds;
 using MiraAPI.LocalSettings;
 using MiraAPI.LocalSettings.Attributes;
 using MiraAPI.Modifiers;
+using MiraAPI.Patches.Options;
 using MiraAPI.Presets;
 using MiraAPI.Roles;
 using MiraAPI.Utilities;
@@ -34,6 +35,7 @@ public sealed class MiraPluginManager
     private readonly Dictionary<Assembly, MiraPluginInfo> _registeredPlugins = [];
 
     internal MiraPluginInfo[] RegisteredPlugins { get; private set; } = null!;
+    internal MiraPluginInfo[] RegisteredPluginsWithOptions { get; private set; } = null!;
 
     internal Dictionary<MiraPluginInfo, List<Type>> QueuedRoleRegistrations { get; } = [];
     internal static MiraPluginManager Instance { get; private set; } = new();
@@ -147,6 +149,7 @@ public sealed class MiraPluginManager
 
             // Cache all the registered plugins into an array for easy access
             RegisteredPlugins = [.. _registeredPlugins.Values];
+            RegisteredPluginsWithOptions = [.. RegisteredPlugins.Where(m => m.MiraPlugin.DisplayOnOptionsMenu)];
 
             ModifierManager.Modifiers = new ReadOnlyCollection<BaseModifier>(ModifierManager.InternalModifiers);
         };
@@ -159,7 +162,7 @@ public sealed class MiraPluginManager
     /// Get a mira plugin by its GUID.
     /// </summary>
     /// <param name="pluginId">The plugin GUID.</param>
-    /// <returns>A MiraPluginInfo.</returns>
+    /// <returns>A <see cref="MiraPluginInfo"/>.</returns>
     public static MiraPluginInfo? GetPluginByGuid(string pluginId)
     {
         return Instance._registeredPlugins.Values.FirstOrDefault(plugin => plugin.PluginId == pluginId);

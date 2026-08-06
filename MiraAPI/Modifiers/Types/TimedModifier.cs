@@ -1,5 +1,4 @@
 ﻿using System;
-using Reactor.Utilities;
 using UnityEngine;
 
 namespace MiraAPI.Modifiers.Types;
@@ -89,7 +88,7 @@ public abstract class TimedModifier : BaseModifier
     }
 
     /// <summary>
-    /// Stops the timer and calls OnTimerComplete().
+    /// Stops the timer and calls <see cref="OnTimerComplete"/>.
     /// </summary>
     public void StopTimer()
     {
@@ -109,7 +108,7 @@ public abstract class TimedModifier : BaseModifier
     }
 
     /// <summary>
-    /// Resets the timer. Does not call OnTimerComplete().
+    /// Resets the timer. Does not call <see cref="OnTimerComplete"/>.
     /// </summary>
     public void ResetTimer()
     {

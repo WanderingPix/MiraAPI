@@ -1,6 +1,4 @@
-﻿using MiraAPI.Voting;
-
-namespace MiraAPI.Events.Vanilla.Meeting.Voting;
+﻿namespace MiraAPI.Events.Vanilla.Meeting.Voting;
 
 /// <summary>
 /// Event that is invoked after the local player successfully votes a player or skips. This event is not cancelable.
@@ -8,7 +6,7 @@ namespace MiraAPI.Events.Vanilla.Meeting.Voting;
 public class AfterVoteEvent : MiraEvent
 {
     /// <summary>
-    /// Gets the instance of the voter's vote data.
+    /// Gets the instance of the voter's <see cref="PlayerVoteArea"/>.
     /// </summary>
     public PlayerVoteArea VoteArea { get; }
 
@@ -20,7 +18,7 @@ public class AfterVoteEvent : MiraEvent
     /// <summary>
     /// Initializes a new instance of the <see cref="AfterVoteEvent"/> class.
     /// </summary>
-    /// <param name="playerVoteArea">The player vote area that was voted on.</param>
+    /// <param name="playerVoteArea">The <see cref="PlayerVoteArea"/> that was voted on.</param>
     /// <param name="voter">The player who voted.</param>
     public AfterVoteEvent(PlayerVoteArea playerVoteArea, PlayerControl voter)
     {

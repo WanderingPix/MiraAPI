@@ -1,12 +1,12 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
 using MiraAPI.Utilities;
+using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using MiraAPI.Utilities.Assets;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -83,9 +83,9 @@ public static class SkinsTabPatches
 
     private static void GenerateHats(SkinsTab __instance, int page)
     {
-        foreach (ColorChip instanceColorChip in __instance.ColorChips) instanceColorChip.gameObject.Destroy();
+        foreach (var instanceColorChip in __instance.ColorChips) instanceColorChip.gameObject.Destroy();
         __instance.ColorChips.Clear();
-        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.Destroy());
+        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.DeepDestroy(false));
 
         var groupNameText = __instance.GetComponentInChildren<TextMeshPro>(false);
 

@@ -26,12 +26,12 @@ public static class MiraAssets
     }
 
     /// <summary>
-    /// Gets the color used for teal highlighting in UI.
+    /// Gets the <see cref="Color32"/> used for teal highlighting in UI.
     /// </summary>
     public static Color32 AcceptedTeal { get; } = new(43, 233, 198, 255);
 
     /// <summary>
-    /// Gets the Mira API asset bundle.
+    /// Gets the Mira API <see cref="AssetBundle"/>.
     /// </summary>
     public static AssetBundle MiraAssetBundle { get; } = AssetBundleManager.Load("mirabundle");
 
@@ -46,22 +46,22 @@ public static class MiraAssets
     public static LoadableAsset<GameObject> PresetSavePopup { get; } = new LoadableBundleAsset<GameObject>("PresetSavePopup", MiraAssetBundle);
 
     /// <summary>
-    /// Gets the Refresh Icon sprite.
+    /// Gets the Refresh Icon <see cref="Sprite"/>.
     /// </summary>
     public static LoadableAsset<Sprite> RefreshIcon { get; } = new LoadableBundleAsset<Sprite>("refresh", MiraAssetBundle);
 
     /// <summary>
-    /// Gets the Folder Icon sprite.
+    /// Gets the Folder Icon <see cref="Sprite"/>.
     /// </summary>
     public static LoadableAsset<Sprite> FolderIcon { get; } = new LoadableBundleAsset<Sprite>("freePlay_folderTaskRoom", MiraAssetBundle);
 
     /// <summary>
-    /// Gets the empty sprite asset.
+    /// Gets the empty <see cref="Sprite"/> asset.
     /// </summary>
     public static LoadableResourceAsset Empty { get; } = new("MiraAPI.Resources.Empty.png");
 
     /// <summary>
-    /// Gets the RoundedBox sprite, which is a rounded rectangle used for UI elements.
+    /// Gets the RoundedBox <see cref="Sprite"/>, which is a rounded rectangle used for UI elements.
     /// </summary>
     public static LoadableAsset<Sprite> RoundedBox { get; }
 
@@ -169,4 +169,5 @@ public static class MiraAssets
     /// Gets the sprite used for the chat button notifications.
     /// </summary>
     public static LoadableResourceAsset ChatNormalBubble { get; } = new("MiraAPI.Resources.ChatNormalBubble.png");
+    internal static LoadableResourceAsset BlankSprite { get; } = new("MiraAPI.Resources.BlankSprite.png");
 }

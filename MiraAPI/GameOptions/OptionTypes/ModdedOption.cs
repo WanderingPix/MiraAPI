@@ -4,7 +4,6 @@ using MiraAPI.Networking;
 using MiraAPI.PluginLoading;
 using Reactor.Localization.Utilities;
 using Reactor.Networking.Rpc;
-using Reactor.Utilities;
 using UnityEngine;
 
 namespace MiraAPI.GameOptions.OptionTypes;
@@ -190,4 +189,10 @@ public abstract class ModdedOption<T> : IModdedOption
     {
         return option.Value;
     }
+
+    /// <inheritdoc />
+    public AbstractOptionGroup ParentGroup { get; set; }
+
+    /// <inheritdoc />
+    public virtual OptionNotifConfiguration Configuration => new(ParentGroup);
 }

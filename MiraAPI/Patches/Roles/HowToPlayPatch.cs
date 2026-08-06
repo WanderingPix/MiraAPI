@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using MiraAPI.Roles;
@@ -11,7 +10,7 @@ namespace MiraAPI.Patches.Roles;
 internal static class HowToPlayPatch
 {
     // yes i patched the entire method
-    private static void Prefix(HowToPlayScene __instance)
+    public static void Prefix(HowToPlayScene __instance)
     {
         if (RoleManager.Instance.AllRoles.ToArray().All(x => !x.IsCustomRole()))
         {

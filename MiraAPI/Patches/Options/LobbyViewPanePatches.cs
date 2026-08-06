@@ -25,7 +25,7 @@ public static class LobbyViewPanePatches
 
     private static MiraPluginInfo? SelectedMod => SelectedModIdx == 0
         ? null
-        : MiraPluginManager.Instance.RegisteredPlugins[SelectedModIdx - 1];
+        : MiraPluginManager.Instance.RegisteredPluginsWithOptions[SelectedModIdx - 1];
 
     private static PassiveButton? ModifiersTabButton { get; set; }
 
@@ -75,7 +75,7 @@ public static class LobbyViewPanePatches
             (UnityAction)(() =>
             {
                 SelectedModIdx += 1;
-                if (SelectedModIdx > MiraPluginManager.Instance.RegisteredPlugins.Length)
+                if (SelectedModIdx > MiraPluginManager.Instance.RegisteredPluginsWithOptions.Length)
                 {
                     SelectedModIdx = 0;
                 }
@@ -99,7 +99,7 @@ public static class LobbyViewPanePatches
                 SelectedModIdx -= 1;
                 if (SelectedModIdx < 0)
                 {
-                    SelectedModIdx = MiraPluginManager.Instance.RegisteredPlugins.Length;
+                    SelectedModIdx = MiraPluginManager.Instance.RegisteredPluginsWithOptions.Length;
                 }
 
                 Refresh(__instance);
@@ -109,7 +109,7 @@ public static class LobbyViewPanePatches
     private static void Refresh(LobbyViewSettingsPane menu)
     {
         ModifiersTabButton?.gameObject.SetActive(SelectedModIdx != 0);
-        menu.gameModeText.text = SelectedMod?.PluginInfo.Metadata.Name ?? "Default";
+        menu.gameModeText.text = SelectedMod?.PluginInfo.Metadata.Name ?? "Main";
         menu.RefreshTab();
         menu.scrollBar.ScrollToTop();
     }
@@ -132,7 +132,7 @@ public static class LobbyViewPanePatches
         ModifiersTabButton?.SelectButton(true);
 
         var filteredGroups = SelectedMod.InternalOptionGroups
-            .Where(x => x.GroupVisible() && (x.ShowInModifiersMenu || (x.OptionableType != null && x.OptionableType.IsAssignableTo(typeof(BaseModifier)))));
+            .Where(x => x.GroupVisible() && (x.ParentMenu is MenuCategory.Modifiers || (x.OptionableType != null && x.OptionableType.IsAssignableTo(typeof(BaseModifier)))));
 
         DrawOptions(__instance, filteredGroups);
     }
@@ -152,7 +152,7 @@ public static class LobbyViewPanePatches
         }
 
         var filteredGroups = SelectedMod.InternalOptionGroups
-            .Where(x => x is { ShowInModifiersMenu: false, OptionableType: null } && x.GroupVisible());
+            .Where(x => x is { ParentMenu: not MenuCategory.Modifiers, OptionableType: null } && x.GroupVisible());
 
         DrawOptions(__instance, filteredGroups);
         return false;

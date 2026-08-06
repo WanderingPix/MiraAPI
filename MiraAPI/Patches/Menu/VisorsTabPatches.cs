@@ -1,11 +1,11 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
 using MiraAPI.Utilities;
+using MiraAPI.Utilities.Assets;
 using Reactor.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MiraAPI.Utilities.Assets;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -40,7 +40,6 @@ public static class VisorsTabPatches
         GenerateHats(tab, currentPage);
     }
 
-
     [HarmonyPatch(nameof(VisorsTab.OnEnable))]
     [HarmonyPrefix]
     public static bool OnEnablePrefix(VisorsTab __instance)
@@ -51,7 +50,7 @@ public static class VisorsTabPatches
         }
         __instance.visorId = HatManager.Instance.GetVisorById(DataManager.Player.Customization.Visor).ProdId;
 
-        if (!SortedVisors.ContainsKey("Vanilla")) AddRange(DestroyableSingleton<HatManager>.Instance.GetUnlockedVisors().Select(x => ("Vanilla", x)));
+        if (!SortedVisors.ContainsKey("Vanilla")) AddRange(HatManager.Instance.GetUnlockedVisors().Select(x => ("Vanilla", x)));
 
         InventoryUtility.CreateNextBackButtons(__instance, PreviousPage, NextPage);
 
@@ -81,9 +80,9 @@ public static class VisorsTabPatches
 
     private static void GenerateHats(VisorsTab __instance, int page)
     {
-        foreach (ColorChip instanceColorChip in __instance.ColorChips) instanceColorChip.gameObject.Destroy();
+        foreach (var instanceColorChip in __instance.ColorChips) instanceColorChip.gameObject.Destroy();
         __instance.ColorChips.Clear();
-        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.Destroy());
+        __instance.scroller.Inner.GetComponentsInChildren<TextMeshPro>().Do(x => x.gameObject.DeepDestroy(false));
 
         var groupNameText = __instance.GetComponentInChildren<TextMeshPro>(false);
 

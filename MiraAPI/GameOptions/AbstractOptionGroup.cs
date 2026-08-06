@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using MiraAPI.Modifiers;
+using MiraAPI.Roles;
 using UnityEngine;
 
 namespace MiraAPI.GameOptions;
@@ -29,15 +31,18 @@ public abstract class AbstractOptionGroup
     public virtual Type? OptionableType => null;
 
     /// <summary>
-    /// Gets a value indicating whether the group should be shown in the modifiers menu. This is deprecated, please use ParentMenu!
+    /// Gets a value indicating whether the group should be shown in the modifiers menu.
     /// </summary>
     // TODO: make this not a boolean
+#pragma warning disable S1133
+    [Obsolete("Use ParentMenu instead.")]
+#pragma warning restore S1133
     public virtual bool ShowInModifiersMenu => false;
 
     /// <summary>
     /// Gets a value indicating which menu the group is in.
     /// </summary>
-    public virtual MenuCategory ParentMenu => MenuCategory.Roles;
+    public virtual MenuCategory ParentMenu => MenuCategory.Game;
 
     /// <summary>
     /// Gets the function that determines whether the group should be visible or not.
@@ -45,19 +50,26 @@ public abstract class AbstractOptionGroup
     public virtual Func<bool> GroupVisible => () => true;
 
     /// <summary>
-    /// Gets the group color. This is used to color the group in the options menu.
+    /// Gets the group <see cref="Color"/>. This is used to color the group in the options menu.
     /// </summary>
     public virtual Color GroupColor => MiraApiPlugin.DefaultHeaderColor;
 
     /// <summary>
     /// Gets the group priority. This is used to determine the order in which groups are displayed in the options menu.
-    /// Zero is the highest priority, and the default value is the max uint value.
+    /// Zero is the highest priority, and the default value is the max <see langword="uint"/> value.
     /// </summary>
     public virtual uint GroupPriority => uint.MaxValue;
+
+    /// <summary>
+    /// Gets the default notification settings for the group.
+    /// </summary>
+    public virtual OptionNotifConfiguration Configuration => new(new Color(0.7333f, 0.7333f, 0.7333f, 1));
 
     internal bool AllOptionsHidden { get; set; }
 
     internal CategoryHeaderMasked? Header { get; set; }
+
+    internal bool Ready { get; set; }
 }
 
 /// <summary>
@@ -69,9 +81,7 @@ public abstract class AbstractOptionGroup<T> : AbstractOptionGroup where T : IOp
     /// <inheritdoc />
     public override Type OptionableType => typeof(T);
 
-    /// <summary>
-    /// Gets a value indicating which menu the group is in.
-    /// </summary>
+    /// <inheritdoc />
     public override MenuCategory ParentMenu
     {
         get
@@ -90,11 +100,65 @@ public abstract class AbstractOptionGroup<T> : AbstractOptionGroup where T : IOp
     }
 }
 
+/// <summary>
+/// Base class for option groups. An option group is a collection of options that are displayed together in the options menu.
+/// </summary>
+/// <typeparam name="T">The custom role that the group is for.</typeparam>
+public abstract class AbstractRoleOptionGroup<T>() : AbstractOptionGroup<T> where T : ICustomRole
+{
+    /// <inheritdoc />
+    public override Type OptionableType => typeof(T);
+
+    /// <inheritdoc />
+    public override MenuCategory ParentMenu => MenuCategory.Roles;
+
+    /// <inheritdoc />
+    public override OptionNotifConfiguration Configuration
+    {
+        get
+        {
+            var role = CustomRoleManager.CustomMiraRoles.FirstOrDefault(x => x.GetType() == OptionableType);
+            if (role == null)
+            {
+                return new(new Color(0.7333f, 0.7333f, 0.7333f, 1));
+            }
+            return new(role.RoleColor, role.Configuration.IconTmp);
+        }
+    }
+}
+
+/// <summary>
+/// Menu categories for option groups.
+/// </summary>
 public enum MenuCategory
 {
+    /// <summary>
+    /// Placeholder for indexing purposes. Options don't exist in the presset tab.
+    /// </summary>
+    Preset,
+
+    /// <summary>
+    /// Determines the option group is in the game settings tab.
+    /// </summary>
     Game,
+
+    /// <summary>
+    /// Determines the option group is in the role settings tab.
+    /// </summary>
     Roles,
+
+    /// <summary>
+    /// Determines the option group is in the modifier settings tab.
+    /// </summary>
     Modifiers,
+
+    /// <summary>
+    /// Determines the option group is in the first custom settings tab.
+    /// </summary>
     CustomOne,
-    CustomTwo
+
+    /// <summary>
+    /// Determines the option group is in the second custom settings tab.
+    /// </summary>
+    CustomTwo,
 }

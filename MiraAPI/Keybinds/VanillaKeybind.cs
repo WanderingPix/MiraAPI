@@ -1,4 +1,4 @@
-﻿using Rewired;
+﻿using System.Globalization;
 
 namespace MiraAPI.Keybinds;
 
@@ -19,6 +19,6 @@ public class VanillaKeybind : BaseKeybind
     public VanillaKeybind(int id)
     {
         RewiredInputAction = KeybindUtils.GetInputActionById(id);
-        Id = RewiredInputAction != null ? RewiredInputAction.name : id.ToString();
+        Id = RewiredInputAction != null ? RewiredInputAction.name : id.ToString(CultureInfo.InvariantCulture);
     }
 }

@@ -10,13 +10,12 @@ using MiraAPI.Modifiers;
 using MiraAPI.Networking;
 using MiraAPI.Utilities;
 using MiraAPI.Voting;
-using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 
 namespace MiraAPI.Patches;
 
 /// <summary>
-/// General patches for the PlayerControl class.
+/// General patches for the <see cref="PlayerControl"/> class.
 /// </summary>
 [HarmonyPatch(typeof(PlayerControl))]
 internal static class PlayerControlPatches
